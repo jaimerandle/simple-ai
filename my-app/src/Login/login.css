@@ -1,0 +1,9 @@
+.login-card {
+    box-shadow: 0 16px 54px 14px rgba(138, 43, 226, 0.5);
+}
+.btn {
+    margin-left: 35%;
+    background-color: rgb(199, 115, 209);
+    color: black;
+    border: none;
+}
