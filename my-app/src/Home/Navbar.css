@@ -1,0 +1,14 @@
+/* src/components/Navbar.css */
+
+.user-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    border-radius: 50%;
+    padding: 8px;
+}
+
+.user-icon-wrapper:hover {
+    background-color:  #f78fff99;
+}
