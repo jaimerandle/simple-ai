@@ -20,6 +20,7 @@ const Home = () => {
                         <p className="text-center">Desde acá podrás visualizar todas tus conversaciones con los clientes:</p>
                         <div className="row justify-content-center">
                             <SimpleTable />
+                            
                         </div>
                     </div>
                 </div>
