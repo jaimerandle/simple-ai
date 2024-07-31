@@ -10,7 +10,7 @@ const ConversationContainer = styled(Box)(({ theme, canal }) => ({
   padding: theme.spacing(2),
   height: '100vh',
   overflowY: 'auto',
-  marginTop:"-20px"
+  marginTop:"-20px",
 }));
 
 export default ConversationContainer;

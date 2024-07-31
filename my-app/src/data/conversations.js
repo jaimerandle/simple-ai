@@ -91,6 +91,60 @@ const conversations = {
           { de: 'usuario', mensaje: 'Sí, ofrecemos descuentos por compras grandes. Contáctanos para más detalles.', avatar: 'https://example.com/avatar2.jpg' },
         ],
       },
+      11: {
+        canal: 'Mercado Libre',
+        fecha: '2024-07-29',
+        hora: '12:00',
+        mensajes: [
+          { de: 'cliente', mensaje: '¿Tienen descuentos por compras al por mayor?', avatar: 'https://example.com/avatar1.jpg' },
+          { de: 'usuario', mensaje: 'Sí, ofrecemos descuentos por compras grandes. Contáctanos para más detalles.', avatar: 'https://example.com/avatar2.jpg' },
+        ],
+      },
+      12: {
+        canal: 'Mercado Libre',
+        fecha: '2024-07-29',
+        hora: '12:00',
+        mensajes: [
+          { de: 'cliente', mensaje: '¿Tienen descuentos por compras al por mayor?', avatar: 'https://example.com/avatar1.jpg' },
+          { de: 'usuario', mensaje: 'Sí, ofrecemos descuentos por compras grandes. Contáctanos para más detalles.', avatar: 'https://example.com/avatar2.jpg' },
+        ],
+      },
+      13: {
+        canal: 'Mercado Libre',
+        fecha: '2024-07-29',
+        hora: '12:00',
+        mensajes: [
+          { de: 'cliente', mensaje: '¿Tienen descuentos por compras al por mayor?', avatar: 'https://example.com/avatar1.jpg' },
+          { de: 'usuario', mensaje: 'Sí, ofrecemos descuentos por compras grandes. Contáctanos para más detalles.', avatar: 'https://example.com/avatar2.jpg' },
+        ],
+      },
+      14: {
+        canal: 'Instagram',
+        fecha: '2024-07-29',
+        hora: '12:00',
+        mensajes: [
+          { de: 'cliente', mensaje: '¿Tienen descuentos por compras al por mayor?', avatar: 'https://example.com/avatar1.jpg' },
+          { de: 'usuario', mensaje: 'Sí, ofrecemos descuentos por compras grandes. Contáctanos para más detalles.', avatar: 'https://example.com/avatar2.jpg' },
+        ],
+      },
+      15: {
+        canal: 'Instagram',
+        fecha: '2024-07-29',
+        hora: '12:00',
+        mensajes: [
+          { de: 'cliente', mensaje: '¿Tienen descuentos por compras al por mayor?', avatar: 'https://example.com/avatar1.jpg' },
+          { de: 'usuario', mensaje: 'Sí, ofrecemos descuentos por compras grandes. Contáctanos para más detalles.', avatar: 'https://example.com/avatar2.jpg' },
+        ],
+      },
+      16: {
+        canal: 'Instagram',
+        fecha: '2024-07-29',
+        hora: '12:00',
+        mensajes: [
+          { de: 'cliente', mensaje: '¿Tienen descuentos por compras al por mayor?', avatar: 'https://example.com/avatar1.jpg' },
+          { de: 'usuario', mensaje: 'Sí, ofrecemos descuentos por compras grandes. Contáctanos para más detalles.', avatar: 'https://example.com/avatar2.jpg' },
+        ],
+      },
   };
   
   export default conversations;

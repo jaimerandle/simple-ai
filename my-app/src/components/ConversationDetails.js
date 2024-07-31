@@ -49,7 +49,7 @@ const ConversationDetails = () => {
         <Typography variant="body1"><strong>Hora:</strong> {conversation.hora}</Typography>
         <CanalLogo src={logoSrc} alt={`${conversation.canal} logo`} />
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: 'white' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: 'white',border:"1px solid black", borderRadius:"20px" }}>
         {conversation.mensajes.map((mensaje, index) => (
           conversation.canal === 'Mercado Libre' ? (
             <MercadoLibreMessage key={index} de={mensaje.de}>

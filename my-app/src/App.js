@@ -5,6 +5,9 @@ import Home from './Home/Home';
 
 import SimpleTable from './components/multiTable';
 import ConversationDetails from './components/ConversationDetails';
+import UserInfo from './userInfo/userInfo';
+import { user } from './data/userData';
+import UserStats from './dashboard/userStadistics';
 
 
 function App() {
@@ -16,6 +19,8 @@ function App() {
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/conversation/:id" element={<ConversationDetails />} />
                 <Route path="/conversations" element={<SimpleTable />} />
+                <Route path="/Perfil" element={<UserInfo user={user} />}/>
+                <Route path="/dashboard" element={ <UserStats />}/>
             </Routes>
         </Router>
     );

@@ -5,6 +5,8 @@ import SimpleLogo from '../assets/simpleLogo.webp';
 import PersonIcon from '@mui/icons-material/Person';
 import './Navbar.css'; // Asegúrate de crear y usar este archivo CSS
 import { useNavigate } from 'react-router-dom';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import { Tooltip } from '@mui/material';
 
 const Navbar = () => {
     const router = useNavigate()
@@ -17,9 +19,17 @@ const Navbar = () => {
                         <img style={{ height: '30px', width: '30px', marginLeft: '10px' }} src={SimpleLogo} alt="Simple Logo" />
                     </div>
                     <div className="ml-auto" style={{ display: 'flex', alignItems: 'center' }}>
-                        <a href="/user-profile" className="nav-link user-icon-wrapper">
-                            <PersonIcon style={{ height: '30px', width: '30px', cursor:"pointer" }} />
+                        <a  className="nav-link user-icon-wrapper">
+                        <Tooltip title="Perfil">
+                            <PersonIcon style={{ height: '30px', width: '30px', cursor:"pointer" }} onClick={()=>{router("/Perfil")}}/>
+                            </Tooltip>
                         </a>
+                        <a  className="nav-link user-icon-wrapper" >
+                            <Tooltip title="Dashboard">
+                            <EqualizerIcon style={{ height: '30px', width: '30px', cursor:"pointer" }} onClick={()=>{router("/dashboard")}} />
+                            </Tooltip>
+                        </a>
+                        
                     </div>
                 </div>
             </nav>
