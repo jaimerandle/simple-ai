@@ -1,3 +1,5 @@
+// src/Home.js
+
 import React from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -7,22 +9,23 @@ import SimpleTable from '../components/multiTable';
 
 const Home = () => {
     return (
-        <div>
+        <>
             <Navbar />
+        <div>
             <div className="d-flex" id="wrapper">
-                <Sidebar />
-                <div id="page-content-wrapper">
-                    <div className="container-fluid">
-                        <h1 className="mt-4">Bienvenido Jaime</h1>
-                        <p>desde aca podras visualizar todas tus conversaciones con los clientes:</p>
-                        <div className="row">
-                        <SimpleTable/>
-
+                {/* <Sidebar /> */}
+                <div id="page-content-wrapper" className="w-100">
+                    <div className="container-fluid px-4">
+                        <h1 className="mt-2 pt-4 text-center">Bienvenido Jaime</h1>
+                        <p className="text-center">Desde acá podrás visualizar todas tus conversaciones con los clientes:</p>
+                        <div className="row justify-content-center">
+                            <SimpleTable />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        </>
     );
 };
 
