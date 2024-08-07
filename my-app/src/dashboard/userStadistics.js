@@ -49,6 +49,7 @@ const UserStats = () => {
           setLoading(false);
         }
       } else {
+        
         setError('No auth token found');
         setLoading(false);
       }
