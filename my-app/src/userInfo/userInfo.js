@@ -1,7 +1,7 @@
 // src/components/UserInfo.js
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -25,6 +25,7 @@ const UserAvatar = styled(Avatar)(({ theme }) => ({
 
 const UserInfo = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -35,6 +36,8 @@ const UserInfo = () => {
           setUser(userInfo);
         } catch (error) {
           console.error('Error fetching user info:', error);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -42,16 +45,18 @@ const UserInfo = () => {
     fetchUserInfo();
   }, []);
 
-  if (!user) {
-    return <Typography variant="h6">Loading...</Typography>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
-
-  console.log(user,"userdata")
 
   return (
     <>
       <Navbar />
-      <UserInfoContainer style={{paddingBottom: '100px'}}>
+      <UserInfoContainer style={{ paddingBottom: '100px' }}>
         <UserAvatar alt={user.name} src={user.avatar} />
         <Typography variant="h5" gutterBottom>{user.name}</Typography>
         <Typography variant="body1" color="textSecondary">{user.email}</Typography>

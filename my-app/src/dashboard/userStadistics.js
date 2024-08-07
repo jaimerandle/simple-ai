@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell, ResponsiveContainer } from 'recharts';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, CircularProgress } from '@mui/material';
 import { getConversations } from '../services/bffService';
 import Navbar from '../Home/Navbar';
 
 const UserStats = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -34,6 +35,8 @@ const UserStats = () => {
               case 11:
                 platformCounts['Instagram']++;
                 break;
+              default:
+                break;
             }
           });
 
@@ -42,9 +45,12 @@ const UserStats = () => {
           setData(chartData);
         } catch (error) {
           setError(error.message);
+        } finally {
+          setLoading(false);
         }
       } else {
         setError('No auth token found');
+        setLoading(false);
       }
     };
 
@@ -57,6 +63,14 @@ const UserStats = () => {
     'Mercado Libre': '#ffe600',
     'Otro': '#8884d8'
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <>

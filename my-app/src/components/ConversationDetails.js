@@ -14,10 +14,12 @@ import ConversationContainer from './ConversationContainer';
 import MercadoLibreMessage from './MercadoLibreMessage';
 import CanalLogo from './CanalLogo';
 import Navbar from '../Home/Navbar';
+import { CircularProgress } from '@mui/material';
 
 const ConversationDetails = () => {
   const { id } = useParams();
   const [conversation, setConversation] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -29,21 +31,32 @@ const ConversationDetails = () => {
           setConversation(conversationDetails);
         } catch (error) {
           setError(error.message);
+        } finally {
+          setLoading(false);
         }
       } else {
         setError('No auth token found');
+        setLoading(false);
       }
     };
 
     fetchConversationDetails();
   }, [id]);
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   if (error) {
     return <Typography>{error}</Typography>;
   }
 
   if (!conversation) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>No se encontró la conversación.</Typography>;
   }
 
   let logoSrc;
@@ -61,11 +74,11 @@ const ConversationDetails = () => {
       logoSrc = InstagramLogo;
       canal = 'Otro';
   }
-console.log(conversation,"Conversation jaimeee")
+
   return (
     <>
       <Navbar />
-      <ConversationContainer canal={canal} style={{paddingBottom: '100px'}}>
+      <ConversationContainer canal={canal} style={{ paddingBottom: '100px' }}>
         <Box sx={{ padding: 2, position: 'relative' }}>
           <Typography variant="h4" gutterBottom>Detalles de la Conversación</Typography>
           <Typography variant="body1"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>

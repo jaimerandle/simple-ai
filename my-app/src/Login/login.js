@@ -5,18 +5,23 @@ import simpleAi from "../assets/simple-ai.webp";
 import SimpleLogo from "../assets/simpleLogo.webp";
 import './login.css';
 import { loginAuth } from '../services/bffService';
+import Spinner from 'react-bootstrap/Spinner';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [loginError, setLoginError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setEmailError('');
         setPasswordError('');
+        setLoginError('');
+        setLoading(true);
 
         let valid = true;
 
@@ -41,7 +46,12 @@ const Login = () => {
                 navigate('/home');
             } catch (error) {
                 console.error('Login error', error.message);
+                setLoginError('Invalid email or password');
+            } finally {
+                setLoading(false);
             }
+        } else {
+            setLoading(false);
         }
     };
 
@@ -58,7 +68,7 @@ const Login = () => {
                         <label htmlFor="email">Email address</label>
                         <input
                             type="email"
-                            className="form-control"
+                            className={`form-control ${emailError ? 'is-invalid' : ''}`}
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +81,7 @@ const Login = () => {
                         <label htmlFor="password">Password</label>
                         <input
                             type="password"
-                            className="form-control"
+                            className={`form-control ${passwordError ? 'is-invalid' : ''}`}
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -80,7 +90,10 @@ const Login = () => {
                         {passwordError && <small className="form-text text-danger">{passwordError}</small>}
                     </div>
                     <br />
-                    <button type="submit" className="btn btn-primary btn-block">Login</button>
+                    {loginError && <div className="alert alert-danger">{loginError}</div>}
+                    <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+                        {loading ? <Spinner animation="border" size="sm"/> : 'Login'}
+                    </button>
                 </form>
             </div>
         </div>

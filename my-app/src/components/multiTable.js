@@ -1,5 +1,3 @@
-// src/components/SimpleTable.js
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -7,7 +5,8 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { TextField } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { TextField, CircularProgress } from '@mui/material';
 import { getConversations } from '../services/bffService';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -15,30 +14,29 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     color: 'black',
     fontWeight: 'bold',
-    textAlign: 'center', 
-     // Centrar el texto de los encabezados de las columnas
+    textAlign: 'center',
   },
   '& .MuiDataGrid-cell': {
-    textAlign: 'center',  // Centrar el texto de las celdas
+    textAlign: 'center',
   },
   '& .MuiDataGrid-footerContainer': {
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
   },
   '& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
     display: 'flex',
-    justifyContent: 'center', // Centrar horizontalmente
-    alignItems: 'center',     // Centrar verticalmente
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   '& .MuiDataGrid-columnHeader': {
     display: 'flex',
-    justifyContent: 'center', // Centrar horizontalmente
-    alignItems: 'center',     // Centrar verticalmente
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }));
 
 const columns = [
   { field: 'id', headerName: 'ID', flex: 1 },
-  { field:'referencia', headerName:'Referencia',flex :1 },
+  { field: 'referencia', headerName: 'Referencia', flex: 1 },
   { field: 'canal', headerName: 'Canal', flex: 1 },
   { field: 'fecha', headerName: 'Fecha', flex: 1 },
   { field: 'hora', headerName: 'Hora', flex: 1 },
@@ -52,14 +50,14 @@ const columns = [
 
 const ActionButton = ({ row }) => {
   const navigate = useNavigate();
-  
+
   const handleViewConversation = () => {
     navigate(`/conversation/${row.id}`);
   };
 
   return (
     <IconButton color="primary" onClick={handleViewConversation}>
-      <VisibilityIcon style={{color:"black"}} />
+      <VisibilityIcon style={{ color: "black" }} />
     </IconButton>
   );
 };
@@ -67,47 +65,68 @@ const ActionButton = ({ row }) => {
 const SimpleTable = () => {
   const [filter, setFilter] = useState('');
   const [rows, setRows] = useState([]);
+  const [filteredRows, setFilteredRows] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchConversations = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const conversations = await getConversations(token);
-          console.log(conversations,"CONVERSACIONES")
-          const formattedRows = conversations.map((conversation, index) => {
-            const date = new Date(conversation.last_updated);
-            const formattedDate = date.toLocaleDateString();
-            const formattedTime = date.toLocaleTimeString();
-            return{
+  const fetchConversations = async () => {
+    setLoading(true);
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      try {
+        const conversations = await getConversations(token);
+        const formattedRows = conversations.map((conversation) => {
+          const date = new Date(conversation.last_updated);
+          const formattedDate = date.toLocaleDateString();
+          const formattedTime = date.toLocaleTimeString();
+          return {
             id: conversation.id,
-            referencia: conversation.channel_target.substring(0, 15),
+            referencia: conversation.channel_source.substring(0, 15),
             canal: conversation.channel_id === 9 ? 'Mercado Libre' : conversation.channel_id === 10 ? 'Whatsapp' : 'Instagram',
             fecha: formattedDate,
             hora: formattedTime,
-          }});
-          setRows(formattedRows);
-        } catch (error) {
-          console.error('Error fetching conversations:', error);
-        }
+          };
+        });
+        sessionStorage.setItem('conversations', JSON.stringify(formattedRows));
+        setRows(formattedRows);
+        setFilteredRows(formattedRows);
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+      } finally {
+        setLoading(false);
       }
-    };
+    }
+  };
 
-    fetchConversations();
+  useEffect(() => {
+    const cachedConversations = sessionStorage.getItem('conversations');
+    if (cachedConversations) {
+      const parsedConversations = JSON.parse(cachedConversations);
+      setRows(parsedConversations);
+      setFilteredRows(parsedConversations);
+      setLoading(false);
+    } else {
+      fetchConversations();
+    }
   }, []);
 
   const handleFilterChange = (event) => {
     const value = event.target.value.toLowerCase();
     setFilter(value);
 
-    const filteredRows = rows.filter((row) =>
+    const filtered = rows.filter((row) =>
       row.id.toString().includes(value) ||
       row.canal.toLowerCase().includes(value) ||
       row.fecha.toLowerCase().includes(value) ||
-      row.hora.toLowerCase().includes(value)
+      row.hora.toLowerCase().includes(value) ||
+      row.referencia.toLowerCase().includes(value)
     );
 
-    setRows(filteredRows);
+    setFilteredRows(filtered);
+  };
+
+  const handleRefresh = () => {
+    sessionStorage.removeItem('conversations');
+    fetchConversations();
   };
 
   return (
@@ -134,25 +153,36 @@ const SimpleTable = () => {
           marginTop: "-25px",
         }}
       >
-        <TextField
-          label="Filtrar"
-          variant="outlined"
-          value={filter}
-          onChange={handleFilterChange}
-          fullWidth
-          margin="normal"
-          style={{ width: "400px" }}
-        />
-        <StyledDataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[5, 10, 20]}
-          components={{ Toolbar: GridToolbar }}
-          disableSelectionOnClick
-          autoHeight={false}
-          getRowHeight={() => 'auto'}
-        />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+          <TextField
+            label="Filtrar"
+            variant="outlined"
+            value={filter}
+            onChange={handleFilterChange}
+            fullWidth
+            margin="normal"
+            style={{ width: "400px" }}
+          />
+          <IconButton color="primary" onClick={handleRefresh}>
+            <RefreshIcon />
+          </IconButton>
+        </Box>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <StyledDataGrid
+            rows={filteredRows}
+            columns={columns}
+            pageSize={10}
+            rowsPerPageOptions={[5, 10, 20]}
+            components={{ Toolbar: GridToolbar }}
+            disableSelectionOnClick
+            autoHeight={false}
+            getRowHeight={() => 'auto'}
+          />
+        )}
       </Box>
     </>
   );
