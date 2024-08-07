@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import SimpleTable from '../components/multiTable';
@@ -12,7 +11,7 @@ const Home = () => {
         <>
             <Navbar />
         <div>
-            <div className="d-flex" id="wrapper">
+            <div className="d-flex" id="wrapper" style={{paddingBottom: '150px'}}>
                 {/* <Sidebar /> */}
                 <div id="page-content-wrapper" className="w-100">
                     <div className="container-fluid px-4">

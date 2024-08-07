@@ -1,13 +1,13 @@
 // src/components/ConversationDetails.js
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import WhatsAppLogo from '../assets/WhatsAppLogo.svg';
 import InstagramLogo from '../assets/Instagram.svg';
 import MercadoLibreLogo from '../assets/mercadolibre.svg';
-import conversations from '../data/conversations';
+import { getConversationDetails } from '../services/bffService';
 import ChatBubble from './ChatBubble';
 import AvatarWrapper from './AvatarWrapper';
 import ConversationContainer from './ConversationContainer';
@@ -17,56 +17,84 @@ import Navbar from '../Home/Navbar';
 
 const ConversationDetails = () => {
   const { id } = useParams();
-  const conversation = conversations[id];
+  const [conversation, setConversation] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchConversationDetails = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const conversationDetails = await getConversationDetails(id, token);
+          setConversation(conversationDetails);
+        } catch (error) {
+          setError(error.message);
+        }
+      } else {
+        setError('No auth token found');
+      }
+    };
+
+    fetchConversationDetails();
+  }, [id]);
+
+  if (error) {
+    return <Typography>{error}</Typography>;
+  }
 
   if (!conversation) {
-    return <Typography>No se encontró la conversación.</Typography>;
+    return <Typography>Loading...</Typography>;
   }
 
   let logoSrc;
-  switch (conversation.canal) {
-    case 'WhatsApp':
-      logoSrc = WhatsAppLogo;
-      break;
-    case 'Instagram':
-      logoSrc = InstagramLogo;
-      break;
-    case 'Mercado Libre':
+  let canal;
+  switch (conversation.channel_id) {
+    case 9:
       logoSrc = MercadoLibreLogo;
+      canal = 'MELI';
+      break;
+    case 10:
+      logoSrc = WhatsAppLogo;
+      canal = 'WhatsApp';
       break;
     default:
-      logoSrc = '';
+      logoSrc = InstagramLogo;
+      canal = 'Otro';
   }
-
+console.log(conversation,"Conversation jaimeee")
   return (
     <>
-        <Navbar/>
-    <ConversationContainer canal={conversation.canal}>
-      <Box sx={{ padding: 2, position: 'relative' }}>
-        <Typography variant="h4" gutterBottom>Detalles de la Conversación</Typography>
-        <Typography variant="body1"><strong>Canal:</strong> {conversation.canal}</Typography>
-        <Typography variant="body1"><strong>Fecha:</strong> {conversation.fecha}</Typography>
-        <Typography variant="body1"><strong>Hora:</strong> {conversation.hora}</Typography>
-        <CanalLogo src={logoSrc} alt={`${conversation.canal} logo`} />
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: 'white',border:"1px solid black", borderRadius:"20px" }}>
-        {conversation.mensajes.map((mensaje, index) => (
-          conversation.canal === 'Mercado Libre' ? (
-            <MercadoLibreMessage key={index} de={mensaje.de}>
-              <Typography variant="body1" component="div">{mensaje.mensaje}</Typography>
-              <Typography variant="body2" color="textSecondary">{mensaje.fecha}</Typography>
-            </MercadoLibreMessage>
+      <Navbar />
+      <ConversationContainer canal={canal} style={{paddingBottom: '100px'}}>
+        <Box sx={{ padding: 2, position: 'relative' }}>
+          <Typography variant="h4" gutterBottom>Detalles de la Conversación</Typography>
+          <Typography variant="body1"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>
+          <Typography variant="body1"><strong>Fecha:</strong> {new Date(conversation.last_updated).toLocaleDateString()}</Typography>
+          <Typography variant="body1"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
+          <CanalLogo src={logoSrc} alt={`${canal} logo`} />
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: 'white', border: "1px solid black", borderRadius: "20px" }}>
+          {conversation.messages && conversation.messages.length > 0 ? (
+            conversation.messages.map((mensaje, index) => (
+              canal === 'MELI' ? (
+                <MercadoLibreMessage key={index} de={mensaje.from}>
+                  <Typography variant="body1" component="div">{mensaje.text}</Typography>
+                  <Typography variant="body2" color="textSecondary">{new Date(mensaje.timestamp).toLocaleString()}</Typography>
+                </MercadoLibreMessage>
+              ) : (
+                <Box key={index} display="flex" alignItems="center" justifyContent={mensaje.from === 'user' ? 'flex-start' : 'flex-end'}>
+                  <AvatarWrapper de={mensaje.from} />
+                  <ChatBubble de={mensaje.from} canal={canal}>
+                    {mensaje.text}
+                  </ChatBubble>
+                </Box>
+              )
+            ))
           ) : (
-            <Box key={index} display="flex" alignItems="center" justifyContent={mensaje.de === 'cliente' ? 'flex-start' : 'flex-end'}>
-              <AvatarWrapper de={mensaje.de} src={mensaje.avatar} />
-              <ChatBubble de={mensaje.de} canal={conversation.canal}>
-                {mensaje.mensaje}
-              </ChatBubble>
-            </Box>
-          )
-        ))}
-      </Box>
-    </ConversationContainer>
+            <Typography>No hay mensajes en esta conversación.</Typography>
+          )}
+        </Box>
+      </ConversationContainer>
     </>
   );
 };

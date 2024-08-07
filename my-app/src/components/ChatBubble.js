@@ -16,13 +16,13 @@ const ChatBubble = styled(Box)(({ theme, de, canal }) => ({
   alignItems: 'center',
   fontSize: '15px',
   ...(canal === 'Instagram' && {
-    backgroundColor: de === 'cliente' ? '#E5E1E0' : '#833ab4',
+    backgroundColor: de === 'user' ? '#E5E1E0' : '#833ab4',
   }),
   ...(canal === 'WhatsApp' && {
-    backgroundColor: de === 'cliente' ? '#dcf8c6' : '#34b7f1',
+    backgroundColor: de === 'user' ? '#25d366' : '#34b7f1',
   }),
-  ...(canal === 'Mercado Libre' && {
-    backgroundColor: de === 'cliente' ? '#f1f1f1' : '#dfe6e9',
+  ...(canal === 'MELI' && {
+    backgroundColor: de === 'user' ? '#f1f1f1' : '#dfe6e9',
     color: theme.palette.text.primary,
   }),
 }));

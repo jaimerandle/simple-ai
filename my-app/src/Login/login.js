@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import simpleAi from "../assets/simple-ai.webp"
-import SimpleLogo from "../assets/simpleLogo.webp"
+import simpleAi from "../assets/simple-ai.webp";
+import SimpleLogo from "../assets/simpleLogo.webp";
 import './login.css';
+import { loginAuth } from '../services/bffService';
+
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -11,7 +13,7 @@ const Login = () => {
     const [passwordError, setPasswordError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setEmailError('');
         setPasswordError('');
@@ -29,17 +31,28 @@ const Login = () => {
         }
 
         if (valid) {
-            navigate('/home');
+            try {
+                const token = await loginAuth(email, password);
+
+                // Guarda el token en el almacenamiento local
+                localStorage.setItem('authToken', token);
+
+                // Navega a la página principal
+                navigate('/home');
+            } catch (error) {
+                console.error('Login error', error.message);
+            }
         }
     };
 
     return (
-        <div className="login-container d-flex align-items-center justify-content-center vh-100 bg-light" >
+        <div className="login-container d-flex align-items-center justify-content-center vh-100 bg-light">
             <div className="card p-5 login-card">
-                <div style={{display:"flex"}}>
-                <img style={{width:"200px"}} src={simpleAi} /> <img style={{ height:"50px",width:"50px"}} src={SimpleLogo}/>
+                <div style={{ display: "flex" }}>
+                    <img style={{ width: "200px" }} src={simpleAi} alt="Simple AI" />
+                    <img style={{ height: "50px", width: "50px" }} src={SimpleLogo} alt="Simple Logo" />
                 </div>
-                <br/>
+                <br />
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="email">Email address</label>
@@ -53,7 +66,7 @@ const Login = () => {
                         />
                         {emailError && <small className="form-text text-danger">{emailError}</small>}
                     </div>
-                    <br></br>
+                    <br />
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
                         <input
@@ -66,7 +79,7 @@ const Login = () => {
                         />
                         {passwordError && <small className="form-text text-danger">{passwordError}</small>}
                     </div>
-                    <br></br>
+                    <br />
                     <button type="submit" className="btn btn-primary btn-block">Login</button>
                 </form>
             </div>

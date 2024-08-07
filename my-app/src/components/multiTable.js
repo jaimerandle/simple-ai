@@ -1,15 +1,14 @@
 // src/components/SimpleTable.js
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import conversations from '../data/conversations';
 import { TextField } from '@mui/material';
-
+import { getConversations } from '../services/bffService';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
@@ -39,6 +38,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 const columns = [
   { field: 'id', headerName: 'ID', flex: 1 },
+  { field:'referencia', headerName:'Referencia',flex :1 },
   { field: 'canal', headerName: 'Canal', flex: 1 },
   { field: 'fecha', headerName: 'Fecha', flex: 1 },
   { field: 'hora', headerName: 'Hora', flex: 1 },
@@ -49,13 +49,6 @@ const columns = [
     renderCell: (params) => <ActionButton {...params} />,
   },
 ];
-
-const allRows = Object.values(conversations).map((conversation, index) => ({
-  id: index + 1,
-  canal: conversation.canal,
-  fecha: conversation.fecha,
-  hora: conversation.hora,
-}));
 
 const ActionButton = ({ row }) => {
   const navigate = useNavigate();
@@ -73,13 +66,41 @@ const ActionButton = ({ row }) => {
 
 const SimpleTable = () => {
   const [filter, setFilter] = useState('');
-  const [rows, setRows] = useState(allRows);
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const conversations = await getConversations(token);
+          console.log(conversations,"CONVERSACIONES")
+          const formattedRows = conversations.map((conversation, index) => {
+            const date = new Date(conversation.last_updated);
+            const formattedDate = date.toLocaleDateString();
+            const formattedTime = date.toLocaleTimeString();
+            return{
+            id: conversation.id,
+            referencia: conversation.channel_target.substring(0, 15),
+            canal: conversation.channel_id === 9 ? 'Mercado Libre' : conversation.channel_id === 10 ? 'Whatsapp' : 'Instagram',
+            fecha: formattedDate,
+            hora: formattedTime,
+          }});
+          setRows(formattedRows);
+        } catch (error) {
+          console.error('Error fetching conversations:', error);
+        }
+      }
+    };
+
+    fetchConversations();
+  }, []);
 
   const handleFilterChange = (event) => {
     const value = event.target.value.toLowerCase();
     setFilter(value);
 
-    const filteredRows = allRows.filter((row) =>
+    const filteredRows = rows.filter((row) =>
       row.id.toString().includes(value) ||
       row.canal.toLowerCase().includes(value) ||
       row.fecha.toLowerCase().includes(value) ||
@@ -91,48 +112,48 @@ const SimpleTable = () => {
 
   return (
     <>
-    <style  jsx global> 
-      {`
-       .css-ptiqhd-MuiSvgIcon-root {
-    width: 0px;
-    height: 0px   } 
-       .css-t89xny-MuiDataGrid-columnHeaderTitle  {
-        font-weight: bold !important;
-        width:100%;
-        position:absolute
-       }
-      `}
-    </style>
-    <Box
-      sx={{
-       maxHeight:"400px",
-        width: '100%',
-        background: '',
-        padding: 2,
-        marginTop:"-25px",
-      
-      }}
-    >
-      <TextField
-        label="Filtrar"
-        variant="outlined"
-        value={filter}
-        onChange={handleFilterChange}
-        fullWidth
-        margin="normal"
-        style={{width:"400px"}}
-      />
-      <StyledDataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[5, 10, 20]}
-        components={{ Toolbar: GridToolbar }}
-        disableSelectionOnClick
-        autoHeight ={false}
-        getRowHeight={() => 'auto'}
-      />
-    </Box>
+      <style jsx global>
+        {`
+          .css-ptiqhd-MuiSvgIcon-root {
+            width: 0px;
+            height: 0px;
+          }
+          .css-t89xny-MuiDataGrid-columnHeaderTitle {
+            font-weight: bold !important;
+            width: 100%;
+            position: absolute;
+          }
+        `}
+      </style>
+      <Box
+        sx={{
+          maxHeight: "400px",
+          width: '100%',
+          background: '',
+          padding: 2,
+          marginTop: "-25px",
+        }}
+      >
+        <TextField
+          label="Filtrar"
+          variant="outlined"
+          value={filter}
+          onChange={handleFilterChange}
+          fullWidth
+          margin="normal"
+          style={{ width: "400px" }}
+        />
+        <StyledDataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[5, 10, 20]}
+          components={{ Toolbar: GridToolbar }}
+          disableSelectionOnClick
+          autoHeight={false}
+          getRowHeight={() => 'auto'}
+        />
+      </Box>
     </>
   );
 };

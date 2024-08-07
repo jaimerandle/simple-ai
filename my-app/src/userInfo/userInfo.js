@@ -1,12 +1,13 @@
 // src/components/UserInfo.js
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import StoreIcon from '@mui/icons-material/Store';
 import Navbar from '../Home/Navbar';
+import { getUserInfo } from '../services/bffService';
 
 const UserInfoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -22,36 +23,60 @@ const UserAvatar = styled(Avatar)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const UserInfo = ({ user }) => {
+const UserInfo = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const userInfo = await getUserInfo(token);
+          setUser(userInfo);
+        } catch (error) {
+          console.error('Error fetching user info:', error);
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  if (!user) {
+    return <Typography variant="h6">Loading...</Typography>;
+  }
+
+  console.log(user,"userdata")
+
   return (
     <>
-     <Navbar />
-    <UserInfoContainer>
-      <UserAvatar alt={user.name} src={user.avatar} />
-      <Typography variant="h5" gutterBottom>{user.name}</Typography>
-      <Typography variant="body1" color="textSecondary">{user.email}</Typography>
-      <Typography variant="body2" color="textSecondary">{user.bio}</Typography>
-      <List>
-        <ListItem>
-          <ListItemIcon>
-            <WhatsAppIcon color={user.whatsapp ? "primary" : "disabled"} />
-          </ListItemIcon>
-          <ListItemText primary="WhatsApp" secondary={user.whatsapp ? "Cuenta activa" : "Cuenta inactiva"} />
-        </ListItem>
-        <ListItem>
-          <ListItemIcon>
-            <InstagramIcon color={user.instagram ? "primary" : "disabled"} />
-          </ListItemIcon>
-          <ListItemText primary="Instagram" secondary={user.instagram ? "Cuenta activa" : "Cuenta inactiva"} />
-        </ListItem>
-        <ListItem>
-          <ListItemIcon>
-            <StoreIcon color={user.mercadolibre ? "primary" : "disabled"} />
-          </ListItemIcon>
-          <ListItemText primary="Mercado Libre" secondary={user.mercadolibre ? "Cuenta activa" : "Cuenta inactiva"} />
-        </ListItem>
-      </List>
-    </UserInfoContainer>
+      <Navbar />
+      <UserInfoContainer style={{paddingBottom: '100px'}}>
+        <UserAvatar alt={user.name} src={user.avatar} />
+        <Typography variant="h5" gutterBottom>{user.name}</Typography>
+        <Typography variant="body1" color="textSecondary">{user.email}</Typography>
+        <Typography variant="body2" color="textSecondary">{user.bio}</Typography>
+        <List>
+          <ListItem>
+            <ListItemIcon>
+              <WhatsAppIcon color={user.whatsapp ? "primary" : "disabled"} />
+            </ListItemIcon>
+            <ListItemText primary="WhatsApp" secondary={user.whatsapp ? "Cuenta activa" : "Cuenta inactiva"} />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <InstagramIcon color={user.instagram ? "primary" : "disabled"} />
+            </ListItemIcon>
+            <ListItemText primary="Instagram" secondary={user.instagram ? "Cuenta activa" : "Cuenta inactiva"} />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <StoreIcon color={user.mercadolibre ? "primary" : "disabled"} />
+            </ListItemIcon>
+            <ListItemText primary="Mercado Libre" secondary={user.mercadolibre ? "Cuenta activa" : "Cuenta inactiva"} />
+          </ListItem>
+        </List>
+      </UserInfoContainer>
     </>
   );
 };
