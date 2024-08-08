@@ -45,7 +45,7 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <div style={{ overflowY: 'auto', height: '100vh' }}>
+            <div style={{  height: '100vh' }}>
                 <div className="d-flex" id="wrapper" style={{ paddingBottom: '170px' }}>
                     <div id="page-content-wrapper" className="w-100">
                         <div className="container-fluid px-4">
