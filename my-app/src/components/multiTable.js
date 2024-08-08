@@ -1,5 +1,3 @@
-// src/components/SimpleTable.js
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -93,10 +91,17 @@ const SimpleTable = () => {
           const date = new Date(conversation.last_updated);
           const formattedDate = date.toLocaleDateString();
           const formattedTime = date.toLocaleTimeString();
+          const numeroCorto = conversation.channel_source.substr(3,18)
+          console.log(numeroCorto,"numero corto")
+          const canal = conversation.channel_id === 9 ? 'Mercado Libre' : conversation.channel_id === 10 ? 'WhatsApp' : 'Instagram';
+          const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0,15)
+
+          console.log('Canal:', canal, 'Referencia:', referencia); // Verificar que la lógica funcione
+
           return {
             id: conversation.id,
-            referencia: conversation.channel_source.substring(0, 15),
-            canal: conversation.channel_id === 9 ? 'Mercado Libre' : conversation.channel_id === 10 ? 'Whatsapp' : 'Instagram',
+            referencia: referencia,
+            canal: canal,
             fecha: formattedDate,
             hora: formattedTime,
           };
@@ -151,6 +156,10 @@ const SimpleTable = () => {
           .css-ptiqhd-MuiSvgIcon-root {
             width: 0px;
             height: 0px;
+          }
+          .css-1k33q06 {
+            width: 0px !important;
+            height: 0px !important;
           }
           .css-t89xny-MuiDataGrid-columnHeaderTitle {
             font-weight: bold !important;
