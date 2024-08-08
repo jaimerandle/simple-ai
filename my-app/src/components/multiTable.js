@@ -1,3 +1,5 @@
+// src/components/SimpleTable.js
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -6,7 +8,7 @@ import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { TextField, CircularProgress } from '@mui/material';
+import { TextField, CircularProgress, useMediaQuery } from '@mui/material';
 import { getConversations } from '../services/bffService';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -34,12 +36,24 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-const columns = [
+const allColumns = [
   { field: 'id', headerName: 'ID', flex: 1 },
   { field: 'referencia', headerName: 'Referencia', flex: 1 },
   { field: 'canal', headerName: 'Canal', flex: 1 },
   { field: 'fecha', headerName: 'Fecha', flex: 1 },
   { field: 'hora', headerName: 'Hora', flex: 1 },
+  {
+    field: 'actions',
+    headerName: 'Acciones',
+    flex: 1,
+    renderCell: (params) => <ActionButton {...params} />,
+  },
+];
+
+const mobileColumns = [
+  { field: 'canal', headerName: 'Canal', flex: 1 },
+  { field: 'referencia', headerName: 'Referencia', flex: 1 },
+  { field: 'fecha', headerName: 'Fecha', flex: 1 },
   {
     field: 'actions',
     headerName: 'Acciones',
@@ -67,6 +81,7 @@ const SimpleTable = () => {
   const [rows, setRows] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   const fetchConversations = async () => {
     setLoading(true);
@@ -161,9 +176,29 @@ const SimpleTable = () => {
             onChange={handleFilterChange}
             fullWidth
             margin="normal"
-            style={{ width: "400px" }}
+            style={{ width: "400px", color: "black" }}
+            sx={{
+              width: '400px',
+              '& .MuiInputBase-input': {
+                color: 'black',
+              },
+              '& .MuiInputLabel-root': {
+                color: 'black',
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'black',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'black',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'black',
+                },
+              },
+            }}
           />
-          <IconButton color="primary" onClick={handleRefresh}>
+          <IconButton color="black" onClick={handleRefresh}>
             <RefreshIcon />
           </IconButton>
         </Box>
@@ -174,7 +209,7 @@ const SimpleTable = () => {
         ) : (
           <StyledDataGrid
             rows={filteredRows}
-            columns={columns}
+            columns={isMobile ? mobileColumns : allColumns}
             pageSize={10}
             rowsPerPageOptions={[5, 10, 20]}
             components={{ Toolbar: GridToolbar }}

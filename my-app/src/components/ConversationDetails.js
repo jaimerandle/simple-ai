@@ -1,7 +1,7 @@
 // src/components/ConversationDetails.js
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import WhatsAppLogo from '../assets/WhatsAppLogo.svg';
@@ -21,10 +21,14 @@ const ConversationDetails = () => {
   const [conversation, setConversation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchConversationDetails = async () => {
       const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/');
+    } else {
       if (token) {
         try {
           const conversationDetails = await getConversationDetails(id, token);
@@ -39,6 +43,7 @@ const ConversationDetails = () => {
         setLoading(false);
       }
     };
+  }
 
     fetchConversationDetails();
   }, [id]);

@@ -8,6 +8,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import StoreIcon from '@mui/icons-material/Store';
 import Navbar from '../Home/Navbar';
 import { getUserInfo } from '../services/bffService';
+import { useNavigate } from 'react-router-dom';
 
 const UserInfoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -26,10 +27,14 @@ const UserAvatar = styled(Avatar)(({ theme }) => ({
 const UserInfo = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/');
+    } else {
       if (token) {
         try {
           const userInfo = await getUserInfo(token);
@@ -41,6 +46,7 @@ const UserInfo = () => {
         }
       }
     };
+  }
 
     fetchUserInfo();
   }, []);

@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-import { Box, Typography, CircularProgress, Button, ButtonGroup } from '@mui/material';
+import { Box, Typography, CircularProgress, Button, ButtonGroup, useMediaQuery } from '@mui/material';
 import { getConversations } from '../services/bffService';
 import Navbar from '../Home/Navbar';
+import { useNavigate } from 'react-router-dom';
 
 const COLORS = {
   'WhatsApp': '#63cb77',
@@ -28,17 +29,38 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+const CustomLegend = ({ payload }) => (
+  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, flexWrap: 'wrap' }}>
+    {payload.map((entry, index) => (
+      <div key={`item-${index}`} style={{ margin: '5px 10px', display: 'flex', alignItems: 'center' }}>
+        <div style={{
+          width: 10,
+          height: 10,
+          backgroundColor: entry.color,
+          border: '1px solid black',
+          marginRight: 5
+        }} />
+        <span style={{ color: 'black' }}>{entry.value}</span>
+      </div>
+    ))}
+  </div>
+);
+
 const UserStats = () => {
   const [data, setData] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [view, setView] = useState('overall'); // 'overall' or 'weekly'
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
     const fetchConversations = async () => {
       const token = localStorage.getItem('authToken');
-      if (token) {
+      if (!token) {
+        navigate('/');
+      } else {
         try {
           const conversations = await getConversations(token);
           
@@ -74,7 +96,7 @@ const UserStats = () => {
             }
           });
 
-          const overallChartData = Object.entries(platformCounts).map(([name, conversaciones]) => ({ name, conversaciones }));
+          const overallChartData = Object.entries(platformCounts).map(([name, value]) => ({ name, value }));
           const weeklyChartData = Object.entries(last7Days).map(([date, counts]) => ({
             date,
             ...counts,
@@ -87,14 +109,11 @@ const UserStats = () => {
         } finally {
           setLoading(false);
         }
-      } else {
-        setError('No auth token found');
-        setLoading(false);
       }
     };
 
     fetchConversations();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
@@ -111,24 +130,24 @@ const UserStats = () => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'flex-start', // Changed to 'flex-start' to align items at the top
+          justifyContent: 'flex-start',
           alignItems: 'center',
           height: '100vh',
           overflowY: 'auto',
           marginTop: "-20px",
-          background: 'linear-gradient(160deg, #ffffff, #cc86cc)',       
-          paddingBottom:"100px"
-        // Ensure vertical scroll is possible
+          background: 'linear-gradient(160deg, #ffffff, #cc86cc)',
+          paddingBottom: "100px",
+          padding: '16px',
         }}
       >
-        <Typography variant="h4" gutterBottom style={{ color: "black" , marginTop:"25px"}}>
+        <Typography variant="h4" gutterBottom style={{ color: "black", marginTop: "25px", textAlign: "center" }}>
           Dashboard de tus productos
         </Typography>
         <ButtonGroup variant="contained" sx={{ marginBottom: 2 }}>
           <Button onClick={() => setView('overall')} color={view === 'overall' ? 'primary' : 'inherit'}>Vista General</Button>
           <Button onClick={() => setView('weekly')} color={view === 'weekly' ? 'primary' : 'inherit'}>Últimos 7 Días</Button>
         </ButtonGroup>
-        <Box sx={{ width: '100%', maxWidth: 800, marginBottom: '20px' }}> {/* Added marginBottom */}
+        <Box sx={{ width: '100%', maxWidth: 800, marginBottom: '20px' }}>
           {error ? (
             <Typography variant="body1" color="error">{error}</Typography>
           ) : (
@@ -136,14 +155,20 @@ const UserStats = () => {
               {view === 'overall' ? (
                 <BarChart
                   data={data}
-                  margin={{ top: 20, right: 10, left: 10, bottom: 5 }}
+                  margin={{ top: 20, right: 15, left: -25, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="black" />
-                  <XAxis dataKey="name" stroke="black" />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="black" 
+                    tick={{ angle: 0, textAnchor: 'middle' }} 
+                    height={isMobile ? 60 : undefined} 
+                    interval={0}
+                  />
                   <YAxis stroke="black" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: 'white' }} content={CustomTooltip} />
-                  <Legend wrapperStyle={{ color: "black" }} />
-                  <Bar dataKey="conversaciones" >
+                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: isMobile ? 'block' : 'flex', textAlign: isMobile ? 'center' : 'left' }} />
+                  <Bar dataKey="value" >
                     {data.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[entry.name]} strokeLinecap="inherit" stroke="#000" strokeWidth={1} />
                     ))}
@@ -152,13 +177,19 @@ const UserStats = () => {
               ) : (
                 <BarChart
                   data={weeklyData}
-                  margin={{ top: 20, right: 10, left: 10, bottom: 5 }}
+                  margin={{ top: 20, right: 15, left: -25, bottom: 5  }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="black" />
-                  <XAxis dataKey="date" stroke="black" />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="black" 
+                    tick={{ angle: isMobile ? -50 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
+                    height={isMobile ? 60 : undefined} 
+                    interval={0}
+                  />
                   <YAxis stroke="black" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
-                  <Legend wrapperStyle={{ color: "black" }} />
+                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: isMobile ? 'block' : 'flex', textAlign: isMobile ? 'center' : 'left' }} />
                   <Bar dataKey="WhatsApp" stackId="a" fill="#63cb77" stroke="#000" strokeWidth={1} />
                   <Bar dataKey="Mercado Libre" stackId="a" fill="#ffe600" stroke="#000" strokeWidth={1} />
                   <Bar dataKey="Instagram" stackId="a" fill="#833ab4" stroke="#000" strokeWidth={1} />
