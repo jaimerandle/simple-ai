@@ -48,14 +48,16 @@ const Home = () => {
         <>
             <Navbar />
             <div style={{  height: '100vh' }}>
-                <div className="d-flex" id="wrapper" style={{ paddingBottom: '170px' }}>
+                <div className="d-flex" id="wrapper" style={{ paddingBottom: '100px' }}>
                     <div id="page-content-wrapper" className="w-100">
+                        <div classname="roboto-medium"> 
                         <div className="container-fluid px-4">
                             <h1 className="mt-2 pt-4 text-center">Bienvenido {userName}</h1>
                             <p className="text-center">Desde acá podrás visualizar todas tus conversaciones con los clientes:</p>
                             <div className="row justify-content-center">
                                 <SimpleTable />
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>

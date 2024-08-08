@@ -125,6 +125,17 @@ body {
         transform: translateY(-20px);
     }
 }
+.roboto-light {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .roboto-medium {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+  }
 
 @media (max-width: 600px) {
     #wrapper {
