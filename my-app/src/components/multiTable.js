@@ -92,7 +92,7 @@ const SimpleTable = () => {
           const formattedDate = date.toLocaleDateString();
           const formattedTime = date.toLocaleTimeString();
           const numeroCorto = conversation.channel_source.substr(3, 18);
-          const canal = conversation.channel_id === 9 ? 'Mercado Libre' : conversation.channel_id === 10 ? 'WhatsApp' : 'Instagram';
+          const canal = conversation.channel_type === 3? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : 'Instagram';
           const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0, 15);
           return {
             id: conversation.id,

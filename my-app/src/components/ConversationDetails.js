@@ -66,12 +66,12 @@ const ConversationDetails = () => {
 
   let logoSrc;
   let canal;
-  switch (conversation.channel_id) {
-    case 9:
+  switch (conversation.channel_type) {
+    case 3:
       logoSrc = MercadoLibreLogo;
       canal = 'MELI';
       break;
-    case 10:
+    case 4:
       logoSrc = WhatsAppLogo;
       canal = 'WhatsApp';
       break;

@@ -81,8 +81,8 @@ const UserStats = () => {
           // Count conversations
           conversations.forEach(conversation => {
             const date = new Date(conversation.last_updated).toISOString().split('T')[0];
-            const channel = conversation.channel_id === 9 ? 'Mercado Libre' :
-                            conversation.channel_id === 10 ? 'WhatsApp' :
+            const channel = conversation.channel_type === 3 ? 'Mercado Libre' :
+                            conversation.channel_type === 4 ? 'WhatsApp' :
                             conversation.channel_id === 11 ? 'Instagram' : 'Otro';
             
             if (platformCounts[channel] !== undefined) {
@@ -159,7 +159,7 @@ const UserStats = () => {
                   <XAxis 
                     dataKey="name" 
                     stroke="black" 
-                    tick={{ angle: 0, textAnchor: 'middle' }} 
+                    tick={{ angle: isMobile ? -50 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
                     height={isMobile ? 60 : undefined} 
                     interval={0}
                   />
@@ -187,7 +187,7 @@ const UserStats = () => {
                   />
                   <YAxis stroke="black" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
-                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block', textAlign:  'center' }} />
+                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block', textAlign:  'center'}} />
                   <Bar dataKey="WhatsApp" stackId="a" fill="#63cb77" stroke="#000" strokeWidth={1} />
                   <Bar dataKey="Mercado Libre" stackId="a" fill="#ffe600" stroke="#000" strokeWidth={1} />
                   <Bar dataKey="Instagram" stackId="a" fill="#833ab4" stroke="#000" strokeWidth={1} />
