@@ -1,5 +1,3 @@
-// src/components/UserStats.js
-
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { Box, Typography, CircularProgress, Button, ButtonGroup, useMediaQuery } from '@mui/material';
@@ -124,7 +122,7 @@ const UserStats = () => {
   }
 
   return (
-    <div>
+    <div style={{ height: '100vh', overflowY: 'auto' }}>
       <Navbar />
       <Box
         sx={{
@@ -132,7 +130,7 @@ const UserStats = () => {
           flexDirection: 'column',
           justifyContent: 'flex-start',
           alignItems: 'center',
-          height: '100vh',
+          minHeight: '100vh',
           overflowY: 'auto',
           marginTop: "-20px",
           background: 'linear-gradient(160deg, #ffffff, #cc86cc)',
@@ -155,7 +153,7 @@ const UserStats = () => {
               {view === 'overall' ? (
                 <BarChart
                   data={data}
-                  margin={{ top: 20, right: 15, left: -25, bottom: 5 }}
+                  margin={{ top: 20, right: isMobile ? 30 : 15, left: isMobile ? -10 : -25, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="black" />
                   <XAxis 
@@ -177,7 +175,7 @@ const UserStats = () => {
               ) : (
                 <BarChart
                   data={weeklyData}
-                  margin={{ top: 20, right: 15, left: -25, bottom: 5  }}
+                  margin={{ top: 20, right: isMobile ? 30 : 15, left: isMobile ? -10 : -25, bottom: 5  }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="black" />
                   <XAxis 

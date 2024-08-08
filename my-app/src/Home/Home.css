@@ -125,3 +125,15 @@ body {
         transform: translateY(-20px);
     }
 }
+
+@media (max-width: 600px) {
+    #wrapper {
+        display: block;
+        padding: 0;
+    }
+
+    #page-content-wrapper {
+        padding: 0 15px;
+    }
+}
+

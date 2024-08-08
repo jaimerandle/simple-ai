@@ -1,5 +1,3 @@
-// src/Home.js
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -46,7 +44,7 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <div>
+            <div style={{ overflowY: 'auto', height: '100vh' }}>
                 <div className="d-flex" id="wrapper" style={{ paddingBottom: '150px' }}>
                     <div id="page-content-wrapper" className="w-100">
                         <div className="container-fluid px-4">
