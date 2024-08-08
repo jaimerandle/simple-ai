@@ -13,7 +13,8 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('authToken'); // Elimina el token de autenticación
+        localStorage.clear(); // Limpia todo el localStorage
+        sessionStorage.clear(); // Limpia todo el sessionStorage
         navigate('/'); // Redirige a la página de inicio de sesión
     };
 
