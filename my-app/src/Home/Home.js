@@ -5,12 +5,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import SimpleTable from '../components/multiTable';
 import { getUserInfo } from '../services/bffService';
-import { CircularProgress, Box } from '@mui/material';
+import { CircularProgress, Box, useMediaQuery } from '@mui/material';
 
 const Home = () => {
     const [userName, setUserName] = useState('');
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const isMobile = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -45,7 +46,7 @@ const Home = () => {
         <>
             <Navbar />
             <div style={{ overflowY: 'auto', height: '100vh' }}>
-                <div className="d-flex" id="wrapper" style={{ paddingBottom: '150px' }}>
+                <div className="d-flex" id="wrapper" style={{ paddingBottom: '170px' }}>
                     <div id="page-content-wrapper" className="w-100">
                         <div className="container-fluid px-4">
                             <h1 className="mt-2 pt-4 text-center">Bienvenido {userName}</h1>

@@ -32,15 +32,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  '& .MuiDataGrid-columnHeaderTitle css-mh3zap':{
-    fontWeight: 'bold !important',
-    width: '100% !important',
-    position: 'absolute !important'
-  },
-  '& .MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-1k33q06': {
-    width: '0px !important;',
-    height: '0px !important'
-  }
 }));
 
 const allColumns = [
@@ -100,13 +91,9 @@ const SimpleTable = () => {
           const date = new Date(conversation.last_updated);
           const formattedDate = date.toLocaleDateString();
           const formattedTime = date.toLocaleTimeString();
-          const numeroCorto = conversation.channel_source.substr(3,18)
-          console.log(numeroCorto,"numero corto")
+          const numeroCorto = conversation.channel_source.substr(3, 18);
           const canal = conversation.channel_id === 9 ? 'Mercado Libre' : conversation.channel_id === 10 ? 'WhatsApp' : 'Instagram';
-          const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0,15)
-
-          console.log('Canal:', canal, 'Referencia:', referencia); // Verificar que la lógica funcione
-
+          const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0, 15);
           return {
             id: conversation.id,
             referencia: referencia,
@@ -180,7 +167,7 @@ const SimpleTable = () => {
             width: 100%;
             position: absolute;
           }
-          .MuiDataGrid-columnHeaderTitle css-mh3zap{
+          .MuiDataGrid-columnHeaderTitle css-mh3zap {
             font-weight: bold !important;
             width: 100% !important;
             position: absolute !important;
@@ -192,7 +179,7 @@ const SimpleTable = () => {
           maxHeight: "400px",
           width: '100%',
           background: '',
-          padding: 2,
+          padding: isMobile? 0 : 2,
           marginTop: "-25px",
         }}
       >
@@ -204,9 +191,9 @@ const SimpleTable = () => {
             onChange={handleFilterChange}
             fullWidth
             margin="normal"
-            style={{ width: "400px", color: "black" }}
+            style={{ width: isMobile ? 'calc(100% - 1px)' : "400px", color: "black" }}
             sx={{
-              width: '400px',
+              width: isMobile ? 'calc(100% - 1px)' : '400px',
               '& .MuiInputBase-input': {
                 color: 'black',
               },
