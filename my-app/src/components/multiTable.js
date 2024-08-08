@@ -157,6 +157,11 @@ const SimpleTable = () => {
             width: 100%;
             position: absolute;
           }
+          .css-mh3zap {
+            font-weight: bold !important;
+            width: 100%;
+            position: absolute;
+          }
         `}
       </style>
       <Box
