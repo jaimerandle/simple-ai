@@ -16,6 +16,11 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+    }, []);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setEmailError('');
