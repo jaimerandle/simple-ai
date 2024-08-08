@@ -32,6 +32,15 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  '& .MuiDataGrid-columnHeaderTitle css-mh3zap':{
+    fontWeight: 'bold !important',
+    width: '100% !important',
+    position: 'absolute !important'
+  },
+  '& .MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-1k33q06': {
+    width: '0px !important;',
+    height: '0px !important'
+  }
 }));
 
 const allColumns = [
@@ -170,6 +179,11 @@ const SimpleTable = () => {
             font-weight: bold !important;
             width: 100%;
             position: absolute;
+          }
+          .MuiDataGrid-columnHeaderTitle css-mh3zap{
+            font-weight: bold !important;
+            width: 100% !important;
+            position: absolute !important;
           }
         `}
       </style>
