@@ -167,7 +167,7 @@ const UserStats = () => {
                   />
                   <YAxis stroke="black" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: 'white' }} content={CustomTooltip} />
-                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: isMobile ? 'block' : 'flex', textAlign: isMobile ? 'center' : 'left' }} />
+                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block' , textAlign: 'center' }} />
                   <Bar dataKey="value" >
                     {data.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[entry.name]} strokeLinecap="inherit" stroke="#000" strokeWidth={1} />
@@ -189,7 +189,7 @@ const UserStats = () => {
                   />
                   <YAxis stroke="black" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
-                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: isMobile ? 'block' : 'flex', textAlign: isMobile ? 'center' : 'left' }} />
+                  <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block', textAlign:  'center' }} />
                   <Bar dataKey="WhatsApp" stackId="a" fill="#63cb77" stroke="#000" strokeWidth={1} />
                   <Bar dataKey="Mercado Libre" stackId="a" fill="#ffe600" stroke="#000" strokeWidth={1} />
                   <Bar dataKey="Instagram" stackId="a" fill="#833ab4" stroke="#000" strokeWidth={1} />
