@@ -33,6 +33,8 @@ const UserInfo = () => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
+        localStorage.clear(); // Limpia todo el localStorage
+        sessionStorage.clear(); // Limpia todo el sessionStorage
         navigate('/');
     } else {
       if (token) {
