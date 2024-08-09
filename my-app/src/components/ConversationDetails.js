@@ -23,6 +23,7 @@ const ConversationDetails = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate()
 
+
   useEffect(() => {
     const fetchConversationDetails = async () => {
       const token = localStorage.getItem('authToken');
@@ -79,6 +80,7 @@ const ConversationDetails = () => {
       logoSrc = InstagramLogo;
       canal = 'Otro';
   }
+ const numeroCorto= conversation.channel_source.substr(3, 18);
 
   return (
     <>
@@ -87,6 +89,7 @@ const ConversationDetails = () => {
         <Box sx={{ padding: 2, position: 'relative' }}>
           <Typography variant="h4" gutterBottom>Detalles de la Conversación</Typography>
           <Typography variant="body1"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>
+          <Typography variant="body1"><strong>{canal === "MELI"?  "Referencia:" : "Numero:" }</strong> {canal === "MELI" ? conversation.channel_source : numeroCorto }</Typography>
           <Typography variant="body1"><strong>Fecha:</strong> {new Date(conversation.last_updated).toLocaleDateString()}</Typography>
           <Typography variant="body1"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
           <CanalLogo src={logoSrc} alt={`${canal} logo`} />
