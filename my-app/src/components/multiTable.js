@@ -34,6 +34,21 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
+const ActionButton = ({ row }) => {
+  const navigate = useNavigate();
+
+  const handleViewConversation = () => {
+    navigate(`/conversation/${row.id}`);
+  };
+
+  return (
+    <IconButton color="primary" onClick={handleViewConversation}>
+      <VisibilityIcon style={{ color: "black" }} />
+    </IconButton>
+  );
+};
+
+
 const SimpleTable = () => {
   const [filter, setFilter] = useState('');
   const [rows, setRows] = useState([]);
@@ -120,19 +135,6 @@ const SimpleTable = () => {
     fetchConversations();
   };
 
-  const ActionButton = ({ row }) => {
-    const navigate = useNavigate();
-  
-    const handleViewConversation = () => {
-      navigate(`/conversation/${row.id}`);
-    };
-  
-    return (
-      <IconButton color="primary" onClick={handleViewConversation}>
-        <VisibilityIcon style={{ color: "black" }} />
-      </IconButton>
-    );
-  };
 
   const columns = isMobile
     ? [
