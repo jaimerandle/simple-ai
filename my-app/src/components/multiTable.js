@@ -120,6 +120,20 @@ const SimpleTable = () => {
     fetchConversations();
   };
 
+  const ActionButton = ({ row }) => {
+    const navigate = useNavigate();
+  
+    const handleViewConversation = () => {
+      navigate(`/conversation/${row.id}`);
+    };
+  
+    return (
+      <IconButton color="primary" onClick={handleViewConversation}>
+        <VisibilityIcon style={{ color: "black" }} />
+      </IconButton>
+    );
+  };
+
   const columns = isMobile
     ? [
         { field: 'referencia', headerName: 'Referencia', flex: 1 },
@@ -134,7 +148,7 @@ const SimpleTable = () => {
           field: 'actions',
           headerName: 'Acciones',
           flex: 1,
-          renderCell: (params) => <VisibilityIcon {...params} />,
+          renderCell: (params) => <ActionButton {...params} />,
         },
       ]
     : [
@@ -151,7 +165,7 @@ const SimpleTable = () => {
           field: 'actions',
           headerName: 'Acciones',
           flex: 1,
-          renderCell: (params) => <VisibilityIcon {...params} />,
+          renderCell: (params) => <ActionButton {...params} />,
         },
       ];
 
