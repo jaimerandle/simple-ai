@@ -1,5 +1,3 @@
-// src/components/UserInfo.js
-
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -7,7 +5,6 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import StoreIcon from '@mui/icons-material/Store';
 import Navbar from '../Home/Navbar';
-import { getUserInfo } from '../services/bffService';
 import { useNavigate } from 'react-router-dom';
 
 const UserInfoContainer = styled(Box)(({ theme }) => ({
@@ -27,31 +24,22 @@ const UserAvatar = styled(Avatar)(({ theme }) => ({
 const UserInfo = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const cachedUserInfo = localStorage.getItem('userInfo');
+    if (cachedUserInfo) {
+      setUser(JSON.parse(cachedUserInfo));
+      setLoading(false);
+    } else {
       const token = localStorage.getItem('authToken');
       if (!token) {
-        localStorage.clear(); // Limpia todo el localStorage
-        sessionStorage.clear(); // Limpia todo el sessionStorage
+        localStorage.clear(); 
+        sessionStorage.clear(); 
         navigate('/');
-    } else {
-      if (token) {
-        try {
-          const userInfo = await getUserInfo(token);
-          setUser(userInfo);
-        } catch (error) {
-          console.error('Error fetching user info:', error);
-        } finally {
-          setLoading(false);
-        }
       }
-    };
-  }
-
-    fetchUserInfo();
-  }, []);
+    }
+  }, [navigate]);
 
   if (loading) {
     return (

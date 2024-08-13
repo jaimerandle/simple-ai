@@ -34,24 +34,16 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-const allColumns = [
+const columns = [
   { field: 'id', headerName: 'ID', flex: 1 },
   { field: 'referencia', headerName: 'Referencia', flex: 1 },
   { field: 'canal', headerName: 'Canal', flex: 1 },
-  { field: 'fecha', headerName: 'Fecha', flex: 1 },
-  { field: 'hora', headerName: 'Hora', flex: 1 },
   {
-    field: 'actions',
-    headerName: 'Acciones',
+    field: 'fechaHora',
+    headerName: 'Fecha y Hora',
     flex: 1,
-    renderCell: (params) => <ActionButton {...params} />,
+    sortComparator: (a, b) => new Date(b) - new Date(a), // Ordena de más reciente a más antiguo
   },
-];
-
-const mobileColumns = [
-  { field: 'canal', headerName: 'Canal', flex: 1 },
-  { field: 'referencia', headerName: 'Referencia', flex: 1 },
-  { field: 'fecha', headerName: 'Fecha', flex: 1 },
   {
     field: 'actions',
     headerName: 'Acciones',
@@ -89,19 +81,29 @@ const SimpleTable = () => {
         const conversations = await getConversations(token);
         const formattedRows = conversations.map((conversation) => {
           const date = new Date(conversation.last_updated);
-          const formattedDate = date.toLocaleDateString();
-          const formattedTime = date.toLocaleTimeString();
+          const formattedDateTime = date.toLocaleString('es-AR', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          }).replace(", ", " "); // Formatea la fecha y hora en español y elimina la coma
           const numeroCorto = conversation.channel_source.substr(3, 18);
-          const canal = conversation.channel_type === 3? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : 'Instagram';
+          const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : 'Instagram';
           const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0, 15);
+
           return {
             id: conversation.id,
             referencia: referencia,
             canal: canal,
-            fecha: formattedDate,
-            hora: formattedTime,
+            fechaHora: date, // Guardamos la fecha como objeto Date para ordenar correctamente
+            formattedFechaHora: formattedDateTime, // Formato que se mostrará
           };
         });
+
+        formattedRows.sort((a, b) => b.fechaHora - a.fechaHora); // Ordenar filas antes de establecer el estado
+
         sessionStorage.setItem('conversations', JSON.stringify(formattedRows));
         setRows(formattedRows);
         setFilteredRows(formattedRows);
@@ -117,6 +119,7 @@ const SimpleTable = () => {
     const cachedConversations = sessionStorage.getItem('conversations');
     if (cachedConversations) {
       const parsedConversations = JSON.parse(cachedConversations);
+      parsedConversations.sort((a, b) => b.fechaHora - a.fechaHora); // Ordenar filas en el caché
       setRows(parsedConversations);
       setFilteredRows(parsedConversations);
       setLoading(false);
@@ -132,8 +135,7 @@ const SimpleTable = () => {
     const filtered = rows.filter((row) =>
       row.id.toString().includes(value) ||
       row.canal.toLowerCase().includes(value) ||
-      row.fecha.toLowerCase().includes(value) ||
-      row.hora.toLowerCase().includes(value) ||
+      row.formattedFechaHora.toLowerCase().includes(value) ||
       row.referencia.toLowerCase().includes(value)
     );
 
@@ -179,7 +181,7 @@ const SimpleTable = () => {
           maxHeight: "400px",
           width: '100%',
           background: '',
-          padding: isMobile? 0 : 2,
+          padding: isMobile ? 0 : 2,
           marginTop: "-25px",
         }}
       >
@@ -223,14 +225,19 @@ const SimpleTable = () => {
           </Box>
         ) : (
           <StyledDataGrid
-            rows={filteredRows}
-            columns={isMobile ? mobileColumns : allColumns}
+            rows={filteredRows.map(row => ({ ...row, fechaHora: row.formattedFechaHora }))}
+            columns={columns}
             pageSize={10}
             rowsPerPageOptions={[5, 10, 20]}
             components={{ Toolbar: GridToolbar }}
             disableSelectionOnClick
             autoHeight={false}
             getRowHeight={() => 'auto'}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'fechaHora', sort: 'desc' }],
+              },
+            }}
           />
         )}
       </Box>

@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import simpleAi from "../assets/simple-ai.webp";
 import SimpleLogo from "../assets/simpleLogo.webp";
 import './login.css';
-import { loginAuth } from '../services/bffService';
+import { loginAuth, getUserInfo } from '../services/bffService';
 import Spinner from 'react-bootstrap/Spinner';
 
 const Login = () => {
@@ -43,11 +43,13 @@ const Login = () => {
         if (valid) {
             try {
                 const token = await loginAuth(email, password);
-
-                // Guarda el token en el almacenamiento local
                 localStorage.setItem('authToken', token);
 
-                // Navega a la página principal
+                // Obtener y cachear la información del usuario
+                const userInfo = await getUserInfo(token);
+                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+                // Navegar a la página principal
                 navigate('/home');
             } catch (error) {
                 console.error('Login error', error.message);
@@ -97,7 +99,7 @@ const Login = () => {
                     <br />
                     {loginError && <div className="alert alert-danger">{loginError}</div>}
                     <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-                        {loading ? <Spinner animation="border" size="sm"/> : 'Login'}
+                        {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
                     </button>
                 </form>
             </div>
