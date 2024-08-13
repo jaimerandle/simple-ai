@@ -4,12 +4,13 @@ import { Box, Typography, CircularProgress, Button, ButtonGroup, useMediaQuery }
 import { getConversations } from '../services/bffService';
 import Navbar from '../Home/Navbar';
 import { useNavigate } from 'react-router-dom';
+import "./userStadistics.css"
 
 const COLORS = {
-  'WhatsApp': '#63cb77',
-  'Mercado Libre': '#ffe600',
-  'Instagram': '#833ab4',
-  'Otro': '#8884d8'
+  'WhatsApp': '#4CAF50',  // Darker green
+  'Mercado Libre': '#FFB300',  // Darker amber
+  'Instagram': '#8E44AD',  // Richer purple
+  'Otro': '#8884d8'  // Slightly lighter purple
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -135,12 +136,12 @@ const UserStats = () => {
           minHeight: '100vh',
           overflowY: 'auto',
           marginTop: "-20px",
-          background: 'linear-gradient(160deg, #ffffff, #cc86cc)',
+          background: 'linear-gradient(160deg, #E0B3E5, #D76DD7)', // Darker gradient
           paddingBottom: "100px",
           padding: '16px',
         }}
       >
-        <Typography variant="h4" gutterBottom style={{ color: "black", marginTop: "25px", textAlign: "center" }}>
+        <Typography variant="h4" gutterBottom sx={{ color: "black", marginTop: "25px", textAlign: "center", fontSize: isMobile ? '20px' : '24px' }}>
           Dashboard de tus productos
         </Typography>
         <ButtonGroup variant="contained" sx={{ marginBottom: 2 }}>
@@ -157,20 +158,20 @@ const UserStats = () => {
                   data={data}
                   margin={{ top: 20, right: isMobile ? 30 : 15, left: isMobile ? -10 : -25, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="black" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E0E0E0" />
                   <XAxis 
                     dataKey="name" 
-                    stroke="black" 
-                    tick={{ angle: isMobile ? -50 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
+                    stroke="#CCCCCC" 
+                    tick={{ angle: isMobile ? -45 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
                     height={isMobile ? 60 : undefined} 
-                    interval={0}
+                    interval={isMobile ? 1 : 0}
                   />
-                  <YAxis stroke="black" />
+                  <YAxis stroke="#CCCCCC" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: 'white' }} content={CustomTooltip} />
                   <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block' , textAlign: 'center' }} />
-                  <Bar dataKey="value" >
+                  <Bar dataKey="value" barSize={isMobile ? 30 : 20}>
                     {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[entry.name]} strokeLinecap="inherit" stroke="#000" strokeWidth={1} />
+                      <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -179,20 +180,20 @@ const UserStats = () => {
                   data={weeklyData}
                   margin={{ top: 20, right: isMobile ? 30 : 15, left: isMobile ? -10 : -25, bottom: 5  }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="black" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E0E0E0" />
                   <XAxis 
                     dataKey="date" 
-                    stroke="black" 
-                    tick={{ angle: isMobile ? -50 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
+                    stroke="#CCCCCC" 
+                    tick={{ angle: isMobile ? -45 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
                     height={isMobile ? 60 : undefined} 
-                    interval={0}
+                    interval={isMobile ? 1 : 0}
                   />
-                  <YAxis stroke="black" />
+                  <YAxis stroke="#CCCCCC" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
                   <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block', textAlign:  'center'}} />
-                  <Bar dataKey="WhatsApp" stackId="a" fill="#63cb77" stroke="#000" strokeWidth={1} />
-                  <Bar dataKey="Mercado Libre" stackId="a" fill="#ffe600" stroke="#000" strokeWidth={1} />
-                  <Bar dataKey="Instagram" stackId="a" fill="#833ab4" stroke="#000" strokeWidth={1} />
+                  <Bar dataKey="WhatsApp" stackId="a" fill={COLORS['WhatsApp']} />
+                  <Bar dataKey="Mercado Libre" stackId="a" fill={COLORS['Mercado Libre']} />
+                  <Bar dataKey="Instagram" stackId="a" fill={COLORS['Instagram']} />
                 </BarChart>
               )}
             </ResponsiveContainer>

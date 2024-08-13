@@ -6,7 +6,6 @@ import SimpleLogo from "../assets/simpleLogo.webp";
 import './login.css';
 import { loginAuth, getUserInfo } from '../services/bffService';
 import Spinner from 'react-bootstrap/Spinner';
-import BackgroundVideo from "../assets/background-video.mp4" // Make sure to add your video here
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -46,9 +45,11 @@ const Login = () => {
                 const token = await loginAuth(email, password);
                 localStorage.setItem('authToken', token);
 
+                // Obtener y cachear la información del usuario
                 const userInfo = await getUserInfo(token);
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
 
+                // Navegar a la página principal
                 navigate('/home');
             } catch (error) {
                 console.error('Login error', error.message);
@@ -62,51 +63,45 @@ const Login = () => {
     };
 
     return (
-        <div className="login-container">
-            <video autoPlay muted loop id="background-video">
-                <source src={BackgroundVideo} type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
-            <div className="login-content d-flex align-items-center justify-content-center vh-100">
-                <div className="card p-5 login-card">
-                    <div style={{ display: "flex" }}>
-                        <img style={{ width: "200px" }} src={simpleAi} alt="Simple AI" />
-                        <img style={{ height: "50px", width: "50px" }} src={SimpleLogo} alt="Simple Logo" />
+        <div className="login-container d-flex align-items-center justify-content-center vh-100 bg-light">
+            <div className="card p-5 login-card">
+                <div style={{ display: "flex" }}>
+                    <img style={{ width: "200px" }} src={simpleAi} alt="Simple AI" />
+                    <img style={{ height: "50px", width: "50px" }} src={SimpleLogo} alt="Simple Logo" />
+                </div>
+                <br />
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="email">Email address</label>
+                        <input
+                            type="email"
+                            className={`form-control ${emailError ? 'is-invalid' : ''}`}
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter email"
+                        />
+                        {emailError && <small className="form-text text-danger">{emailError}</small>}
                     </div>
                     <br />
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label htmlFor="email" style={{color:"white"}}>Email address</label>
-                            <input
-                                type="email"
-                                className={`form-control ${emailError ? 'is-invalid' : ''}`}
-                                id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter email"
-                            />
-                            {emailError && <small className="form-text text-danger">{emailError}</small>}
-                        </div>
-                        <br />
-                        <div className="form-group">
-                            <label htmlFor="password" style={{color:"white"}}>Password</label>
-                            <input
-                                type="password"
-                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Password"
-                            />
-                            {passwordError && <small className="form-text text-danger">{passwordError}</small>}
-                        </div>
-                        <br />
-                        {loginError && <div className="alert alert-danger">{loginError}</div>}
-                        <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-                            {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
-                        </button>
-                    </form>
-                </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            type="password"
+                            className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                        />
+                        {passwordError && <small className="form-text text-danger">{passwordError}</small>}
+                    </div>
+                    <br />
+                    {loginError && <div className="alert alert-danger">{loginError}</div>}
+                    <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+                        {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
+                    </button>
+                </form>
             </div>
         </div>
     );
