@@ -34,38 +34,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-const columns = [
-  { field: 'id', headerName: 'ID', flex: 1 },
-  { field: 'referencia', headerName: 'Referencia', flex: 1 },
-  { field: 'canal', headerName: 'Canal', flex: 1 },
-  {
-    field: 'fechaHora',
-    headerName: 'Fecha y Hora',
-    flex: 1,
-    sortComparator: (a, b) => new Date(b) - new Date(a), // Ordena de más reciente a más antiguo
-  },
-  {
-    field: 'actions',
-    headerName: 'Acciones',
-    flex: 1,
-    renderCell: (params) => <ActionButton {...params} />,
-  },
-];
-
-const ActionButton = ({ row }) => {
-  const navigate = useNavigate();
-
-  const handleViewConversation = () => {
-    navigate(`/conversation/${row.id}`);
-  };
-
-  return (
-    <IconButton color="primary" onClick={handleViewConversation}>
-      <VisibilityIcon style={{ color: "black" }} />
-    </IconButton>
-  );
-};
-
 const SimpleTable = () => {
   const [filter, setFilter] = useState('');
   const [rows, setRows] = useState([]);
@@ -81,6 +49,11 @@ const SimpleTable = () => {
         const conversations = await getConversations(token);
         const formattedRows = conversations.map((conversation) => {
           const date = new Date(conversation.last_updated);
+          const formattedDate = date.toLocaleDateString('es-AR', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          });
           const formattedDateTime = date.toLocaleString('es-AR', {
             year: 'numeric',
             month: 'short',
@@ -98,7 +71,7 @@ const SimpleTable = () => {
             referencia: referencia,
             canal: canal,
             fechaHora: date, // Guardamos la fecha como objeto Date para ordenar correctamente
-            formattedFechaHora: formattedDateTime, // Formato que se mostrará
+            formattedFechaHora: isMobile ? formattedDate : formattedDateTime, // Mostramos solo la fecha en mobile
           };
         });
 
@@ -146,6 +119,41 @@ const SimpleTable = () => {
     sessionStorage.removeItem('conversations');
     fetchConversations();
   };
+
+  const columns = isMobile
+    ? [
+        { field: 'referencia', headerName: 'Referencia', flex: 1 },
+        { field: 'canal', headerName: 'Canal', flex: 1 },
+        {
+          field: 'fechaHora',
+          headerName: 'Fecha',
+          flex: 1,
+          sortComparator: (a, b) => new Date(b) - new Date(a), // Ordena de más reciente a más antiguo
+        },
+        {
+          field: 'actions',
+          headerName: 'Acciones',
+          flex: 1,
+          renderCell: (params) => <ActionButton {...params} />,
+        },
+      ]
+    : [
+        { field: 'id', headerName: 'ID', flex: 1 },
+        { field: 'referencia', headerName: 'Referencia', flex: 1 },
+        { field: 'canal', headerName: 'Canal', flex: 1 },
+        {
+          field: 'fechaHora',
+          headerName: 'Fecha y Hora',
+          flex: 1,
+          sortComparator: (a, b) => new Date(b) - new Date(a), // Ordena de más reciente a más antiguo
+        },
+        {
+          field: 'actions',
+          headerName: 'Acciones',
+          flex: 1,
+          renderCell: (params) => <ActionButton {...params} />,
+        },
+      ];
 
   return (
     <>
