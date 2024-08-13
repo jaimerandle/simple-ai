@@ -1,21 +1,50 @@
-.login-card {
-    box-shadow: 0 16px 54px 14px rgba(138, 43, 226, 0.5);
-}
-.btn {
-    margin-left: 35%;
-    background-color: rgb(199, 115, 209);
-    color: black;
-    border: none;
-}
 #background-video {
     position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%; 
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
     min-height: 100%;
     width: auto;
     height: auto;
-    z-index: -1; /* Ensure video stays behind other elements */
+    z-index: -1;
+    transform: translate(-50%, -50%); /* Center the video */
     background-size: cover;
     overflow: hidden;
+    object-fit: cover; /* Ensures the video covers the entire area */
+}
+
+.login-container {
+    position: relative;
+    z-index: 1;
+    padding: 20px; /* Add padding to ensure content is not too close to the edges */
+}
+
+.login-content {
+    position: relative;
+    z-index: 2;
+}
+
+.login-card {
+    background-color: rgba(255, 255, 255, 0.85); /* Slightly transparent to show video through */
+    border-radius: 15px;
+    padding: 20px; /* Padding inside the card */
+}
+
+@media (max-width: 600px) {
+    #background-video {
+        min-width: 100%;
+        min-height: 100%;
+        transform: translate(-50%, -50%);
+        object-fit: cover; /* Ensure the video scales correctly */
+    }
+
+    .login-container {
+        padding: 10px; /* Less padding for smaller screens */
+    }
+
+    .login-card {
+        width: 100%;
+        padding: 15px; /* Adjust padding */
+        border-radius: 10px; /* Slightly smaller radius for smaller screens */
+    }
 }

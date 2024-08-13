@@ -76,7 +76,7 @@ const Login = () => {
                     <br />
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label htmlFor="email">Email address</label>
+                            <label htmlFor="email" style={{color:"white"}}>Email address</label>
                             <input
                                 type="email"
                                 className={`form-control ${emailError ? 'is-invalid' : ''}`}
@@ -89,7 +89,7 @@ const Login = () => {
                         </div>
                         <br />
                         <div className="form-group">
-                            <label htmlFor="password">Password</label>
+                            <label htmlFor="password" style={{color:"white"}}>Password</label>
                             <input
                                 type="password"
                                 className={`form-control ${passwordError ? 'is-invalid' : ''}`}
