@@ -76,6 +76,7 @@ const SimpleTable = () => {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
+            hour12: false,
           }).replace(", ", " "); // Formatea la fecha y hora en español y elimina la coma
           const numeroCorto = conversation.channel_source.substr(3, 18);
           const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : 'Instagram';
