@@ -134,7 +134,7 @@ const SimpleTable = () => {
           field: 'actions',
           headerName: 'Acciones',
           flex: 1,
-          renderCell: (params) => <ActionButton {...params} />,
+          renderCell: (params) => <VisibilityIcon {...params} />,
         },
       ]
     : [
@@ -151,7 +151,7 @@ const SimpleTable = () => {
           field: 'actions',
           headerName: 'Acciones',
           flex: 1,
-          renderCell: (params) => <ActionButton {...params} />,
+          renderCell: (params) => <VisibilityIcon {...params} />,
         },
       ];
 
