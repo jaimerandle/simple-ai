@@ -148,3 +148,31 @@ export const getConversationDetails = async (id, token) => {
         throw new Error(error.response?.data?.message || 'Error fetching conversation details');
     }
 };
+
+export const updateConversationMetadata = async (id, metadata, token) => {
+    try {
+        const response = await apiClient.post(`/conversations/${id}/metadata`, metadata, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        return response.data;  // Devuelve la respuesta de la actualización
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to update conversation metadata');
+    }
+};
+
+export const deleteConversation = async (id, token) => {
+    try {
+        const response = await apiClient.delete(`/conversations/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        return response.data;  // Devuelve la respuesta de la eliminación
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to delete conversation');
+    }
+};

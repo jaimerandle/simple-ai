@@ -102,6 +102,7 @@ const ConversationDetails = () => {
           <Typography variant="body1"><strong>{canal === "MELI"?  "Referencia:" : "Numero:" }</strong> {canal === "MELI" ? conversation.channel_source : numeroCorto }</Typography>
           <Typography variant="body1"><strong>Fecha:</strong> {new Date(conversation.last_updated).toLocaleDateString()}</Typography>
           <Typography variant="body1"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
+          <Typography variant="body1"><strong>Prioridad:</strong> {""}</Typography>
           <CanalLogo src={logoSrc} alt={`${canal} logo`} />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: 'white', border: "1px solid black", borderRadius: "20px" }}>

@@ -6,8 +6,14 @@ import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { TextField, CircularProgress, useMediaQuery } from '@mui/material';
-import { getConversations } from '../services/bffService';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import { TextField, CircularProgress, useMediaQuery, Select, MenuItem } from '@mui/material';
+import { getConversations, updateConversationMetadata, deleteConversation } from '../services/bffService';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
@@ -15,9 +21,15 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     color: 'black',
     fontWeight: 'bold',
     textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   '& .MuiDataGrid-cell': {
     textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   '& .MuiDataGrid-footerContainer': {
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
@@ -34,20 +46,116 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-const ActionButton = ({ row }) => {
+const StateSelector = ({ id, initialState, onStateChange }) => {
+  const [state, setState] = useState(initialState);
+
+  const handleChange = async (event) => {
+    const newState = event.target.value;
+    setState(newState);
+    const token = localStorage.getItem('authToken');
+    try {
+      await updateConversationMetadata(id, { state: newState }, token);
+
+      // Llamar a la función para actualizar el estado en SimpleTable
+      onStateChange(id, newState);
+
+      console.log('Estado actualizado exitosamente');
+    } catch (error) {
+      console.error('Error al actualizar el estado:', error.message);
+    }
+  };
+
+  return (
+    <Select
+      value={state}
+      onChange={handleChange}
+      variant="standard"
+      fullWidth
+      disableUnderline
+      sx={{
+        '& .MuiOutlinedInput-notchedOutline': {
+          border: 'none',
+        },
+      }}
+    >
+      <MenuItem value="alta" style={{color:"red"}}>Alta</MenuItem>
+      <MenuItem value="media" style={{color:"black"}}>Media</MenuItem>
+      <MenuItem value="baja" style={{color:"green"}}>Baja</MenuItem>
+    </Select>
+  );
+};
+
+const ActionButton = ({ row, onDelete }) => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleViewConversation = () => {
     navigate(`/conversation/${row.id}`);
   };
 
+  const handleDelete = async () => {
+    const token = localStorage.getItem('authToken');
+    try {
+      await deleteConversation(row.id, token);
+      onDelete(row.id);
+      setOpen(false); // Cierra el modal después de eliminar
+    } catch (error) {
+      console.error('Error al eliminar la conversación:', error.message);
+    }
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <IconButton color="primary" onClick={handleViewConversation}>
-      <VisibilityIcon style={{ color: "black" }} />
-    </IconButton>
+    <>
+      <IconButton color="primary" onClick={handleViewConversation}>
+        <VisibilityIcon style={{ color: "black" }} />
+      </IconButton>
+      <IconButton color="secondary" onClick={handleOpen}>
+        <DeleteIcon style={{ color: "black" }} />
+      </IconButton>
+
+      {/* Modal de confirmación */}
+      <Dialog
+      style={{background:"inear-gradient(160deg, #ffffff, #cc86cc)"}}
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="alert-dialog-title"
+  aria-describedby="alert-dialog-description"
+  sx={{
+    '& .MuiDialog-paper': {
+      padding: '10px', 
+    },
+  }}
+>
+  <DialogTitle
+    id="alert-dialog-title"
+    sx={{ textAlign: 'center', fontWeight: 'bold' }} // Centra y hace negrita el título
+  >
+    ¿Estás seguro de que queres borrar la conversación con la referencia "{row.referencia}" y ID {row.id}?
+  </DialogTitle>
+  <DialogContent>
+  </DialogContent>
+  <DialogActions
+    sx={{ justifyContent: 'center' }} // Centra los botones
+  >
+    <Button onClick={handleClose} sx={{ color: 'purple' }}> 
+      Cancelar
+    </Button>
+    <Button onClick={handleDelete} sx={{ color: 'red' }}> 
+      Borrar
+    </Button>
+  </DialogActions>
+</Dialog>
+    </>
   );
 };
-
 
 const SimpleTable = () => {
   const [filter, setFilter] = useState('');
@@ -77,7 +185,7 @@ const SimpleTable = () => {
             minute: '2-digit',
             second: '2-digit',
             hour12: false,
-          }).replace(", ", " "); // Formatea la fecha y hora en español y elimina la coma
+          }).replace(", ", " ");
           const numeroCorto = conversation.channel_source.substr(3, 18);
           const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : 'Instagram';
           const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0, 15);
@@ -86,12 +194,13 @@ const SimpleTable = () => {
             id: conversation.id,
             referencia: referencia,
             canal: canal,
-            fechaHora: date, // Guardamos la fecha como objeto Date para ordenar correctamente
-            formattedFechaHora: isMobile ? formattedDate : formattedDateTime, // Mostramos solo la fecha en mobile
+            fechaHora: date,
+            formattedFechaHora: isMobile ? formattedDate : formattedDateTime,
+            state: conversation.metadata?.state || 'baja',
           };
         });
 
-        formattedRows.sort((a, b) => b.fechaHora - a.fechaHora); // Ordenar filas antes de establecer el estado
+        formattedRows.sort((a, b) => b.fechaHora - a.fechaHora);
 
         sessionStorage.setItem('conversations', JSON.stringify(formattedRows));
         setRows(formattedRows);
@@ -108,7 +217,7 @@ const SimpleTable = () => {
     const cachedConversations = sessionStorage.getItem('conversations');
     if (cachedConversations) {
       const parsedConversations = JSON.parse(cachedConversations);
-      parsedConversations.sort((a, b) => b.fechaHora - a.fechaHora); // Ordenar filas en el caché
+      parsedConversations.sort((a, b) => b.fechaHora - a.fechaHora);
       setRows(parsedConversations);
       setFilteredRows(parsedConversations);
       setLoading(false);
@@ -125,7 +234,8 @@ const SimpleTable = () => {
       row.id.toString().includes(value) ||
       row.canal.toLowerCase().includes(value) ||
       row.formattedFechaHora.toLowerCase().includes(value) ||
-      row.referencia.toLowerCase().includes(value)
+      row.referencia.toLowerCase().includes(value) ||
+      row.state.toLowerCase().includes(value)
     );
 
     setFilteredRows(filtered);
@@ -136,22 +246,43 @@ const SimpleTable = () => {
     fetchConversations();
   };
 
+  const handleDeleteRow = (id) => {
+    const updatedRows = filteredRows.filter(row => row.id !== id);
+    setRows(updatedRows);
+    setFilteredRows(updatedRows);
+  };
+
+  const handleStateChange = (id, newState) => {
+    const updatedRows = rows.map(row => 
+      row.id === id ? { ...row, state: newState } : row
+    );
+    setRows(updatedRows);
+    setFilteredRows(updatedRows);
+    
+    // Actualiza también en sessionStorage
+    sessionStorage.setItem('conversations', JSON.stringify(updatedRows));
+  };
 
   const columns = isMobile
     ? [
         { field: 'referencia', headerName: 'Referencia', flex: 1 },
-        { field: 'canal', headerName: 'Canal', flex: 1 },
         {
           field: 'fechaHora',
           headerName: 'Fecha',
           flex: 1,
-          sortComparator: (a, b) => new Date(b) - new Date(a), // Ordena de más reciente a más antiguo
+          sortComparator: (a, b) => new Date(b) - new Date(a),
+        },
+        {
+          field: 'state',
+          headerName: 'Estado',
+          flex: 1,
+          renderCell: (params) => <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />,
         },
         {
           field: 'actions',
           headerName: 'Acciones',
           flex: 1,
-          renderCell: (params) => <ActionButton {...params} />,
+          renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
         },
       ]
     : [
@@ -162,45 +293,36 @@ const SimpleTable = () => {
           field: 'fechaHora',
           headerName: 'Fecha y Hora',
           flex: 1,
-          sortComparator: (a, b) => new Date(b) - new Date(a), // Ordena de más reciente a más antiguo
+          sortComparator: (a, b) => new Date(b) - new Date(a),
+        },
+        {
+          field: 'state',
+          headerName: 'Prioridad',
+          flex: 1,
+          renderCell: (params) => <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange}  />,
         },
         {
           field: 'actions',
           headerName: 'Acciones',
           flex: 1,
-          renderCell: (params) => <ActionButton {...params} />,
+          renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
         },
       ];
 
   return (
     <>
-      <style jsx global>
-        {`
-          .css-ptiqhd-MuiSvgIcon-root {
-            width: 0px;
-            height: 0px;
-          }
-          .css-1k33q06 {
-            width: 0px !important;
-            height: 0px !important;
-          }
-          .css-t89xny-MuiDataGrid-columnHeaderTitle {
-            font-weight: bold !important;
-            width: 100%;
-            position: absolute;
-          }
-          .css-mh3zap {
-            font-weight: bold !important;
-            width: 100%;
-            position: absolute;
-          }
-          .MuiDataGrid-columnHeaderTitle css-mh3zap {
-            font-weight: bold !important;
-            width: 100% !important;
-            position: absolute !important;
-          }
-        `}
-      </style>
+     <style  jsx global> 
+      {`
+       .css-ptiqhd-MuiSvgIcon-root {
+    width: 0px;
+    height: 0px   } 
+       .css-t89xny-MuiDataGrid-columnHeaderTitle  {
+        font-weight: bold !important;
+        width:100%;
+        position:absolute
+       }
+      `}
+    </style>
       <Box
         sx={{
           maxHeight: "400px",
@@ -269,5 +391,6 @@ const SimpleTable = () => {
     </>
   );
 };
+
 
 export default SimpleTable;
