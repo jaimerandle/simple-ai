@@ -46,6 +46,19 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
+const getColorForState = (state) => {
+  switch (state) {
+    case 'alta':
+      return 'red';
+    case 'media':
+      return 'orange';
+    case 'baja':
+      return 'green';
+    default:
+      return 'black';
+  }
+};
+
 const StateSelector = ({ id, initialState, onStateChange }) => {
   const [state, setState] = useState(initialState);
 
@@ -73,14 +86,20 @@ const StateSelector = ({ id, initialState, onStateChange }) => {
       fullWidth
       disableUnderline
       sx={{
+        color: getColorForState(state),  // Aplicar color basado en el estado seleccionado
+        fontWeight: 'bold',
+        textShadow: '1px 1px 1px black',
+        '& .MuiSelect-icon': {
+          color: getColorForState(state),  // Aplicar color al ícono del select
+        },
         '& .MuiOutlinedInput-notchedOutline': {
           border: 'none',
         },
       }}
     >
-      <MenuItem value="alta" style={{color:"red"}}>Alta</MenuItem>
-      <MenuItem value="media" style={{color:"black"}}>Media</MenuItem>
-      <MenuItem value="baja" style={{color:"green"}}>Baja</MenuItem>
+      <MenuItem value="alta" style={{ color: 'red' }}>Alta</MenuItem>
+      <MenuItem value="media" style={{ color: 'orange' }}>Media</MenuItem>
+      <MenuItem value="baja" style={{ color: 'green' }}>Baja</MenuItem>
     </Select>
   );
 };
@@ -97,12 +116,21 @@ const ActionButton = ({ row, onDelete }) => {
     const token = localStorage.getItem('authToken');
     try {
       await deleteConversation(row.id, token);
+  
+      // Elimina la conversación del sessionStorage
+      const storedConversations = JSON.parse(sessionStorage.getItem('conversations'));
+      if (storedConversations) {
+        const updatedConversations = storedConversations.filter(conversation => conversation.id !== row.id);
+        sessionStorage.setItem('conversations', JSON.stringify(updatedConversations));
+      }
+  
       onDelete(row.id);
       setOpen(false); // Cierra el modal después de eliminar
     } catch (error) {
       console.error('Error al eliminar la conversación:', error.message);
     }
   };
+  
 
   const handleOpen = () => {
     setOpen(true);
@@ -247,9 +275,14 @@ const SimpleTable = () => {
   };
 
   const handleDeleteRow = (id) => {
-    const updatedRows = filteredRows.filter(row => row.id !== id);
+    const updatedRows = rows.filter(row => row.id !== id);
+    const updatedFilteredRows = filteredRows.filter(row => row.id !== id);
+
     setRows(updatedRows);
-    setFilteredRows(updatedRows);
+    setFilteredRows(updatedFilteredRows);
+    
+    // Actualiza también en sessionStorage
+    sessionStorage.setItem('conversations', JSON.stringify(updatedRows));
   };
 
   const handleStateChange = (id, newState) => {
@@ -263,51 +296,56 @@ const SimpleTable = () => {
     sessionStorage.setItem('conversations', JSON.stringify(updatedRows));
   };
 
+  
   const columns = isMobile
-    ? [
-        { field: 'referencia', headerName: 'Referencia', flex: 1 },
-        {
-          field: 'fechaHora',
-          headerName: 'Fecha',
-          flex: 1,
-          sortComparator: (a, b) => new Date(b) - new Date(a),
-        },
-        {
-          field: 'state',
-          headerName: 'Estado',
-          flex: 1,
-          renderCell: (params) => <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />,
-        },
-        {
-          field: 'actions',
-          headerName: 'Acciones',
-          flex: 1,
-          renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
-        },
-      ]
-    : [
-        { field: 'id', headerName: 'ID', flex: 1 },
-        { field: 'referencia', headerName: 'Referencia', flex: 1 },
-        { field: 'canal', headerName: 'Canal', flex: 1 },
-        {
-          field: 'fechaHora',
-          headerName: 'Fecha y Hora',
-          flex: 1,
-          sortComparator: (a, b) => new Date(b) - new Date(a),
-        },
-        {
-          field: 'state',
-          headerName: 'Prioridad',
-          flex: 1,
-          renderCell: (params) => <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange}  />,
-        },
-        {
-          field: 'actions',
-          headerName: 'Acciones',
-          flex: 1,
-          renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
-        },
-      ];
+  ? [
+      { field: 'referencia', headerName: 'Referencia', flex: 1 },
+      {
+        field: 'fechaHora',
+        headerName: 'Fecha',
+        flex: 1,
+        sortComparator: (a, b) => new Date(b) - new Date(a),
+      },
+      {
+        field: 'state',
+        headerName: 'Estado',
+        flex: 1,
+        renderCell: (params) => (
+          <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />
+        ),
+      },
+      {
+        field: 'actions',
+        headerName: 'Acciones',
+        flex: 1,
+        renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
+      },
+    ]
+  : [
+      { field: 'id', headerName: 'ID', flex: 1 },
+      { field: 'referencia', headerName: 'Referencia', flex: 1 },
+      { field: 'canal', headerName: 'Canal', flex: 1 },
+      {
+        field: 'fechaHora',
+        headerName: 'Fecha y Hora',
+        flex: 1,
+        sortComparator: (a, b) => new Date(b) - new Date(a),
+      },
+      {
+        field: 'state',
+        headerName: 'Prioridad',
+        flex: 1,
+        renderCell: (params) => (
+          <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />
+        ),
+      },
+      {
+        field: 'actions',
+        headerName: 'Acciones',
+        flex: 1,
+        renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
+      },
+    ];
 
   return (
     <>

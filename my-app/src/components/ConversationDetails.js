@@ -12,7 +12,8 @@ import ConversationContainer from './ConversationContainer';
 import MercadoLibreMessage from './MercadoLibreMessage';
 import CanalLogo from './CanalLogo';
 import Navbar from '../Home/Navbar';
-import { CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { deleteConversation } from '../services/bffService'; 
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -22,22 +23,22 @@ const formatDate = (timestamp) => {
 const formatTime = (timestamp) => {
   const date = new Date(timestamp);
   return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
-};
+};// Asegúrate de importar esta función
 
 const ConversationDetails = () => {
   const { id } = useParams();
   const [conversation, setConversation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate()
+  const [open, setOpen] = useState(false); // Estado para controlar el diálogo de confirmación
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchConversationDetails = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         navigate('/');
-    } else {
-      if (token) {
+      } else {
         try {
           const conversationDetails = await getConversationDetails(id, token);
           setConversation(conversationDetails);
@@ -46,15 +47,38 @@ const ConversationDetails = () => {
         } finally {
           setLoading(false);
         }
-      } else {
-        setError('No auth token found');
-        setLoading(false);
       }
     };
-  }
 
     fetchConversationDetails();
-  }, [id]);
+  }, [id, navigate]);
+
+  const handleDelete = async () => {
+    const token = localStorage.getItem('authToken');
+    try {
+      await deleteConversation(id, token);
+  
+      // Elimina la conversación del sessionStorage
+      const storedConversations = JSON.parse(sessionStorage.getItem('conversations'));
+      if (storedConversations) {
+        const updatedConversations = storedConversations.filter(conversation => conversation.id !== parseInt(id));
+        sessionStorage.setItem('conversations', JSON.stringify(updatedConversations));
+      }
+  
+      setOpen(false);
+      navigate('/home'); // Redirigir a /home después de eliminar
+    } catch (error) {
+      console.error('Error al eliminar la conversación:', error.message);
+    }
+  };
+
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
 
   if (loading) {
     return (
@@ -89,7 +113,6 @@ const ConversationDetails = () => {
   }
   const numeroCorto = conversation.channel_source.substr(3, 18);
 
-  // Variables para mantener la fecha actual y decidir cuándo mostrar una nueva fecha
   let currentDate = '';
 
   return (
@@ -99,12 +122,32 @@ const ConversationDetails = () => {
         <Box sx={{ padding: 2, position: 'relative' }}>
           <Typography variant="h4" gutterBottom>Detalles de la Conversación</Typography>
           <Typography variant="body1"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>
-          <Typography variant="body1"><strong>{canal === "MELI"?  "Referencia:" : "Numero:" }</strong> {canal === "MELI" ? conversation.channel_source : numeroCorto }</Typography>
+          <Typography variant="body1"><strong>{canal === "MELI" ? "Referencia:" : "Numero:"}</strong> {canal === "MELI" ? conversation.channel_source : numeroCorto}</Typography>
           <Typography variant="body1"><strong>Fecha:</strong> {new Date(conversation.last_updated).toLocaleDateString()}</Typography>
           <Typography variant="body1"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
-          <Typography variant="body1"><strong>Prioridad:</strong> {""}</Typography>
+          <Typography variant="body1"><strong>Prioridad:</strong> {conversation.metadata?.state || 'baja'}</Typography>
           <CanalLogo src={logoSrc} alt={`${canal} logo`} />
+          
+          {/* Botón para eliminar la conversación */}
+          <Button variant="contained" color="secondary" onClick={handleOpenDialog} sx={{ mt: 2 }}>
+            Eliminar conversación
+          </Button>
         </Box>
+        
+        {/* Modal de confirmación */}
+        <Dialog
+          open={open}
+          onClose={handleCloseDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">¿Estás seguro de que queres eliminar esta conversación?</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color="primary">Cancelar</Button>
+            <Button onClick={handleDelete} color="secondary">Eliminar</Button>
+          </DialogActions>
+        </Dialog>
+        
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: 'white', border: "1px solid black", borderRadius: "20px" }}>
           {conversation.messages && conversation.messages.length > 0 ? (
             conversation.messages.map((mensaje, index) => {
@@ -123,7 +166,7 @@ const ConversationDetails = () => {
                     <AvatarWrapper de={mensaje.from} />
                     <ChatBubble de={mensaje.from} canal={canal} horaFecha={formatTime(mensaje.timestamp)}>
                       {mensaje.text}
-                  <Typography variant="body2" color="white" sx={{ 
+                      <Typography variant="body2" color="white" sx={{ 
                           marginTop: 5, 
                           fontSize: '0.55rem', 
                           textAlign: 'left',
@@ -133,8 +176,8 @@ const ConversationDetails = () => {
                           "min-width": "fit-content",
                           "align-self": "self-end"
                         }}>
-                    {formatTime(mensaje.timestamp)}
-                  </Typography>
+                        {formatTime(mensaje.timestamp)}
+                      </Typography>
                     </ChatBubble>
                   </Box>
                 </React.Fragment>
