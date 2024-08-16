@@ -312,14 +312,29 @@ const SimpleTable = () => {
   return (
     <>
      <style  jsx global> 
-      {`
+       {`
        .css-ptiqhd-MuiSvgIcon-root {
-    width: 0px;
-    height: 0px   } 
-       .css-t89xny-MuiDataGrid-columnHeaderTitle  {
-        font-weight: bold !important;
-        width:100%;
-        position:absolute
+         width: 0px;
+         height: 0px;
+       }
+       .css-1k33q06 {
+         width: 0px !important;
+         height: 0px !important;
+       }
+       .css-t89xny-MuiDataGrid-columnHeaderTitle {
+         font-weight: bold !important;
+         width: 100%;
+         position: absolute;
+       }
+       .css-mh3zap {
+         font-weight: bold !important;
+         width: 100%;
+         position: absolute;
+       }
+       .MuiDataGrid-columnHeaderTitle css-mh3zap {
+         font-weight: bold !important;
+         width: 100% !important;
+         position: absolute !important;
        }
       `}
     </style>
