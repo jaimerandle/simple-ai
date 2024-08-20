@@ -429,7 +429,7 @@ const SimpleTable = () => {
               },
             }}
           />
-          <IconButton color="white" onClick={handleRefresh}  style={{color:"white", width:isMobile??"15%"}}  sx={{
+          <IconButton color="white" onClick={handleRefresh}  style={{color:"white", width:isMobile??"20%"}}  sx={{
         '&:hover': {
           boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
         }
