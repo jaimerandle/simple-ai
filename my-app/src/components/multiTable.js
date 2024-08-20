@@ -18,7 +18,7 @@ import StateSelector from './StateSelector';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent !important',
     color: '#b0b0b0',
     fontWeight: 'bold',
     textAlign: 'center',
@@ -431,7 +431,7 @@ const SimpleTable = () => {
           boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
         }
       }}>
-            <RefreshIcon style={{ width:"100%", height:"40px" }} />
+            <RefreshIcon style={{height:"40px", width: isMobile? "90%" : "100%" }} />
           </IconButton>
         </Box>
         {loading ? (
