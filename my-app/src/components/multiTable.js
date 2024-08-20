@@ -434,7 +434,7 @@ const SimpleTable = () => {
           boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
         }
       }}>
-            <RefreshIcon style={{height:"40px"}} />
+            <RefreshIcon style={{height:"25px"}} />
           </IconButton>
         </Box>
         {loading ? (
