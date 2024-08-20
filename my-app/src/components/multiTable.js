@@ -18,7 +18,7 @@ import StateSelector from './StateSelector';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
-    backgroundColor: 'transparent !important',
+    // backgroundColor: 'transparent !important',
     color: '#b0b0b0',
     fontWeight: 'bold',
     textAlign: 'center',
@@ -62,6 +62,9 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
   '.MuiDataGrid-scrollbar':{
   width:"0px"
+  },
+  '& .MuiDataGrid-container--top [role="row"]':{
+    background:"transparent !important"
   }
 }));
 
