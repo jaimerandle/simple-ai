@@ -137,6 +137,7 @@ const ConversationDetails = () => {
   const numeroCorto = conversation.channel_source?.substr(3, 18);
 
   let currentDate = '';
+  console.log(conversation,"conversation")
 
   return (
     <>
@@ -150,7 +151,7 @@ const ConversationDetails = () => {
           <Typography color="#b0b0b0"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
           <div style={{display:"flex", justifyContent:"center" , width: isMobile? "30%" :"10%", border:"1px solid white", borderRadius:"5px", marginTop:"10px", marginBottom:"10px"}} >
             <strong style={{width:"100%", marginLeft:"10px"}}> 
-              <StateSelector id={id} initialState={conversation.metadata.state} onStateChange={handleStateChange}/>
+              <StateSelector id={id} initialState={conversation.metadata? conversation.metadata.state : "baja" } onStateChange={handleStateChange}/>
             </strong>
           </div>
           <CanalLogo src={logoSrc} alt={`${canal} logo`} />
