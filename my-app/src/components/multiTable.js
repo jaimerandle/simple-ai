@@ -429,12 +429,12 @@ const SimpleTable = () => {
               },
             }}
           />
-          <IconButton color="white" onClick={handleRefresh}  style={{color:"white"}}  sx={{
+          <IconButton color="white" onClick={handleRefresh}  style={{color:"white", width:isMobile??"15%"}}  sx={{
         '&:hover': {
           boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
         }
       }}>
-            <RefreshIcon style={{height:"40px", width: isMobile? "90%" : "100%" }} />
+            <RefreshIcon style={{height:"40px"}} />
           </IconButton>
         </Box>
         {loading ? (
