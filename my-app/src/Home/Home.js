@@ -52,8 +52,8 @@ const Home = () => {
                     <div id="page-content-wrapper" className="w-100">
                         <div classname="roboto-medium"> 
                         <div className="container-fluid px-4">
-                            <h1 className="mt-2 pt-4 text-center">Bienvenido {userName}</h1>
-                            <p className="text-center">Desde acá podrás visualizar todas tus conversaciones con los clientes:</p>
+                            <h1 className="mt-2 pt-4 text-center" style={{color:'#b0b0b0'}}>Bienvenido {userName}</h1>
+                            <p className="text-center" style={{color:'#b0b0b0'}}>Desde acá podrás visualizar todas tus conversaciones con los clientes:</p>
                             <div className="row justify-content-center">
                                 <SimpleTable />
                             </div>

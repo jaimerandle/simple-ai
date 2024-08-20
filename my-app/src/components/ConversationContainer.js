@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 const ConversationContainer = styled(Box)(({ theme, canal }) => ({
   display: 'flex',
   flexDirection: 'column',
-  backgroundColor: canal === 'WhatsApp' ? '#e5ddd5' : canal === 'Instagram' ? 'linear-gradient(to right, #833ab4, #fd1d1d, #fcb045)' : '#ffe600',
+  backgroundColor: canal === 'WhatsApp' ? 'transparent' : canal === 'Instagram' ? 'linear-gradient(to right, #833ab4, #fd1d1d, #fcb045)' : '#ffe600',
   padding: theme.spacing(2),
   height: '100vh',
   overflowY: 'auto',

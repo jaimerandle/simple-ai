@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import simpleAi from "../assets/simple-ai.webp";
+import simpleAiWhite from "../assets/SimpleAiWhite.png"
 import SimpleLogo from "../assets/simpleLogo.webp";
 import './login.css';
 import { loginAuth, getUserInfo } from '../services/bffService';
@@ -66,13 +66,13 @@ const Login = () => {
         <div className="login-container d-flex align-items-center justify-content-center vh-100 bg-light">
             <div className="card p-5 login-card">
                 <div style={{ display: "flex" }}>
-                    <img style={{ width: "200px" }} src={simpleAi} alt="Simple AI" />
+                     <img style={{ width: "200px", height:"60px"}} src={simpleAiWhite} alt="Simple AI" />
                     <img style={{ height: "50px", width: "50px" }} src={SimpleLogo} alt="Simple Logo" />
                 </div>
                 <br />
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="email">Email address</label>
+                        <label htmlFor="email" style={{color:"white"}}>Email address</label>
                         <input
                             type="email"
                             className={`form-control ${emailError ? 'is-invalid' : ''}`}
@@ -85,7 +85,7 @@ const Login = () => {
                     </div>
                     <br />
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password" style={{color:"white"}}>Password</label>
                         <input
                             type="password"
                             className={`form-control ${passwordError ? 'is-invalid' : ''}`}

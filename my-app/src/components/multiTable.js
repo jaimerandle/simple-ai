@@ -14,11 +14,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import { TextField, CircularProgress, useMediaQuery, Select, MenuItem } from '@mui/material';
 import { getConversations, updateConversationMetadata, deleteConversation } from '../services/bffService';
+import StateSelector from './StateSelector';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    color: 'black',
+    backgroundColor: 'transparent',
+    color: '#b0b0b0',
     fontWeight: 'bold',
     textAlign: 'center',
     display: 'flex',
@@ -31,9 +32,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  '& .MuiDataGrid-footerContainer': {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  },
   '& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
     display: 'flex',
     justifyContent: 'center',
@@ -44,65 +42,29 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  '& .MuiDataGrid-cell--textLeft':{
+    color:"#b0b0b0"
+  },
+  '& .MuiDataGrid-columnHeaderTitle':{
+     color:"#b0b0b0",
+    
+  },
+  '& .MuiDataGrid-container--top , .MuiDataGrid-footerContainer , .css-yrdy0g-MuiDataGrid-columnHeaderRow' :{
+    background:"black",
+    backgroundColor:"black !important"
+  },
+  '& .css-wop1k0-MuiDataGrid-footerContainer':{
+    width:"0%",
+    height:"0px"
+  },
+  '& .css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone':{
+    '--DataGrid-rowBorderColor':"grey"
+  },
+  '.MuiDataGrid-scrollbar':{
+  width:"0px"
+  }
 }));
 
-const getColorForState = (state) => {
-  switch (state) {
-    case 'alta':
-      return 'red';
-    case 'media':
-      return 'orange';
-    case 'baja':
-      return 'green';
-    default:
-      return 'black';
-  }
-};
-
-const StateSelector = ({ id, initialState, onStateChange }) => {
-  const [state, setState] = useState(initialState);
-
-  const handleChange = async (event) => {
-    const newState = event.target.value;
-    setState(newState);
-    const token = localStorage.getItem('authToken');
-    try {
-      await updateConversationMetadata(id, { state: newState }, token);
-
-      // Llamar a la función para actualizar el estado en SimpleTable
-      onStateChange(id, newState);
-
-      console.log('Estado actualizado exitosamente');
-    } catch (error) {
-      console.error('Error al actualizar el estado:', error.message);
-    }
-  };
-
-  return (
-    <Select
-      value={state}
-      onChange={handleChange}
-      variant="standard"
-      fullWidth
-      disableUnderline
-      sx={{
-        color: getColorForState(state),  // Aplicar color basado en el estado seleccionado
-        fontWeight: 'bold',
-        textShadow: '1px 1px 1px black',
-        '& .MuiSelect-icon': {
-          color: getColorForState(state),  // Aplicar color al ícono del select
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-          border: 'none',
-        },
-      }}
-    >
-      <MenuItem value="alta" style={{ color: 'red' }}>Alta</MenuItem>
-      <MenuItem value="media" style={{ color: 'orange' }}>Media</MenuItem>
-      <MenuItem value="baja" style={{ color: 'green' }}>Baja</MenuItem>
-    </Select>
-  );
-};
 
 const ActionButton = ({ row, onDelete }) => {
   const navigate = useNavigate();
@@ -142,11 +104,23 @@ const ActionButton = ({ row, onDelete }) => {
 
   return (
     <>
-      <IconButton color="primary" onClick={handleViewConversation}>
-        <VisibilityIcon style={{ color: "black" }} />
+      <IconButton color="primary" onClick={handleViewConversation}
+       sx={{
+        '&:hover': {
+          boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
+        }
+      }}
+      >
+        <VisibilityIcon style={{ color: "#b0b0b0"}} />
       </IconButton>
-      <IconButton color="secondary" onClick={handleOpen}>
-        <DeleteIcon style={{ color: "black" }} />
+      <IconButton color="secondary" onClick={handleOpen}
+       sx={{
+        '&:hover': {
+          boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
+        }
+      }}
+      >
+        <DeleteIcon style={{ color: "#b0b0b0" }} />
       </IconButton>
 
       {/* Modal de confirmación */}
@@ -159,6 +133,10 @@ const ActionButton = ({ row, onDelete }) => {
   sx={{
     '& .MuiDialog-paper': {
       padding: '10px', 
+      backgroundColor:"black",
+      color:"white",
+      boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)',
+      borderRadius:"20px"
     },
   }}
 >
@@ -173,10 +151,24 @@ const ActionButton = ({ row, onDelete }) => {
   <DialogActions
     sx={{ justifyContent: 'center' }} // Centra los botones
   >
-    <Button onClick={handleClose} sx={{ color: 'purple' }}> 
+    <Button onClick={handleClose} 
+    sx={{
+      color:'purple',
+      '&:hover': {
+        boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
+      }
+    }}
+    > 
       Cancelar
     </Button>
-    <Button onClick={handleDelete} sx={{ color: 'red' }}> 
+    <Button onClick={handleDelete} 
+    sx={{
+      color:'red',
+      '&:hover': {
+         boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)'
+      }
+    }}
+    > 
       Borrar
     </Button>
   </DialogActions>
@@ -242,17 +234,36 @@ const SimpleTable = () => {
   };
 
   useEffect(() => {
-    const cachedConversations = sessionStorage.getItem('conversations');
-    if (cachedConversations) {
-      const parsedConversations = JSON.parse(cachedConversations);
-      parsedConversations.sort((a, b) => b.fechaHora - a.fechaHora);
-      setRows(parsedConversations);
-      setFilteredRows(parsedConversations);
-      setLoading(false);
-    } else {
-      fetchConversations();
-    }
+    const fetchAndUpdateConversations = () => {
+      const cachedConversations = sessionStorage.getItem('conversations');
+      if (cachedConversations) {
+        const parsedConversations = JSON.parse(cachedConversations);
+        parsedConversations.sort((a, b) => b.fechaHora - a.fechaHora);
+        setRows(parsedConversations);
+        setFilteredRows(parsedConversations);
+        setLoading(false);
+      } else {
+        fetchConversations();
+      }
+    };
+  
+    // Llamar a la función al montar el componente
+    fetchAndUpdateConversations();
+  
+    // Listener para actualizaciones en sessionStorage
+    const handleStorageChange = (event) => {
+      if (event.key === 'conversations') {
+        fetchAndUpdateConversations();
+      }
+    };
+  
+    window.addEventListener('storage', handleStorageChange);
+  
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
+  
 
   const handleFilterChange = (event) => {
     const value = event.target.value.toLowerCase();
@@ -287,7 +298,7 @@ const SimpleTable = () => {
 
   const handleStateChange = (id, newState) => {
     const updatedRows = rows.map(row => 
-      row.id === id ? { ...row, state: newState } : row
+      row.id === id ? { ...row , state: newState } : row
     );
     setRows(updatedRows);
     setFilteredRows(updatedRows);
@@ -308,7 +319,7 @@ const SimpleTable = () => {
       },
       {
         field: 'state',
-        headerName: 'Estado',
+        headerName: 'Prioridad',
         flex: 1,
         renderCell: (params) => (
           <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />
@@ -374,7 +385,7 @@ const SimpleTable = () => {
          width: 100% !important;
          position: absolute !important;
        }
-      `}
+     `}
     </style>
       <Box
         sx={{
@@ -397,26 +408,26 @@ const SimpleTable = () => {
             sx={{
               width: isMobile ? 'calc(100% - 1px)' : '400px',
               '& .MuiInputBase-input': {
-                color: 'black',
+                color: '#b0b0b0',
               },
               '& .MuiInputLabel-root': {
-                color: 'black',
+                color: '#b0b0b0',
               },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: 'black',
+                  borderColor: 'white',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'black',
+                  borderColor: 'white',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'black',
+                  borderColor: 'white',
                 },
               },
             }}
           />
-          <IconButton color="black" onClick={handleRefresh}>
-            <RefreshIcon />
+          <IconButton color="white" onClick={handleRefresh}  style={{color:"white"}}>
+            <RefreshIcon style={{ width:"100%", height:"40px" }} />
           </IconButton>
         </Box>
         {loading ? (
@@ -431,6 +442,7 @@ const SimpleTable = () => {
             rowsPerPageOptions={[5, 10, 20]}
             components={{ Toolbar: GridToolbar }}
             disableSelectionOnClick
+            hideFooter
             autoHeight={false}
             getRowHeight={() => 'auto'}
             initialState={{

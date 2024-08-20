@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import simpleAi from '../assets/simple-ai.webp';
+import simpleAi from '../assets/SimpleAiWhite.png';
 import SimpleLogo from '../assets/simpleLogo.webp';
 import PersonIcon from '@mui/icons-material/Person';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
@@ -19,7 +19,7 @@ const Navbar = () => {
     };
 
     return (
-        <div style={{ backgroundColor: 'white', marginBottom: '20px' }}>
+        <div style={{ backgroundColor: 'black', marginBottom: '20px',boxShadow:'0 16px 54px 14px rgba(138, 43, 226, 0.5)' }}>
             <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{ backgroundColor: 'white' }}>
                 <div className="container-fluid">
                     <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center' }}>
@@ -29,17 +29,17 @@ const Navbar = () => {
                     <div className="ml-auto" style={{ display: 'flex', alignItems: 'center' }}>
                         <a className="nav-link user-icon-wrapper">
                             <Tooltip title="Perfil">
-                                <PersonIcon style={{ height: '30px', width: '30px', cursor: "pointer" }} onClick={() => navigate("/Perfil")} />
+                                <PersonIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/Perfil")} />
                             </Tooltip>
                         </a>
                         <a className="nav-link user-icon-wrapper">
                             <Tooltip title="Dashboard">
-                                <EqualizerIcon style={{ height: '30px', width: '30px', cursor: "pointer" }} onClick={() => navigate("/dashboard")} />
+                                <EqualizerIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/dashboard")} />
                             </Tooltip>
                         </a>
                         <a className="nav-link user-icon-wrapper">
                             <Tooltip title="Cerrar sesión">
-                                <LogoutIcon style={{ height: '30px', width: '30px', cursor: "pointer" }} onClick={handleLogout} />
+                                <LogoutIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"white"}} onClick={handleLogout} />
                             </Tooltip>
                         </a>
                     </div>

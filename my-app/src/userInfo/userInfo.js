@@ -54,27 +54,27 @@ const UserInfo = () => {
       <Navbar />
       <UserInfoContainer style={{ paddingBottom: '100px' }}>
         <UserAvatar alt={user.name} src={user.avatar} />
-        <Typography variant="h5" gutterBottom>{user.name}</Typography>
-        <Typography variant="body1" color="textSecondary">{user.email}</Typography>
-        <Typography variant="body2" color="textSecondary">{user.bio}</Typography>
+        <Typography variant="h5" color="#b0b0b0" gutterBottom>{user.name}</Typography>
+        <Typography variant="body1" color="#b0b0b0">{user.email}</Typography>
+        <Typography variant="body2" color="#b0b0b0">{user.bio}</Typography>
         <List>
           <ListItem>
             <ListItemIcon>
-              <WhatsAppIcon color={user.whatsapp ? "primary" : "disabled"} />
+              <WhatsAppIcon color={user.whatsapp ? "primary" : "primary"} />
             </ListItemIcon>
-            <ListItemText primary="WhatsApp" secondary={user.whatsapp ? "Cuenta activa" : "Cuenta inactiva"} />
+            <ListItemText  primary="WhatsApp" secondary={user.whatsapp ? "Cuenta activa" : "Cuenta inactiva"} style={{color:"#b0b0b0"}}/>
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <InstagramIcon color={user.instagram ? "primary" : "disabled"} />
+              <InstagramIcon color={user.instagram ? "primary" : "primary"} />
             </ListItemIcon>
-            <ListItemText primary="Instagram" secondary={user.instagram ? "Cuenta activa" : "Cuenta inactiva"} />
+            <ListItemText primary="Instagram" secondary={user.instagram ? "Cuenta activa" : "Cuenta inactiva"} style={{color:"#b0b0b0"}}/>
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <StoreIcon color={user.mercadolibre ? "primary" : "disabled"} />
+              <StoreIcon color={user.mercadolibre ? "primary" : "primary"} />
             </ListItemIcon>
-            <ListItemText primary="Mercado Libre" secondary={user.mercadolibre ? "Cuenta activa" : "Cuenta inactiva"} />
+            <ListItemText primary="Mercado Libre" secondary={user.mercadolibre ? "Cuenta activa" : "Cuenta inactiva"} style={{color:"#b0b0b0"}} />
           </ListItem>
         </List>
       </UserInfoContainer>

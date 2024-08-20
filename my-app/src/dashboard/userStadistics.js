@@ -35,10 +35,10 @@ const CustomLegend = ({ payload }) => (
           width: 10,
           height: 10,
           backgroundColor: entry.color,
-          border: '1px solid black',
+          border: '1px solid #b0b0b0',
           marginRight: 5
         }} />
-        <span style={{ color: 'black' }}>{entry.value}</span>
+        <span style={{ color: '#b0b0b0' }}>{entry.value}</span>
       </div>
     ))}
   </div>
@@ -124,8 +124,9 @@ const UserStats = () => {
   }
 
   return (
+    <>
     <div style={{ height: '100vh', overflowY: 'auto' }}>
-      <Navbar />
+      <Navbar/> 
       <Box
         sx={{
           display: 'flex',
@@ -134,20 +135,20 @@ const UserStats = () => {
           alignItems: 'center',
           minHeight: '100vh',
           overflowY: 'auto',
-          marginTop: "-20px",
-          background: 'linear-gradient(160deg, #ffffff, #cc86cc)',
+          marginTop: "70px",
+          background: 'black',
           paddingBottom: "100px",
           padding: '16px',
         }}
       >
-        <Typography variant="h4" gutterBottom style={{ color: "black", marginTop: "25px", textAlign: "center" }}>
+        <Typography variant="h4" gutterBottom style={{ color: "#b0b0b0", marginTop: "-20px", textAlign: "center" ,marginBottom:"20px"}}>
           Dashboard de tus productos
         </Typography>
-        <ButtonGroup variant="contained" sx={{ marginBottom: 2 }}>
+        <ButtonGroup variant="contained" sx={{ marginBottom: 2, marginTop:4 }}>
           <Button onClick={() => setView('overall')} color={view === 'overall' ? 'primary' : 'inherit'}>Vista General</Button>
           <Button onClick={() => setView('weekly')} color={view === 'weekly' ? 'primary' : 'inherit'}>Últimos 7 Días</Button>
         </ButtonGroup>
-        <Box sx={{ width: '100%', maxWidth: 800, marginBottom: '20px' }}>
+        <Box sx={{ width: '100%', maxWidth: 800, marginBottom: '120px' }}>
           {error ? (
             <Typography variant="body1" color="error">{error}</Typography>
           ) : (
@@ -160,17 +161,17 @@ const UserStats = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="black" />
                   <XAxis 
                     dataKey="name" 
-                    stroke="black" 
+                    stroke="#b0b0b0" 
                     tick={{ angle: isMobile ? -50 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
                     height={isMobile ? 60 : undefined} 
                     interval={0}
                   />
-                  <YAxis stroke="black" />
+                  <YAxis stroke="#b0b0b0" />
                   <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: 'white' }} content={CustomTooltip} />
                   <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block' , textAlign: 'center' }} />
                   <Bar dataKey="value" >
                     {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[entry.name]} strokeLinecap="inherit" stroke="#000" strokeWidth={1} />
+                      <Cell key={`cell-${index}`} fill={COLORS[entry.name]} strokeLinecap="inherit" stroke="#b0b0b0" strokeWidth={1} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -182,17 +183,17 @@ const UserStats = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="black" />
                   <XAxis 
                     dataKey="date" 
-                    stroke="black" 
+                    stroke="#b0b0b0" 
                     tick={{ angle: isMobile ? -50 : 0, textAnchor: isMobile ? 'end' : 'middle' }} 
                     height={isMobile ? 60 : undefined} 
                     interval={0}
                   />
-                  <YAxis stroke="black" />
-                  <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
+                  <YAxis stroke="#b0b0b0" />
+                  <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} contentStyle={{ backgroundColor: '#333', color: '#b0b0b0' }} />
                   <Legend content={CustomLegend} wrapperStyle={{ bottom: isMobile ? "-20px" : 0, display: 'block', textAlign:  'center'}} />
-                  <Bar dataKey="WhatsApp" stackId="a" fill="#63cb77" stroke="#000" strokeWidth={1} />
-                  <Bar dataKey="Mercado Libre" stackId="a" fill="#ffe600" stroke="#000" strokeWidth={1} />
-                  <Bar dataKey="Instagram" stackId="a" fill="#833ab4" stroke="#000" strokeWidth={1} />
+                  <Bar dataKey="WhatsApp" stackId="a" fill="#63cb77" stroke="#b0b0b0" strokeWidth={1} />
+                  <Bar dataKey="Mercado Libre" stackId="a" fill="#ffe600" stroke="#b0b0b0" strokeWidth={1} />
+                  <Bar dataKey="Instagram" stackId="a" fill="#833ab4" stroke="#b0b0b0" strokeWidth={1} />
                 </BarChart>
               )}
             </ResponsiveContainer>
@@ -200,6 +201,7 @@ const UserStats = () => {
         </Box>
       </Box>
     </div>
+    </>
   );
 };
 
