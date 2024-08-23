@@ -7,11 +7,11 @@ const getColorForState = (state) => {
     case 'alta':
       return 'red';
     case 'media':
-      return 'orange';
-    case 'baja':
       return 'green';
-    default:
-      return 'white';
+    case 'baja':
+      return 'orange';
+    case'descarte':
+      return 'grey';
   }
 };
 
@@ -53,9 +53,10 @@ const StateSelector = ({ id, initialState, onStateChange }) => {
           },
         }}
       >
-        <MenuItem value="alta" style={{ color: 'red' }}>Alta</MenuItem>
-        <MenuItem value="media" style={{ color: 'orange' }}>Media</MenuItem>
-        <MenuItem value="baja" style={{ color: 'green' }}>Baja</MenuItem>
+        <MenuItem value="alta" style={{ color: 'red' }}>Alto potencial</MenuItem>
+        <MenuItem value="media" style={{ color: 'green' }}>Cliente</MenuItem>
+        <MenuItem value="baja" style={{ color: 'orange' }}>No Cliente</MenuItem>
+        <MenuItem value="descarte" style={{ color: 'grey' }}>Descarte</MenuItem>
       </Select>
     );
   };
