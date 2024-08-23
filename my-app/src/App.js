@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'r
 import Login from './Login/login';
 import Home from './Home/Home';
 import SimpleTable from './components/multiTable';
-import ConversationDetails from './components/ConversationDetails';
+import ConversationDetails from './conversations/ConversationDetails';
 import UserInfo from './userInfo/userInfo';
 import UserStats from './dashboard/userStadistics';
 import { setupInterceptors } from './services/apiClient';

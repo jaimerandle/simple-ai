@@ -1,7 +1,7 @@
 /* index.css */
 body {
   
-  background: black;
+  background: black !important;
   height: 100vh;
   margin: 0;
   display: flex;

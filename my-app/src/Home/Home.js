@@ -47,8 +47,8 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <div style={{  height: '100vh' }}>
-                <div className="d-flex" id="wrapper" style={{ paddingBottom: '100px' }}>
+            <div style={{  height: '100vh', marginTop:"20px"}}>
+                <div className="d-flex" id="wrapper" >
                     <div id="page-content-wrapper" className="w-100">
                         <div classname="roboto-medium"> 
                         <div className="container-fluid px-4">

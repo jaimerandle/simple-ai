@@ -9,6 +9,7 @@ import { Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import './Navbar.css'; // Asegúrate de crear y usar este archivo CSS
 
+
 const Navbar = () => {
     const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ const Navbar = () => {
     };
 
     return (
-        <div style={{ backgroundColor: 'black', marginBottom: '20px',boxShadow:'0 16px 54px 14px rgba(138, 43, 226, 0.5)' }}>
+        <div style={{ backgroundColor: 'black',boxShadow:'0 16px 54px 14px rgba(138, 43, 226, 0.5)' , position:"relative" , "z-index": "111111"}}>
             <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{ backgroundColor: 'white' }}>
                 <div className="container-fluid">
                     <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center' }}>

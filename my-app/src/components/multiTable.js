@@ -15,6 +15,7 @@ import Button from '@mui/material/Button';
 import { TextField, CircularProgress, useMediaQuery, Select, MenuItem } from '@mui/material';
 import { getConversations, updateConversationMetadata, deleteConversation } from '../services/bffService';
 import StateSelector from './StateSelector';
+import NoteDialog from '../conversations/NoteDialog';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
@@ -69,12 +70,14 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 }));
 
 
+
 const ActionButton = ({ row, onDelete }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const handleViewConversation = () => {
-    navigate(`/conversation/${row.id}`);
+    const url = `/conversation/${row.id}`; 
+    window.open(url, '_blank');
   };
 
   const handleDelete = async () => {
@@ -187,7 +190,7 @@ const SimpleTable = () => {
   const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery('(max-width:600px)');
 
-  const fetchConversations = async () => {
+ const fetchConversations = async () => {
     setLoading(true);
     const token = localStorage.getItem('authToken');
     if (token) {
@@ -220,6 +223,7 @@ const SimpleTable = () => {
             fechaHora: date,
             formattedFechaHora: isMobile ? formattedDate : formattedDateTime,
             state: conversation.metadata?.state || 'baja',
+            note: conversation.metadata?.note || ""
           };
         });
 
@@ -235,6 +239,7 @@ const SimpleTable = () => {
       }
     }
   };
+  
 
   useEffect(() => {
     const fetchAndUpdateConversations = () => {
@@ -266,6 +271,7 @@ const SimpleTable = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
   
 
   const handleFilterChange = (event) => {
@@ -277,7 +283,8 @@ const SimpleTable = () => {
       row.canal.toLowerCase().includes(value) ||
       row.formattedFechaHora.toLowerCase().includes(value) ||
       row.referencia.toLowerCase().includes(value) ||
-      row.state.toLowerCase().includes(value)
+      row.state.toLowerCase().includes(value) || 
+      row.note.toLowerCase().includes(value)
     );
 
     setFilteredRows(filtered);
@@ -334,6 +341,7 @@ const SimpleTable = () => {
         flex: 1,
         renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
       },
+      
     ]
   : [
       { field: 'id', headerName: 'ID', flex: 1 },
@@ -392,14 +400,15 @@ const SimpleTable = () => {
     </style>
       <Box
         sx={{
-          maxHeight: "400px",
+          height:"60vh",
           width: '100%',
           background: '',
           padding: isMobile ? 0 : 2,
-          marginTop: "-25px",
+          marginTop: "-15px",
+          flexGrow:"1",
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+        <Box sx={{ flexGrow:"1", display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
           <TextField
             label="Filtrar"
             variant="outlined"
@@ -456,6 +465,10 @@ const SimpleTable = () => {
               sorting: {
                 sortModel: [{ field: 'fechaHora', sort: 'desc' }],
               },
+            }}
+            sx={{
+              flexGrow: 1, // Para que ocupe el espacio restante en el contenedor
+              height: '100%',
             }}
           />
         )}
