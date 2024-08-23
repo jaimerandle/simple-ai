@@ -43,6 +43,13 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
 
   return (
     <>    
+    <style jsx global>
+        {`
+        .css-qkin6e{
+            color: white
+        }
+        `}
+    </style>
     <Dialog
       open={open}
       onClose={handleClose}
