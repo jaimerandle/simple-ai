@@ -24,6 +24,7 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
       setInitialNote(currentConversation.note);
     }
     if (currentConversation && currentConversation.responsible) {
+        console.log(currentConversation.initialResponsible,"JAIME RES")
         setInitialResponsible(currentConversation.responsible);
       }
   }, [id]);

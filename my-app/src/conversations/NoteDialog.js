@@ -6,8 +6,11 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
   const [responsible, setResponsible] = useState(initialResponsible || ''); // Estado para el nombre del responsable
 
   useEffect(() => {
+    console.log(initialResponsible,"RESPONSABLE")
+    console.log(initialNote, "NOTA")
     setNote(initialNote || '');
-  }, [initialNote]);
+    setResponsible(initialResponsible || "")
+  }, [initialNote, initialResponsible]);
 
   const handleChangeNote = (event) => {
     setNote(event.target.value);
@@ -106,7 +109,7 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
                     borderColor: 'white',
                   },
                   '&.css-mwgald-MuiInputBase-root-MuiOutlinedInput-root':{
-                    color:"white"
+                    color:"white !important"
                   }
                 },
               }}

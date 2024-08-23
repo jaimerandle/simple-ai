@@ -223,7 +223,8 @@ const SimpleTable = () => {
             fechaHora: date,
             formattedFechaHora: isMobile ? formattedDate : formattedDateTime,
             state: conversation.metadata?.state || 'baja',
-            note: conversation.metadata?.note || ""
+            note: conversation.metadata?.note || "",
+            responsible: conversation.metadata?.responsible || ""
           };
         });
 
@@ -284,7 +285,8 @@ const SimpleTable = () => {
       row.formattedFechaHora.toLowerCase().includes(value) ||
       row.referencia.toLowerCase().includes(value) ||
       row.state.toLowerCase().includes(value) || 
-      row.note.toLowerCase().includes(value)
+      row.note.toLowerCase().includes(value) ||
+      row.responsible.toLowerCase().includes(value)
     );
 
     setFilteredRows(filtered);
