@@ -19,7 +19,6 @@ import NoteDialog from '../conversations/NoteDialog';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
-    // backgroundColor: 'transparent !important',
     color: '#b0b0b0',
     fontWeight: 'bold',
     textAlign: 'center',
@@ -43,33 +42,39 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  '& .MuiDataGrid-cell--textLeft':{
-    color:"#b0b0b0"
+  '& .MuiDataGrid-cell--textLeft': {
+    color: "#b0b0b0"
   },
-  '& .MuiDataGrid-columnHeaderTitle':{
-     color:"#b0b0b0",
-    
+  '& .MuiDataGrid-columnHeaderTitle': {
+    color: "#b0b0b0",
   },
-  '& .MuiDataGrid-container--top , .MuiDataGrid-footerContainer , .css-yrdy0g-MuiDataGrid-columnHeaderRow' :{
-    background:"black",
-    backgroundColor:"black !important"
+  '& .MuiDataGrid-container--top, .MuiDataGrid-footerContainer, .css-yrdy0g-MuiDataGrid-columnHeaderRow': {
+    background: "black",
+    backgroundColor: "black !important"
   },
-  '& .css-wop1k0-MuiDataGrid-footerContainer':{
-    width:"0%",
-    height:"0px"
+  '& .css-wop1k0-MuiDataGrid-footerContainer': {
+    width: "0%",
+    height: "0px"
   },
-  '& .css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone':{
-    '--DataGrid-rowBorderColor':"grey"
+  '& .css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone': {
+    '--DataGrid-rowBorderColor': "grey"
   },
-  '.MuiDataGrid-scrollbar':{
-  width:"0px"
+  '.MuiDataGrid-scrollbar': {
+    width: "0px"
   },
-  '& .MuiDataGrid-container--top [role="row"]':{
-    background:"transparent !important"
+  '& .MuiDataGrid-container--top [role="row"]': {
+    background: "transparent !important"
+  },
+  '& .Mui-even': {
+    backgroundColor: '#c8c3c338', // Color para filas pares
+  },
+  '& .Mui-odd': {
+    backgroundColor: 'black', // Color para filas impares
+  },
+  '& .MuiDataGrid-row:hover':{
+    backgroundColor:"#631bbf45"
   }
 }));
-
-
 
 const ActionButton = ({ row, onDelete }) => {
   const navigate = useNavigate();
@@ -190,7 +195,7 @@ const SimpleTable = () => {
   const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery('(max-width:600px)');
 
- const fetchConversations = async () => {
+  const fetchConversations = async () => {
     setLoading(true);
     const token = localStorage.getItem('authToken');
     if (token) {
@@ -240,7 +245,6 @@ const SimpleTable = () => {
       }
     }
   };
-  
 
   useEffect(() => {
     const fetchAndUpdateConversations = () => {
@@ -255,25 +259,23 @@ const SimpleTable = () => {
         fetchConversations();
       }
     };
-  
+
     // Llamar a la función al montar el componente
     fetchAndUpdateConversations();
-  
+
     // Listener para actualizaciones en sessionStorage
     const handleStorageChange = (event) => {
       if (event.key === 'conversations') {
         fetchAndUpdateConversations();
       }
     };
-  
+
     window.addEventListener('storage', handleStorageChange);
-  
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
-
-  
 
   const handleFilterChange = (event) => {
     const value = event.target.value.toLowerCase();
@@ -284,7 +286,7 @@ const SimpleTable = () => {
       row.canal.toLowerCase().includes(value) ||
       row.formattedFechaHora.toLowerCase().includes(value) ||
       row.referencia.toLowerCase().includes(value) ||
-      row.state.toLowerCase().includes(value) || 
+      row.state.toLowerCase().includes(value) ||
       row.note.toLowerCase().includes(value) ||
       row.responsible.toLowerCase().includes(value)
     );
@@ -303,25 +305,24 @@ const SimpleTable = () => {
 
     setRows(updatedRows);
     setFilteredRows(updatedFilteredRows);
-    
+
     // Actualiza también en sessionStorage
     sessionStorage.setItem('conversations', JSON.stringify(updatedRows));
   };
 
   const handleStateChange = (id, newState) => {
-    const updatedRows = rows.map(row => 
-      row.id === id ? { ...row , state: newState } : row
+    const updatedRows = rows.map(row =>
+      row.id === id ? { ...row, state: newState } : row
     );
     setRows(updatedRows);
     setFilteredRows(updatedRows);
-    
+
     // Actualiza también en sessionStorage
     sessionStorage.setItem('conversations', JSON.stringify(updatedRows));
   };
 
-  
   const columns = isMobile
-  ? [
+    ? [
       { field: 'referencia', headerName: 'Referencia', flex: 1 },
       {
         field: 'fechaHora',
@@ -343,9 +344,9 @@ const SimpleTable = () => {
         flex: 1,
         renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
       },
-      
+
     ]
-  : [
+    : [
       { field: 'id', headerName: 'ID', flex: 1 },
       { field: 'referencia', headerName: 'Referencia', flex: 1 },
       { field: 'canal', headerName: 'Canal', flex: 1 },
@@ -373,8 +374,8 @@ const SimpleTable = () => {
 
   return (
     <>
-     <style  jsx global> 
-       {`
+      <style jsx global>
+        {`
        .css-ptiqhd-MuiSvgIcon-root {
          width: 0px;
          height: 0px;
@@ -399,18 +400,18 @@ const SimpleTable = () => {
          position: absolute !important;
        }
      `}
-    </style>
+      </style>
       <Box
         sx={{
-          height:"60vh",
+          height: "60vh",
           width: '100%',
           background: '',
           padding: isMobile ? 0 : 2,
           marginTop: "-15px",
-          flexGrow:"1",
+          flexGrow: "1",
         }}
       >
-        <Box sx={{ flexGrow:"1", display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+        <Box sx={{ flexGrow: "1", display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
           <TextField
             label="Filtrar"
             variant="outlined"
@@ -437,15 +438,18 @@ const SimpleTable = () => {
                 '&.Mui-focused fieldset': {
                   borderColor: 'white',
                 },
+                "&.Mui-even": {
+                  backgroundColor: "grey"
+                }
               },
             }}
           />
-          <IconButton color="white" onClick={handleRefresh}  style={{color:"white", width:isMobile??"20%"}}  sx={{
-        '&:hover': {
-          boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
-        }
-      }}>
-            <RefreshIcon style={{height:"25px"}} />
+          <IconButton color="white" onClick={handleRefresh} style={{ color: "white", width: isMobile ?? "20%" }} sx={{
+            '&:hover': {
+              boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
+            }
+          }}>
+            <RefreshIcon style={{ height: "25px" }} />
           </IconButton>
         </Box>
         {loading ? (
@@ -456,6 +460,9 @@ const SimpleTable = () => {
           <StyledDataGrid
             rows={filteredRows.map(row => ({ ...row, fechaHora: row.formattedFechaHora }))}
             columns={columns}
+            getRowClassName={(params) =>
+              params.indexRelativeToCurrentPage % 2 === 0 ? 'Mui-even' : 'Mui-odd'
+            }
             pageSize={10}
             rowsPerPageOptions={[5, 10, 20]}
             components={{ Toolbar: GridToolbar }}
