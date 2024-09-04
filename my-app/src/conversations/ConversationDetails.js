@@ -13,6 +13,7 @@ import ConversationContainer from './ConversationContainer';
 import WhatsAppLogo from '../assets/WhatsAppLogo.svg';
 import InstagramLogo from '../assets/Instagram.svg';
 import MercadoLibreLogo from '../assets/mercadolibre.svg';
+import Loading from '../components/Loading';
 
 const ConversationDetails = () => {
   const isMobile = useMediaQuery('(max-width:600px)');
@@ -64,7 +65,7 @@ const ConversationDetails = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
+        <Loading />
       </Box>
     );
   }
@@ -88,9 +89,13 @@ const ConversationDetails = () => {
       logoSrc = WhatsAppLogo;
       canal = 'WhatsApp';
       break;
+      case 1:
+        logoSrc = WhatsAppLogo;
+        canal = 'WhatsApp';
+        break;
     default:
-      logoSrc = InstagramLogo;
-      canal = 'Otro';
+      logoSrc = WhatsAppLogo;
+      canal = 'WhatsApp';
   }
 
   return (

@@ -7,6 +7,7 @@ import ConversationDetails from './conversations/ConversationDetails';
 import UserInfo from './userInfo/userInfo';
 import UserStats from './dashboard/userStadistics';
 import { setupInterceptors } from './services/apiClient';
+import ChatPrueba from './ChatPrueba/chatPrueba';
 
 
 const App= () => {
@@ -21,6 +22,7 @@ const App= () => {
                 <Route path="/conversations" element={<SimpleTable />} />
                 <Route path="/Perfil" element={<UserInfo />}/>
                 <Route path="/dashboard" element={ <UserStats />}/>
+                <Route path="/chatTest" element={ <ChatPrueba />}/>
             </Routes>
         </Router>
     );

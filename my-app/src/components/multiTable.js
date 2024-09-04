@@ -16,6 +16,7 @@ import { TextField, CircularProgress, useMediaQuery, Select, MenuItem } from '@m
 import { getConversations, updateConversationMetadata, deleteConversation } from '../services/bffService';
 import StateSelector from './StateSelector';
 import NoteDialog from '../conversations/NoteDialog';
+import Loading from './Loading';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
@@ -201,6 +202,7 @@ const SimpleTable = () => {
     if (token) {
       try {
         const conversations = await getConversations(token);
+        console.log(conversations,"converstiosnsAll")
         const formattedRows = conversations.map((conversation) => {
           const date = new Date(conversation.last_updated);
           const formattedDate = date.toLocaleDateString('es-AR', {
@@ -218,7 +220,7 @@ const SimpleTable = () => {
             hour12: false,
           }).replace(", ", " ");
           const numeroCorto = conversation.channel_source.substr(3, 18);
-          const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : 'Instagram';
+          const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 || 1 ? 'WhatsApp' : 'Instagram';
           const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0, 15);
 
           return {
@@ -229,7 +231,8 @@ const SimpleTable = () => {
             formattedFechaHora: isMobile ? formattedDate : formattedDateTime,
             state: conversation.metadata?.state || 'baja',
             note: conversation.metadata?.note || "",
-            responsible: conversation.metadata?.responsible || ""
+            responsible: conversation.metadata?.responsible || "",
+            extract: conversation.extract
           };
         });
 
@@ -280,6 +283,7 @@ const SimpleTable = () => {
   const handleFilterChange = (event) => {
     const value = event.target.value.toLowerCase();
     setFilter(value);
+    console.log(rows,"ROW")
 
     const filtered = rows.filter((row) =>
       row.id.toString().includes(value) ||
@@ -288,7 +292,8 @@ const SimpleTable = () => {
       row.referencia.toLowerCase().includes(value) ||
       row.state.toLowerCase().includes(value) ||
       row.note.toLowerCase().includes(value) ||
-      row.responsible.toLowerCase().includes(value)
+      row.responsible.toLowerCase().includes(value) || 
+      row.extract.toLowerCase().includes(value)
     );
 
     setFilteredRows(filtered);
@@ -454,7 +459,7 @@ const SimpleTable = () => {
         </Box>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <CircularProgress />
+            <Loading/>
           </Box>
         ) : (
           <StyledDataGrid

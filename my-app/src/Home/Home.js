@@ -6,6 +6,7 @@ import './Home.css';
 import SimpleTable from '../components/multiTable';
 import { getUserInfo } from '../services/bffService';
 import { CircularProgress, Box, useMediaQuery } from '@mui/material';
+import Loading from '../components/Loading';
 
 const Home = () => {
     const [userName, setUserName] = useState('');
@@ -39,7 +40,7 @@ const Home = () => {
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <CircularProgress />
+                <Loading />
             </Box>
         );
     }

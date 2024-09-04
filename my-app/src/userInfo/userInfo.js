@@ -6,6 +6,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import StoreIcon from '@mui/icons-material/Store';
 import Navbar from '../Home/Navbar';
 import { useNavigate } from 'react-router-dom';
+import Loading from '../components/Loading';
 
 const UserInfoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -44,7 +45,7 @@ const UserInfo = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
+        <Loading />
       </Box>
     );
   }

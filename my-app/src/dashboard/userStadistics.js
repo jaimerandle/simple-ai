@@ -4,6 +4,7 @@ import { Box, Typography, CircularProgress, Button, ButtonGroup, useMediaQuery }
 import { getConversations } from '../services/bffService';
 import Navbar from '../Home/Navbar';
 import { useNavigate } from 'react-router-dom';
+import Loading from '../components/Loading';
 
 const COLORS = {
   'WhatsApp': '#63cb77',
@@ -84,7 +85,7 @@ const UserStats = () => {
           conversations.forEach(conversation => {
             const date = new Date(conversation.last_updated).toISOString().split('T')[0];
             const channel = conversation.channel_type === 3 ? 'Mercado Libre' :
-                            conversation.channel_type === 4 ? 'WhatsApp' :
+                            conversation.channel_type === 4 || 1 ? 'WhatsApp' :
                             conversation.channel_id === 11 ? 'Instagram' : 'Otro';
             
             if (platformCounts[channel] !== undefined) {
@@ -118,7 +119,7 @@ const UserStats = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
+        <Loading />
       </Box>
     );
   }

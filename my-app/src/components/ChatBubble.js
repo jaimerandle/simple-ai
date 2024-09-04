@@ -18,7 +18,7 @@ const ChatBubble = styled(Box)(({ theme, de, canal }) => ({
   ...(canal === 3 && {
     backgroundColor: de === 'user' ? '#E5E1E0' : '#833ab4',
   }),
-  ...(canal === 4 && {
+  ...(canal === 4 || 1 && {
     backgroundColor: de === 'user' ? '#25d366' : '#34b7f1',
   }),
   ...(canal === 0 && {

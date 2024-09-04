@@ -7,6 +7,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
 import './Navbar.css'; // Asegúrate de crear y usar este archivo CSS
 
 
@@ -28,6 +29,11 @@ const Navbar = () => {
                         <img style={{ height: '30px', width: '30px', marginLeft: '10px' }} src={SimpleLogo} alt="Simple Logo" />
                     </div>
                     <div className="ml-auto" style={{ display: 'flex', alignItems: 'center' }}>
+                    <a className="nav-link user-icon-wrapper">
+                            <Tooltip title="Test">
+                                <WhatshotIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/ChatTest")} />
+                            </Tooltip>
+                        </a>
                         <a className="nav-link user-icon-wrapper">
                             <Tooltip title="Perfil">
                                 <PersonIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/Perfil")} />
