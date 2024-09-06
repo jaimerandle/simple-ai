@@ -62,7 +62,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     height: "0px",
   },
   '& .css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone': {
-    '--DataGrid-rowBorderColor': "none",
+    '--DataGrid-rowBorderColor': "white !important",
   },
   '.MuiDataGrid-scrollbar': {
     width: "0px",
@@ -77,7 +77,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     color: "#6728B8", // Cambiar el color del texto de todas las celdas al hacer hover en la fila
   },
   '& .css-1cawtvi .MuiDataGrid-row': {
-    '--rowBorderColor': 'none !important'
+    '--rowBorderColor': '"white !important"t'
   }
 }));
 
