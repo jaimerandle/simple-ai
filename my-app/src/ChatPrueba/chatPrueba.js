@@ -105,7 +105,7 @@ function ChatPrueba() {
   };
 
   return (
-    <>
+    <div style={{ height: '100vh', overflowY: 'auto' }}>
       <Navbar />
       <div className="playground-container">
         <div className="header-container">
@@ -160,7 +160,7 @@ function ChatPrueba() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

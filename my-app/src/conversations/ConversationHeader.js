@@ -108,7 +108,7 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
   const numeroCorto = conversation.channel_source?.substr(3, 18);
 
   return (
-    <Box sx={{ padding: 2, marginTop: "20px",width:"30%", textAlign:"left" }}>
+    <Box sx={{ padding: 2, marginTop: "20px",width:isMobile?"100%":"30%", textAlign:"left" }}>
          <Typography color="#6728B8"><strong>ID: {conversation.id} </strong></Typography>
       <br></br>
       <Typography style={{marginBottom:"7px"}} color="#867F8A"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>

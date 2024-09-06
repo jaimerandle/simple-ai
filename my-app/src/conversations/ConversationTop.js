@@ -23,7 +23,9 @@ export const ConversationsTop = (canal, logoSrc, title)=>{
         )}
         <Button style={{display:"flex", width:isMobile?"40%":"20%", border:"1px solid grey", height:isMobile?"40px":"60px", marginTop:isMobile? "30px":""}}  onClick={()=>{navigate("/home")}}>
         <img src={Listado} alt="" style={{ height:"20px"}}/>
+        {isMobile? (<></>) : (
         <p style={{color:"grey", marginTop:"15px", marginLeft:"5px"}}>Volver al dashboard</p>
+        )}
         </Button>
         </div>
     )
