@@ -8,6 +8,8 @@ import DeleteDialog from './DeleteDialog';
 import NoteDialog from './NoteDialog'; // Importa el nuevo modal de anotaciones
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Delete from "../assets/Delete.png"
+import Notes from "../assets/description.png"
 
 const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal , logoSrc }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -106,23 +108,28 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
   const numeroCorto = conversation.channel_source?.substr(3, 18);
 
   return (
-    <Box sx={{ padding: 2, position: 'relative', marginTop: "20px" }}>
-      <Typography variant="h4" gutterBottom color="#b0b0b0">Detalles de la Conversación</Typography>
-      <Typography color="#b0b0b0"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>
-      <Typography color="#b0b0b0"><strong>{canal === "MELI" ? "Referencia:" : "Numero:"}</strong> {canal === "MELI" ? conversation.channel_source : numeroCorto}</Typography>
-      <Typography color="#b0b0b0"><strong>Fecha:</strong> {new Date(conversation.last_updated).toLocaleDateString()}</Typography>
-      <Typography color="#b0b0b0"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
-      <div style={{ display: "flex", justifyContent: "center", width: isMobile ? "30%" : "10%", border: "1px solid white", borderRadius: "5px", marginTop: "10px", marginBottom: "10px" }} >
-        <strong style={{ width: "100%", marginLeft: "10px" }}>
-          <StateSelector id={id} initialState={conversation.metadata ? conversation.metadata.state : "baja"} onStateChange={onStateChange} />
+    <Box sx={{ padding: 2, marginTop: "20px",width:"30%", textAlign:"left" }}>
+         <Typography color="#6728B8"><strong>ID: {conversation.id} </strong></Typography>
+      <br></br>
+      <Typography style={{marginBottom:"7px"}} color="#867F8A"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>
+      <Typography style={{marginBottom:"7px"}} color="#867F8A"><strong>{canal === "MELI" ? "Referencia:" : "Numero:"}</strong> {canal === "MELI" ? conversation.channel_source : numeroCorto}</Typography>
+      <Typography  style={{marginBottom:"7px"}}color="#867F8A"><strong>Fecha:</strong> {new Date(conversation.last_updated).toLocaleDateString()}</Typography>
+      <Typography style={{marginBottom:"7px"}}color="#867F8A"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
+      <div style={{ display: "flex", justifyContent: "center", width: isMobile ? "30%" : "50%", marginTop: "10px", marginBottom: "10px" }} >
+        <strong style={{ width: "100%"}}>
+          <StateSelector id={id} initialState={conversation.metadata ? conversation.metadata.state : "baja"} onStateChange={onStateChange}/>
         </strong>
       </div>
-      <Button variant="contained" color="secondary" onClick={handleOpenDeleteDialog} sx={{ mt: 2 }}>
+      <div style={{display:"flex"}}> 
+      <Button style={{color:"transparent", border:"1px solid #EB4335", color:"#EB4335", width:"40%", fontSize:"10px", height:"90px", display:"inline-grid" }} onClick={handleOpenDeleteDialog} sx={{ mt: 2 }}>
+        <img style={{height:"30px", marginLeft:"40%"}} src={Delete} alt=""/>
         Eliminar conversación
       </Button>
-      <Button variant="contained" color="primary" onClick={handleOpenNoteDialog} sx={{ mt: 2, ml: 2 }}>
+      <Button onClick={handleOpenNoteDialog} sx={{ mt: 2, ml: 2 }}  style={{color:"transparent", border:"1px solid grey", color:"grey", width:"40%", fontSize:"10px", height:"90px", display:"inline-grid" }}>
+      <img style={{height:"30px", marginLeft:"30%"}} src={Notes} alt=""/>
         Ver Notas
       </Button>
+      </div>
       <DeleteDialog open={openDeleteDialog} handleClose={handleCloseDeleteDialog} handleDelete={handleDelete} />
       <NoteDialog 
         open={openNoteDialog} 
@@ -132,7 +139,6 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
         initialResponsible={initialResponsible} 
         id={id}
       />
-      <CanalLogo src={logoSrc} alt={`${canal} logo`} />
     </Box>
   );
 };

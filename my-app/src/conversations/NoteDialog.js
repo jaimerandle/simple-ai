@@ -46,7 +46,7 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
     <style jsx global>
         {`
         .css-qkin6e{
-            color: white
+            color: black
         }
         `}
     </style>
@@ -57,14 +57,14 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
       fullWidth
       sx={{
         '& .MuiDialog-paper': {
-          backgroundColor: 'black',
-          color: 'white',
+          backgroundColor: 'white',
+          color: 'black',
           boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra violeta
           borderRadius: '10px',
         },
       }}
     >
-      <DialogTitle sx={{ color: 'white', textAlign: 'center' }}>Tus Notas</DialogTitle>
+      <DialogTitle sx={{ color: 'black', textAlign: 'center' }}>Tus Notas</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
@@ -77,17 +77,17 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
             value={responsible}
             onChange={handleChangeResponsible}
             sx={{
-              input: { color: 'white' },
-              label: { color: 'white' },
+              input: { color: 'grey' },
+              label: { color: 'grey' },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: 'white',
+                  borderColor: 'grey',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'white',
+                  borderColor: 'grey',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'white',
+                  borderColor: 'grey',
                 },
               },
             }}
@@ -103,20 +103,20 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
             value={note}
             onChange={handleChangeNote}
             sx={{
-                input: { color: 'white' },
-                label: { color: 'white' },
+                input: { color: 'grey' },
+                label: { color: 'grey' },
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
-                    borderColor: 'white',
+                    borderColor: 'grey',
                   },
                   '&:hover fieldset': {
-                    borderColor: 'white',
+                    borderColor: 'grey',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: 'white',
+                    borderColor: 'grey',
                   },
                   '&.css-mwgald-MuiInputBase-root-MuiOutlinedInput-root':{
-                    color:"white !important"
+                    color:"grey !important"
                   }
                 },
               }}

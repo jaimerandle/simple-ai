@@ -1,18 +1,23 @@
 /* index.css */
 body {
-  
-  background: black !important;
-  height: 100vh;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+ /* Cambia la ruta según corresponda */
+  background-size: cover;
+  background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
+}
+
+/* Capa superpuesta para agregar el color violeta/rosado con transparencia */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;/* Aquí defines el color con transparencia */
+  z-index: -2; /* Coloca la capa encima */
+  pointer-events: none; /* Deja que el usuario interactúe con los elementos debajo */
 }
 
 code {

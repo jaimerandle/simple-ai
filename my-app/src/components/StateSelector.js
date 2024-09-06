@@ -44,13 +44,13 @@ const StateSelector = ({ id, initialState, onStateChange }) => {
         sx={{
           color: getColorForState(state),  // Aplicar color basado en el estado seleccionado
           fontWeight: 'bold',
-          textShadow: '1px 1px 1px black',
           '& .MuiSelect-icon': {
             color: getColorForState(state),  // Aplicar color al ícono del select
           },
           '& .MuiOutlinedInput-notchedOutline': {
             border: 'none',
           },
+          width:"100%"
         }}
       >
         <MenuItem value="alta" style={{ color: 'red' }}>Alto potencial</MenuItem>

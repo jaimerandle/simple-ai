@@ -5,15 +5,18 @@
     height: calc(100vh - 10px);
     margin: 0 auto;
     max-width: 1200px;
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
     padding: 20px;
     border-radius: 10px;
+    overflow: auto;
   }
   
   .header-container {
-    text-align: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+
   }
   
   .header-container h1 {
@@ -29,10 +32,8 @@
   .chat-box, .assistant-box {
     width: 48%;
     display: flex;
-    flex-direction: column;
-    border: 1px solid white;
+ 
     border-radius: 10px;
-    margin-bottom: 20px;
     
   }
 
@@ -49,7 +50,7 @@
   .chat-messages {
     flex: 1;
     padding: 10px;
-    background-color: black;
+    background-color: white;
     overflow-y: auto;
   }
   
@@ -57,55 +58,50 @@
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 10px;
-    background-color: #555;
-    color: white;
+    background-color: white;
+    color: grey;
    
   }
   
   .own-message {
     align-self: flex-end;
-    background-color: #666;
+    background-color: #E6FFE2;
   }
   
   .chat-message strong {
     display: block;
     font-size: 12px;
-    color: white;
+    color: grey;
   }
   
   .chat-input, .assistant-box textarea {
     margin: 10px;
     padding: 10px;
-    border: 1px solid white;
     border-radius: 5px;
     font-size: 16px;
     resize: none;
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
   }
   
   .chat-input input {
     flex: 1;
-    padding: 10px;
     border-radius: 20px;
     margin-right: 10px;
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
     
   }
   
   .chat-input button, .assistant-box button {
     padding: 10px 20px;
-    border: 1px solid white;
+    border: 0px solid black;
     border-radius: 7px;
-    background-color: black;
+    background-color: #C896FC;
     color: white;
     cursor: pointer;
   }
   
-  .chat-input button:hover, .assistant-box button:hover {
-    background-color: rgba(138, 43, 226, 0.5);
-  }
   
   .assistant-box textarea {
     flex-grow: 1; /* Ajuste para compensar el padding */
@@ -114,8 +110,8 @@
     border-radius: 5px;
     font-size: 16px;
     resize: none;
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
     border: 0px
     
   }
@@ -128,23 +124,24 @@
     align-items: center;
     height: calc(100vh - 10px);
     margin: 0 auto;
-    max-width: 1200px;
-    background-color: black;
-    color: white;
-    padding: 20px;
+    background-color: white;
+    color: black;
     border-radius: 10px;
+    overflow: auto;
+
+    
   }
   
   .header-container {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   
   .chat-box, .assistant-box {
     width: 48%;
     display: flex;
     flex-direction: column;
-    border: 1px solid white;
+    border: 0px solid grey;
     border-radius: 10px;
     margin-bottom: 20px;
   }
@@ -152,7 +149,7 @@
   .chat-messages {
     flex: 1;
     padding: 10px;
-    background-color: black;
+    background-color: white;
     overflow-y: auto;
   }
   
@@ -160,25 +157,27 @@
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 10px;
-    background-color: #555;
-    color: white;
+    background-color: #E6FFE2;
+    color: grey;
   }
   
   .own-message {
     align-self: flex-end;
-    background-color: #666;
+    background-color: white;
+    border: 1px solid grey;
   }
   
   .nicole-message {
-    background-color: #8a2be2; /* Fondo violeta para respuestas de Nicole */
+    background-color: #E6FFE2; 
+    border: 1px solid grey;
+    /* Fondo violeta para respuestas de Nicole */
   }
   
   .nicole-typing {
     margin-bottom: 10px;
     padding: 10px;
-    border-radius: 10px;
-    background-color: #8a2be2; /* Fondo violeta mientras Nicole está escribiendo */
-    color: white;
+    border-radius: 10px; /* Fondo violeta mientras Nicole está escribiendo */
+    color: grey;
   }
   
   .chat-input input {
@@ -186,16 +185,21 @@
     padding: 10px;
     border-radius: 20px;
     margin-right: 10px;
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
+    border:0px;
+  }
+  .chat-input{
+    padding:5px;
+    margin:0px
   }
   
   .chat-input button {
     padding: 10px 20px;
     border-radius: 7px;
-    background-color: black;
+    background-color: #C896FC;
     color: white;
-    border: 1px solid white;
+    border: 0px;
   }
   
 
@@ -223,20 +227,20 @@
     }
   
     .header-container h1 {
-      font-size: 20px;
+      font-size: 10px;
     }
   
     .header-container p {
-      font-size: 14px;
+      font-size: 10px;
     }
   
     .chat-input input, .assistant-box textarea {
-      font-size: 14px;
+      font-size: 10px;
       padding: 8px;
     }
   
     .chat-input button, .assistant-box button {
-      font-size: 14px;
+      font-size: 10px;
       padding: 8px;
     }
   }

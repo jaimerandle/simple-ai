@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import simpleAiWhite from "../assets/SimpleAiWhite.png"
 import SimpleLogo from "../assets/simpleLogo.webp";
+import simpleAiBlack from "../assets/simple-ai.webp"
 import './login.css';
 import { loginAuth, getUserInfo } from '../services/bffService';
 import Spinner from 'react-bootstrap/Spinner';
+import MessageLogo from "../assets/Group.png"
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -63,13 +65,14 @@ const Login = () => {
     };
 
     return (
+        <div className= "ALL">
         <div className="login-container d-flex align-items-center justify-content-center vh-100 bg-light">
             <div className="card p-5 login-card">
-                <div style={{ display: "flex" }}>
-                     <img style={{ width: "200px", height:"60px"}} src={simpleAiWhite} alt="Simple AI" />
+                <div style={{ display: "flex" ,width:"100%", justifyContent:"center"}}>
                     <img style={{ height: "50px", width: "50px" }} src={SimpleLogo} alt="Simple Logo" />
+                     <img style={{ width: "200px", height:"60px"}} src={simpleAiBlack} alt="Simple AI" />
                 </div>
-                <br />
+                <p style={{width:"100%", justifyContent:'center',display:"flex",  fontSize:"20px", fontWeight:"bold", color:"grey"}}> Log in</p>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="email" style={{color:"white"}}>Email address</label>
@@ -79,11 +82,10 @@ const Login = () => {
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter email"
+                            placeholder="Your email"
                         />
                         {emailError && <small className="form-text text-danger">{emailError}</small>}
                     </div>
-                    <br />
                     <div className="form-group">
                         <label htmlFor="password" style={{color:"white"}}>Password</label>
                         <input
@@ -103,6 +105,7 @@ const Login = () => {
                     </button>
                 </form>
             </div>
+        </div>
         </div>
     );
 };

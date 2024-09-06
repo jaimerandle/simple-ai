@@ -32,6 +32,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    color: "grey", // Color predeterminado del texto
   },
   '& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
     display: 'flex',
@@ -44,36 +45,36 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     alignItems: 'center',
   },
   '& .MuiDataGrid-cell--textLeft': {
-    color: "#b0b0b0"
+    color: "grey",
+  },
+  '& .MuiDataGrid-cell--textLeft:hover': {
+    color: "#6728B8",
   },
   '& .MuiDataGrid-columnHeaderTitle': {
-    color: "#b0b0b0",
+    color: "grey",
   },
   '& .MuiDataGrid-container--top, .MuiDataGrid-footerContainer, .css-yrdy0g-MuiDataGrid-columnHeaderRow': {
-    background: "black",
-    backgroundColor: "black !important"
+    background: "#E4E6EC",
+    backgroundColor: "#E4E6EC !important",
   },
   '& .css-wop1k0-MuiDataGrid-footerContainer': {
     width: "0%",
-    height: "0px"
+    height: "0px",
   },
   '& .css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone': {
-    '--DataGrid-rowBorderColor': "grey"
+    '--DataGrid-rowBorderColor': "none",
   },
   '.MuiDataGrid-scrollbar': {
-    width: "0px"
+    width: "0px",
   },
   '& .MuiDataGrid-container--top [role="row"]': {
-    background: "transparent !important"
+    background: "transparent !important",
   },
-  '& .Mui-even': {
-    backgroundColor: '#c8c3c338', // Color para filas pares
+  '& .MuiDataGrid-row:hover': {
+    backgroundColor: "#E4CAFF", // Cambiar el fondo de la fila al hacer hover
   },
-  '& .Mui-odd': {
-    backgroundColor: 'black', // Color para filas impares
-  },
-  '& .MuiDataGrid-row:hover':{
-    backgroundColor:"#631bbf45"
+  '& .MuiDataGrid-row:hover .MuiDataGrid-cell': {
+    color: "#6728B8", // Cambiar el color del texto de todas las celdas al hacer hover en la fila
   }
 }));
 
@@ -408,15 +409,16 @@ const SimpleTable = () => {
       </style>
       <Box
         sx={{
-          height: "60vh",
+          height: "70vh",
           width: '100%',
           background: '',
           padding: isMobile ? 0 : 2,
-          marginTop: "-15px",
+          marginTop: "15px",
           flexGrow: "1",
         }}
       >
         <Box sx={{ flexGrow: "1", display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+          {!isMobile? <h1 style={{color:"grey", zIndex:"1111", fontSize:"30px", marginBottom:"-10px" }}>Dashboard</h1> : <></>}
           <TextField
             label="Filtrar"
             variant="outlined"
@@ -424,7 +426,7 @@ const SimpleTable = () => {
             onChange={handleFilterChange}
             fullWidth
             margin="normal"
-            style={{ width: isMobile ? 'calc(100% - 1px)' : "400px", color: "black" }}
+            style={{ width: isMobile ? 'calc(100% - 1px)' : "400px"}}
             sx={{
               width: isMobile ? 'calc(100% - 1px)' : '400px',
               '& .MuiInputBase-input': {
@@ -435,24 +437,21 @@ const SimpleTable = () => {
               },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: 'white',
+                  borderColor: 'grey',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'white',
+                  borderColor: 'grey',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'white',
+                  borderColor: 'grey',
                 },
                 "&.Mui-even": {
-                  backgroundColor: "grey"
+                  backgroundColor: "black"
                 }
               },
             }}
           />
-          <IconButton color="white" onClick={handleRefresh} style={{ color: "white", width: isMobile ?? "20%" }} sx={{
-            '&:hover': {
-              boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)', // Sombra en hover
-            }
+          <IconButton color="white" onClick={handleRefresh} style={{ color: "grey", width: isMobile ?? "20%" }} sx={{
           }}>
             <RefreshIcon style={{ height: "25px" }} />
           </IconButton>

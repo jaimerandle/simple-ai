@@ -1,7 +1,7 @@
 import React from 'react';
 import './Loading.css';
 import logo from '../assets/simpleLogo.webp'; // Ajusta la ruta según corresponda
-import Simple from "../assets/SimpleAiWhite.png";
+import Simple from "../assets/simple-ai.webp";
 
 function Loading() {
     return (

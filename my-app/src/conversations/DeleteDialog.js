@@ -12,8 +12,8 @@ const DeleteDialog = ({ open, handleClose, handleDelete }) => {
       sx={{
         '& .MuiDialog-paper': {
           padding: '10px', 
-          backgroundColor:"black",
-          color:"white",
+          backgroundColor:"white",
+          color:"black",
           boxShadow: '0 16px 54px 14px rgba(138, 43, 226, 0.5)',
           borderRadius:"20px"
         },

@@ -3,7 +3,9 @@ import './chatPrueba.css';
 import Navbar from '../Home/Navbar';
 import SimpleAiWhite from "../assets/SimpleAiWhite.png"
 import SimpleAi from "../assets/simpleLogo.webp"
-import { useMediaQuery } from '@mui/material';
+import { Button, useMediaQuery } from '@mui/material';
+import Listado from "../assets/description.png"
+import { useNavigate } from 'react-router-dom';
 
 function ChatPrueba() {
   const [messages, setMessages] = useState([]);
@@ -11,6 +13,7 @@ function ChatPrueba() {
   const [assistantInput, setAssistantInput] = useState(''); // Input para el asistente de OpenAI
   const [isTyping, setIsTyping] = useState(false); // Nuevo estado para el estado de "Nicole está escribiendo"
   const isMobile = useMediaQuery('(max-width:600px)');
+  const navigate= useNavigate()
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -106,17 +109,24 @@ function ChatPrueba() {
       <Navbar />
       <div className="playground-container">
         <div className="header-container">
-          <h1>¡Bienvenido a tu prueba, Juan!</h1>
-          <p>Desde acá vas a poder modificar tu asistente y simular una conversación Cliente-Asistente</p>
+          <h1 style={{fontSize:"30px", color:"grey", marginTop:"10px"}}>Configuración asistente</h1>
+          <Button style={{display:"flex", width:"20%", border:"1px solid grey", height:"50px"}} onClick={()=>{navigate("/home")}}>
+        <img src={Listado} alt="" style={{ height:"20px"}}/>
+       { isMobile? <></> : <p style={{color:"grey", marginTop:"20px", marginLeft:"5px", fontSize:"15px"}}>Volver al dashboard</p>}
+        </Button>
         </div>
-        <div style={{ display: "flex", width: "100%", justifyContent: 'space-between', maxHeight: "80%", minHeight: "80%" }}>
+        <div style={{border:"0.5px solid grey", marginBottom:"0px", width:"90%"}}></div>
+        <div style={{width:"90%", marginTop:"10px"}}>
+        <p style={{textAlign:"left", color:"grey"}}>Desde acá vas a poder modificar tu asistente y simular una conversación Cliente - Asistente</p>
+        </div>
+        <div style={{ display: "flex", width: "100%", justifyContent: 'space-between', maxHeight: "70%", minHeight: "450px", overflow:"auto" }}>
           <div className="assistant-box" style={{ marginLeft: isMobile ? "0%" : "2%" }}>
             <textarea
               value={assistantInput}
               onChange={(e) => setAssistantInput(e.target.value)}
               placeholder="Interactúa con el asistente de Simple-Ai. Ejemplo: sos muy carismática, hablas coloquial."
             />
-            <button onClick={sendToAssistant}>Enviar al Asistente{' '}<img src={SimpleAiWhite} style={{ height: "25px" }} /> <img style={{ height: "20px" }} src={SimpleAi} /> </button>
+            <button onClick={sendToAssistant} style={{fontWeight:"bold", marginBottom:"5px"}} >ENVIAR A ASISTENTE SIMPLE AI  </button>
           </div>
           <div className="chat-box">
             <div className="chat-messages">
@@ -145,7 +155,7 @@ function ChatPrueba() {
                 placeholder="Escribe un mensaje..."
                 style={{ width: isMobile ? "50%" : "60%" }}
               />
-              <button onClick={sendMessage} style={{ width: isMobile ? "40%" : "30%" }}>Enviar</button>
+              <button onClick={sendMessage} style={{ width: isMobile ? "40%" : "30%", fontWeight:"bold" }}>ENVIAR</button>
             </div>
           </div>
         </div>

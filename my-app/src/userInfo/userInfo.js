@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText, CircularProgress } from '@mui/material';
+import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -7,19 +7,37 @@ import StoreIcon from '@mui/icons-material/Store';
 import Navbar from '../Home/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
+import './userInfo.css'; // Asegúrate de usar esta hoja de estilos
 
+// Estilo para el contenedor del perfil del usuario
 const UserInfoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: '100vh', // Centra verticalmente el contenido
   padding: theme.spacing(4),
-  backgroundColor: "transparent",
+  backgroundColor: 'transparent',
+
 }));
 
+// Estilo para el avatar del usuario
 const UserAvatar = styled(Avatar)(({ theme }) => ({
-  width: theme.spacing(12),
-  height: theme.spacing(12),
+  width: theme.spacing(16),
+  height: theme.spacing(16),
   marginBottom: theme.spacing(2),
+}));
+
+// Estilo para la caja que contiene la información del usuario
+const InfoBox = styled(Box)(({ theme }) => ({
+  backgroundColor: '#fff',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  padding: theme.spacing(4),
+  textAlign: 'center',
+  zIndex:"1111",
+  width: '400px',
+  marginTop:"-100px" // Tamaño fijo para la caja
 }));
 
 const UserInfo = () => {
@@ -35,8 +53,8 @@ const UserInfo = () => {
     } else {
       const token = localStorage.getItem('authToken');
       if (!token) {
-        localStorage.clear(); 
-        sessionStorage.clear(); 
+        localStorage.clear();
+        sessionStorage.clear();
         navigate('/');
       }
     }
@@ -51,35 +69,38 @@ const UserInfo = () => {
   }
 
   return (
-    <>
+    <div className="USER">
       <Navbar />
-      <UserInfoContainer style={{ paddingBottom: '100px' }}>
-        <UserAvatar alt={user.name} src={user.avatar} />
-        <Typography variant="h5" color="#b0b0b0" gutterBottom>{user.name}</Typography>
-        <Typography variant="body1" color="#b0b0b0">{user.email}</Typography>
-        <Typography variant="body2" color="#b0b0b0">{user.bio}</Typography>
-        <List>
-          <ListItem>
-            <ListItemIcon>
-              <WhatsAppIcon color={user.whatsapp ? "primary" : "primary"} />
-            </ListItemIcon>
-            <ListItemText  primary="WhatsApp" secondary={user.whatsapp ? "Cuenta activa" : "Cuenta inactiva"} style={{color:"#b0b0b0"}}/>
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <InstagramIcon color={user.instagram ? "primary" : "primary"} />
-            </ListItemIcon>
-            <ListItemText primary="Instagram" secondary={user.instagram ? "Cuenta activa" : "Cuenta inactiva"} style={{color:"#b0b0b0"}}/>
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <StoreIcon color={user.mercadolibre ? "primary" : "primary"} />
-            </ListItemIcon>
-            <ListItemText primary="Mercado Libre" secondary={user.mercadolibre ? "Cuenta activa" : "Cuenta inactiva"} style={{color:"#b0b0b0"}} />
-          </ListItem>
-        </List>
+      <UserInfoContainer>
+        <InfoBox>
+          <UserAvatar alt={user.name} src={user.avatar} style={{marginLeft:"30%"}}/>
+          <Typography variant="h5" color="textPrimary" gutterBottom>{user.name}</Typography>
+          <Typography variant="body1" color="black">{user.email}</Typography>
+          <List style={{marginLeft:"20%"}}>
+            <ListItem style={{marginTop:'25px'}}>
+              <ListItemIcon style={{marginTop:"-20px"}}>
+                <WhatsAppIcon color={user.whatsapp ? "primary" : "disabled"} />
+              </ListItemIcon>
+              <ListItemText  primary="WhatsApp" secondary={user.whatsapp ? "Cuenta activa" : "Cuenta inactiva"} />
+            </ListItem>
+            <div className='border'/>
+            <ListItem>
+              <ListItemIcon style={{marginTop:"-20px"}}>
+                <InstagramIcon color={user.instagram ? "primary" : "disabled"} />
+              </ListItemIcon>
+              <ListItemText  primary="Instagram" secondary={user.instagram ? "Cuenta activa" : "Cuenta inactiva"} />
+            </ListItem>
+            <div className='border'/>
+            <ListItem>
+              <ListItemIcon style={{marginTop:"-20px"}}>
+                <StoreIcon color={user.mercadolibre ? "primary" : "disabled"} />
+              </ListItemIcon>
+              <ListItemText primary="Mercado Libre" secondary={user.mercadolibre ? "Cuenta activa" : "Cuenta inactiva"} />
+            </ListItem>
+          </List>
+        </InfoBox>
       </UserInfoContainer>
-    </>
+    </div>
   );
 };
 

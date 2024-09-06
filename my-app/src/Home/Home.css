@@ -18,7 +18,7 @@
 }
 /* Home.css */
 body {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    background: white;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -75,7 +75,7 @@ body {
 }
 
 .card {
-    background-color: transparent;
+    background-color: white;
     border: none;
 }
 

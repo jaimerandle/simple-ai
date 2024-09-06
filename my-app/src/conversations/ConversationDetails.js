@@ -14,6 +14,7 @@ import WhatsAppLogo from '../assets/WhatsAppLogo.svg';
 import InstagramLogo from '../assets/Instagram.svg';
 import MercadoLibreLogo from '../assets/mercadolibre.svg';
 import Loading from '../components/Loading';
+import { ConversationsTop } from './ConversationTop';
 
 const ConversationDetails = () => {
   const isMobile = useMediaQuery('(max-width:600px)');
@@ -99,13 +100,19 @@ const ConversationDetails = () => {
   }
 
   return (
-    <>
+    <div>
       <Navbar />
-      <ConversationContainer canal={canal} style={{ paddingBottom: '100px' }}>
+      <div style={{width:"90%", marginLeft:"5%"}}>
+      <ConversationContainer canal={canal} style={{ paddingBottom: '100px' , backgroundColor:"white" }}>
+        <ConversationsTop canal={canal} logoSrc={logoSrc} style={{backgroundColor:"white"}}/>
+        <div style={{border:"0.3px solid #E1C9FF", zIndex:"1111", marginTop:"20px"}}></div>
+        <div style={{display:isMobile? "block":"flex", backgroundColor:"white"}}>
         <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} onStateChange={handleStateChange} canal={canal} logoSrc={logoSrc}/>
-        <MessageList conversation={conversation} />
+        <MessageList style={{backgroundColor:"pink"}} conversation={conversation} />
+        </div>
       </ConversationContainer>
-    </>
+    </div>
+    </div>
   );
 };
 
