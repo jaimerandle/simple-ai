@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './chatPrueba.css';
 import Navbar from '../Home/Navbar';
-import SimpleAiWhite from "../assets/SimpleAiWhite.png"
-import SimpleAi from "../assets/simpleLogo.webp"
-import { Button, useMediaQuery } from '@mui/material';
-import Listado from "../assets/description.png"
+import { Box, Button, useMediaQuery } from '@mui/material';
+import Listado from "../assets/description.png";
 import { useNavigate } from 'react-router-dom';
 import { getAssistants, getUserInfo, updateAssistant } from '../services/bffService';
 import Loading from '../components/Loading';
@@ -12,24 +10,15 @@ import Loading from '../components/Loading';
 function ChatPrueba() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [assistantInput, setAssistantInput] = useState(''); // Input para el asistente de OpenAI
-  const [isTyping, setIsTyping] = useState(false); // Nuevo estado para el estado de "Nicole está escribiendo"
+  const [isTyping, setIsTyping] = useState(false); // Estado para "Nicole está escribiendo"
   const [extraPrompt, setExtraPrompt] = useState(''); // Estado para el extraPrompt del asistente
+  const [assistantInput, setAssistantInput] = useState(''); // Estado para el input que permite modificar el extraPrompt
   const [demoChannelId, setDemoChannelId] = useState(null); 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [assistantId, setAssistantId] = useState(null);
   const isMobile = useMediaQuery('(max-width:600px)');
-  const navigate= useNavigate()
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      const response = await fetch('URL_RECIBIR_MENSAJES');
-      const data = await response.json();
-      setMessages(data);
-    };
-
-    fetchMessages();
-  }, []);
+  const navigate = useNavigate();
+  const [dates, setDates] = useState("")
 
   useEffect(() => {
     const fetchAssistantData = async () => {
@@ -43,33 +32,37 @@ function ChatPrueba() {
       try {
         // Obtener los asistentes y el primer extraPrompt
         const assistants = await getAssistants(token);
+        setDates(assistants[0].last_updated)
         const firstAssistant = assistants[0]; // Tomar el primer asistente
-        setExtraPrompt(firstAssistant.config.extraPrompt); // Guarda el extraPrompt
+        const prompt = firstAssistant.config.extraPrompt || ''; // Si no hay extraPrompt, usar string vacío
+        setExtraPrompt(prompt); // Guarda el extraPrompt
         setAssistantId(firstAssistant.id); // Guarda el ID del asistente
-        console.log(firstAssistant, "primer asistente")
+        setAssistantInput(prompt); // Asigna el extraPrompt al textarea
 
         // Obtener el demoChannelId del cliente
         const clientInfo = await getUserInfo(token);
-        setDemoChannelId(clientInfo.details.demoChannelId); // Guarda el demoChannelId
+        setDemoChannelId(clientInfo?.clientInfo.details?.demoChannelId); // Guarda el demoChannelId
 
         setLoading(false); // Deja de cargar una vez que tienes los datos
       } catch (error) {
         console.error("Error fetching data", error);
+        setLoading(false);
       }
     };
 
     fetchAssistantData();
   }, [navigate]);
 
-
-  // Función para manejar el envío al presionar Enter
+  // Función para manejar el envío al presionar Enter en el chat
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Prevenir el comportamiento por defecto de "Enter" en formularios
       sendMessage();
     }
   };
+  console.log(demoChannelId, "demochannel")
 
+  // Función para enviar mensajes en el chat
   const sendMessage = async () => {
     if (input.trim() !== '') {
       const eventId = String(Date.now()) + Math.floor(Math.random() * 999999);
@@ -115,7 +108,7 @@ function ChatPrueba() {
       if (result.action === 'SKIP') {
         console.log('Mensaje combinado con otro, no se muestra.');
       } else if (result.action === 'WAIT') {
-        setTimeout(() => startPolling(eventId), 2000);
+        setTimeout(() => startPolling(eventId), 5000);
       } else if (result.action === 'REPLY') {
         // Actualiza mensajes con la respuesta de Nicole
         setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: result.text, timestamp: new Date() }]);
@@ -127,36 +120,67 @@ function ChatPrueba() {
     }
   };
 
+  // Función para enviar la configuración al asistente (actualización del extraPrompt)
   const sendToAssistant = async () => {
+    setLoading(true)
     if (assistantInput.trim() !== '') {
-      const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('authToken');
 
-      try {
-        // Actualizar el campo extraPrompt del asistente en el backend
-        const updatedAssistant = {
-          config: {
-            extraPrompt: assistantInput, // Usa el nuevo valor de assistantInput
-          },
-        };
+        try {
+            // Obtener el asistente actual
+            const assistants = await getAssistants(token);
+            const firstAssistant = assistants[0]; // Tomar el primer asistente
+            setDates(firstAssistant.last_updated)
 
-        // Realizar el PUT a /assistants/ID para actualizar el asistente
-        await updateAssistant(assistantId, updatedAssistant, token);
+            // Actualizar solo el campo extraPrompt en la config, pero enviamos el asistente completo
+            const updatedAssistant = {
+                ...firstAssistant, // Copiamos todo el asistente
+                config: {
+                    ...firstAssistant.config, // Copiamos toda la config existente
+                    extraPrompt: assistantInput, // Sobrescribimos solo el extraPrompt
+                },
+            };
 
-        setAssistantInput(''); // Limpiar el input después de enviar la configuración
-        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: `Configuración actualizada: ${assistantInput}`, timestamp: new Date() }]);
+            // Realizar el PUT a /assistants/ID para actualizar el asistente completo
+            await updateAssistant(firstAssistant.id, updatedAssistant, token);
+            console.log(firstAssistant, "actualizada")
 
-      } catch (error) {
-        console.error('Error actualizando el asistente:', error);
-      }
+            // Actualizar el extraPrompt en el estado y mostrar en el input
+            setExtraPrompt(assistantInput);
+
+
+        } catch (error) {
+            console.error('Error actualizando el asistente:', error);
+        }
+        setLoading(false)
     }
-  };
+};
 
- 
+const date = new Date(dates)
+
+
+// Convertir la fecha a zona horaria de Argentina (ART - UTC-3)
+const options = {
+  timeZone: 'America/Argentina/Buenos_Aires', 
+  year: 'numeric', 
+  month: '2-digit', 
+  day: '2-digit', 
+  hour: '2-digit', 
+  minute: '2-digit', 
+  second: '2-digit'
+};
+
+// Obtener la fecha formateada
+const argentinaTime = date.toLocaleString('es-AR', options);
 
   return (
     <div style={{ height: '100vh', overflowY: 'auto' }}>
       <Navbar />
-      {loading? <Loading/> : (
+      {loading ?(
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Loading /> 
+      </Box>
+       ) : (
       <div className="playground-container">
         <div className="header-container">
           <h1 style={{ fontSize: "30px", color: "grey", marginTop: "10px" }}>Configuración asistente</h1>
@@ -168,14 +192,15 @@ function ChatPrueba() {
         <div style={{ border: "0.5px solid #9747FF", marginBottom: "0px", width: "90%" }}></div>
         <div style={{ width: "90%", marginTop: "10px" }}>
           <p style={{ textAlign: "left", color: "grey" }}>Desde acá vas a poder modificar tu asistente y simular una conversación Cliente - Asistente.</p>
-          <p style={{ textAlign: "left", color: "grey" }}>Prompt actual del asistente: {extraPrompt}</p>
+          <p style={{ textAlign: "left", color: "grey" }}>{`Ultima actualizacion del prompt: ${argentinaTime}`}</p>
+          
         </div>
         <div style={{ display: "flex", width: "100%", justifyContent: 'space-between', maxHeight: "70%", minHeight: "450px", overflow: "auto" }}>
           <div className="assistant-box" style={{ marginLeft: isMobile ? "0%" : "2%" }}>
             <textarea
               value={assistantInput}
               onChange={(e) => setAssistantInput(e.target.value)}
-              placeholder="Interactúa con el asistente de Simple-Ai. Ejemplo: sos muy carismática, hablas coloquial."
+              placeholder={extraPrompt && assistantInput ? '' : "Interactúa con el asistente de Simple-Ai. Ejemplo: sos muy carismática, hablas coloquial."}
             />
             <button onClick={sendToAssistant} style={{ fontWeight: "bold", marginBottom: "5px" }}>ENVIAR A ASISTENTE SIMPLE AI</button>
           </div>
