@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -18,7 +18,7 @@ const UserInfoContainer = styled(Box)(({ theme }) => ({
   minHeight: '100vh', // Centra verticalmente el contenido
   padding: theme.spacing(4),
   backgroundColor: 'transparent',
-
+  
 }));
 
 // Estilo para el avatar del usuario
@@ -44,7 +44,8 @@ const UserInfo = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+  const isMobile = useMediaQuery('(max-width:600px)');
+  
   useEffect(() => {
     const cachedUserInfo = localStorage.getItem('userInfo');
     if (cachedUserInfo) {
@@ -71,9 +72,9 @@ const UserInfo = () => {
   return (
     <div className="USER">
       <Navbar />
-      <UserInfoContainer>
-        <InfoBox>
-          <UserAvatar alt={user.name} src={user.avatar} style={{marginLeft:"30%"}}/>
+      <UserInfoContainer >
+        <InfoBox style={{width: isMobile? '90%' : "", marginLeft: isMobile? '0%' : "", height:isMobile? "480px":""}}>
+          <UserAvatar alt={user.name} src={user.avatar} style={{marginLeft:isMobile? "33%" : "30%", width:isMobile? "33%":"", height: isMobile? "70px": ""}}/>
           <Typography variant="h5" color="textPrimary" gutterBottom>{user.name}</Typography>
           <Typography variant="body1" color="black">{user.email}</Typography>
           <List style={{marginLeft:"20%"}}>

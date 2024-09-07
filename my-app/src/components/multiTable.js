@@ -76,8 +76,9 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-row:hover .MuiDataGrid-cell': {
     color: "#6728B8", // Cambiar el color del texto de todas las celdas al hacer hover en la fila
   },
-  '& .css-1cawtvi .MuiDataGrid-row': {
-    '--rowBorderColor': '"white !important"t'
+  '&.MuiDataGrid-row': {
+    '--rowBorderColor': "white !important",
+    '--DataGrid-rowBorderColor':  "white !important",
   }
 }));
 

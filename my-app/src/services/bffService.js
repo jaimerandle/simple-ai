@@ -84,4 +84,31 @@ export const deleteConversation = async (id, token) => {
     }
 };
 
+export const getAssistants = async (token) => {
+    try {
+        const response = await apiClient.get('/assistants', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        return response.data;  // Devuelve la lista de asistentes
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error fetching assistants');
+    }
+};
+
+// Actualizar el asistente
+export const updateAssistant = async (id, updatedAssistant, token) => {
+    try {
+        const response = await apiClient.put(`/assistants/${id}`, updatedAssistant, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        return response.data;  // Devuelve la respuesta de la actualización
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to update assistant');
+    }
+};
+
 
