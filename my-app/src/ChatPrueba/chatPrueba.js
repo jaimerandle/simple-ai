@@ -12,13 +12,17 @@ function ChatPrueba() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false); // Estado para "Nicole está escribiendo"
   const [extraPrompt, setExtraPrompt] = useState(''); // Estado para el extraPrompt del asistente
-  const [assistantInput, setAssistantInput] = useState(''); // Estado para el input que permite modificar el extraPrompt
+  const [assistantInput, setAssistantInput] = useState('');
+  const [assistantName, setAssistantName] = useState('')
   const [demoChannelId, setDemoChannelId] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [assistantId, setAssistantId] = useState(null);
+  const [clientId, setClientId]= useState(null)
   const isMobile = useMediaQuery('(max-width:600px)');
   const navigate = useNavigate();
   const [dates, setDates] = useState("")
+
+
 
   useEffect(() => {
     const fetchAssistantData = async () => {
@@ -36,12 +40,16 @@ function ChatPrueba() {
         const firstAssistant = assistants[0]; // Tomar el primer asistente
         const prompt = firstAssistant.config.extraPrompt || ''; // Si no hay extraPrompt, usar string vacío
         setExtraPrompt(prompt); // Guarda el extraPrompt
-        setAssistantId(firstAssistant.id); // Guarda el ID del asistente
+        setAssistantId(firstAssistant.id);
+        setAssistantName(firstAssistant.name) // Guarda el ID del asistente
         setAssistantInput(prompt); // Asigna el extraPrompt al textarea
 
         // Obtener el demoChannelId del cliente
         const clientInfo = await getUserInfo(token);
-        setDemoChannelId(clientInfo?.clientInfo.details?.demoChannelId); // Guarda el demoChannelId
+        console.log(clientInfo,"CLIENTE")
+        setDemoChannelId(clientInfo?.clientInfo.details?.demoChannelId);
+        setClientId(clientInfo.client_id)
+        // Guarda el demoChannelId
 
         setLoading(false); // Deja de cargar una vez que tienes los datos
       } catch (error) {
@@ -60,7 +68,6 @@ function ChatPrueba() {
       sendMessage();
     }
   };
-  console.log(demoChannelId, "demochannel")
 
   // Función para enviar mensajes en el chat
   const sendMessage = async () => {
@@ -69,7 +76,7 @@ function ChatPrueba() {
 
       const newMessage = {
         id: eventId,
-        clientId: 1,
+        clientId: clientId,
         channelId: demoChannelId,
         source: '12345',
         target: 'demo',
@@ -129,7 +136,8 @@ function ChatPrueba() {
         try {
             // Obtener el asistente actual
             const assistants = await getAssistants(token);
-            const firstAssistant = assistants[0]; // Tomar el primer asistente
+            const firstAssistant = assistants[0]; 
+            // Tomar el primer asistente
             setDates(firstAssistant.last_updated)
 
             // Actualizar solo el campo extraPrompt en la config, pero enviamos el asistente completo
@@ -195,14 +203,14 @@ const argentinaTime = date.toLocaleString('es-AR', options);
           <p style={{ textAlign: "left", color: "grey" }}>{`Ultima actualizacion del prompt: ${argentinaTime}`}</p>
           
         </div>
-        <div style={{ display: "flex", width: "100%", justifyContent: 'space-between', maxHeight: "70%", minHeight: "450px", overflow: "auto" }}>
+        <div style={{ display: "flex", width: "100%", justifyContent: 'space-between', maxHeight: "70%", minHeight: "450px", overflow: "auto"}}>
           <div className="assistant-box" style={{ marginLeft: isMobile ? "0%" : "2%" }}>
             <textarea
               value={assistantInput}
               onChange={(e) => setAssistantInput(e.target.value)}
-              placeholder={extraPrompt && assistantInput ? '' : "Interactúa con el asistente de Simple-Ai. Ejemplo: sos muy carismática, hablas coloquial."}
+              placeholder={extraPrompt && assistantInput ? '' : "Interactúa con el asistente. Ejemplo: sos muy carismática, hablas coloquial."}
             />
-            <button onClick={sendToAssistant} style={{ fontWeight: "bold", marginBottom: "5px" }}>ENVIAR A ASISTENTE SIMPLE AI</button>
+            <button onClick={sendToAssistant} style={{ fontWeight: "bold", marginTop: "5px" }}>ENVIAR A ASISTENTE SIMPLE AI</button>
           </div>
           <div className="chat-box">
             <div className="chat-messages">
@@ -211,13 +219,13 @@ const argentinaTime = date.toLocaleString('es-AR', options);
                   key={index}
                   className={`chat-message ${message.user === 'CLIENTE' ? 'own-message' : 'nicole-message'}`} // Cambiar la clase si es mensaje de Nicole
                 >
-                  <strong>{message.user === 'CLIENTE' ? 'CLIENTE' : 'NICOLE'}</strong>
+                  <strong>{message.user === 'CLIENTE' ? 'Cliente' : assistantName}</strong>
                   <span>{message.text}</span>
                 </div>
               ))}
               {isTyping && (
                 <div className="nicole-typing">
-                  <span>Nicole está escribiendo...</span>
+                  <span>{assistantName} está escribiendo...</span>
                 </div>
               )}
             </div>
@@ -228,9 +236,9 @@ const argentinaTime = date.toLocaleString('es-AR', options);
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()} // Manejar "Enter" para enviar mensaje
                 placeholder="Escribe un mensaje..."
-                style={{ width: isMobile ? "50%" : "60%" }}
+                style={{ width: isMobile ? "50%" : "60%" ,  backgroundColor: "#E0E2E9", borderRadius:0, display:"flex",justifyContent:"flex-end" }}
               />
-              <button onClick={sendMessage} style={{ width: isMobile ? "40%" : "30%", fontWeight: "bold" }}>ENVIAR</button>
+              <button onClick={sendMessage} style={{ width: isMobile ? "40%" : "20%", fontWeight: "bold" }}>ENVIAR</button>
             </div>
           </div>
         </div>
