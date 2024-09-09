@@ -22,7 +22,7 @@ const formatDate = (timestamp) => {
     const isMobile = useMediaQuery('(max-width:600px)');
   
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#e9d2d657', border: "0.5px solid grey", marginTop:"20px", width: isMobile? "100%":"70%", overflow:"auto" }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"20px", width: isMobile? "100%":"70%", overflow:"auto" }}>
           {conversation.messages && conversation.messages.length > 0 ? (
             conversation.messages.map((mensaje, index) => {
               const messageDate = formatDate(mensaje.timestamp);

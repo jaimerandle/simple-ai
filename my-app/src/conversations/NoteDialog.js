@@ -66,7 +66,7 @@ const NoteDialog = ({ open, handleClose, handleSave, initialNote, initialRespons
     >
       <DialogTitle sx={{ color: 'black', textAlign: 'center' }}>Tus Notas</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2,  }}>
           <TextField
             
             margin="dense"

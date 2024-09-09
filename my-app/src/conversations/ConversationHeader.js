@@ -108,17 +108,21 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
   const numeroCorto = conversation.channel_source?.substr(3, 18);
 
   return (
-    <Box sx={{ padding: 2, marginTop: "20px",width:isMobile?"100%":"30%", textAlign:"left" }}>
+    <Box sx={{ padding: 2, marginTop: "4px",width:isMobile?"100%":"30%", textAlign:"left" }}>
+        <div style={{backgroundColor:"#F6F6F6"}}>
+            <div style={{padding:"15px"}}>
          <Typography color="#6728B8"><strong>ID: {conversation.id} </strong></Typography>
       <br></br>
       <Typography style={{marginBottom:"7px"}} color="#867F8A"><strong>Canal:</strong> {canal === "MELI" ? "Mercado Libre" : canal}</Typography>
       <Typography style={{marginBottom:"7px"}} color="#867F8A"><strong>{canal === "MELI" ? "Referencia:" : "Numero:"}</strong> {canal === "MELI" ? conversation.channel_source : numeroCorto}</Typography>
       <Typography  style={{marginBottom:"7px"}}color="#867F8A"><strong>Fecha:</strong> {new Date(conversation.last_updated).toLocaleDateString()}</Typography>
       <Typography style={{marginBottom:"7px"}}color="#867F8A"><strong>Hora:</strong> {new Date(conversation.last_updated).toLocaleTimeString()}</Typography>
-      <div style={{ display: "flex", justifyContent: "center", width: isMobile ? "30%" : "50%", marginTop: "10px", marginBottom: "10px" }} >
-        <strong style={{ width: "100%"}}>
+      <div style={{ display: "flex", justifyContent: "center", width: isMobile ? "30%" : "50%", marginTop: "10px", marginBottom: "10px" , border:"1px solid grey"}} >
+        <strong style={{ width: "100%", padding:"5px"}}>
           <StateSelector id={id} initialState={conversation.metadata ? conversation.metadata.state : "baja"} onStateChange={onStateChange}/>
         </strong>
+        </div>
+      </div>
       </div>
       <div style={{display:"flex"}}> 
       <Button style={{color:"transparent", border:"1px solid #EB4335", color:"#EB4335", width:"40%", fontSize:"10px", height:"90px", display:"inline-grid" }} onClick={handleOpenDeleteDialog} sx={{ mt: 2 }}>

@@ -79,7 +79,19 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '&.MuiDataGrid-row': {
     '--rowBorderColor': "white !important",
     '--DataGrid-rowBorderColor':  "white !important",
-  }
+  },
+  '& .Mui-selected': {
+   // Quita el color de fondo de la fila seleccionada
+    outline: 'none', // Elimina el contorno (borde) de la selección
+  },
+  // Elimina el efecto de "enfoque" (focus) en la fila seleccionada
+  '& .MuiDataGrid-cell:focus': {
+    outline: 'none', // Quitar el borde al hacer clic en una celda
+  },
+  // Ajustes adicionales para el color al seleccionar una fila
+  '& .MuiDataGrid-row.Mui-selected:hover': {
+    backgroundColor: '#E4CAFF', // Mantener el fondo de hover al seleccionar
+  },
 }));
 
 const ActionButton = ({ row, onDelete }) => {
