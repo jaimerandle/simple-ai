@@ -18,11 +18,24 @@ function ChatPrueba() {
   const [loading, setLoading] = useState(true);
   const [assistantId, setAssistantId] = useState(null);
   const [clientId, setClientId]= useState(null)
+  const [source, setSource]= useState('')
   const isMobile = useMediaQuery('(max-width:600px)');
   const navigate = useNavigate();
   const [dates, setDates] = useState("")
 
+  const generateConversationId = () => {
+    return String(Date.now()) + Math.floor(Math.random() * 999999);
+  };
 
+  useEffect(() => {
+    setSource(generateConversationId()); // Genera un nuevo ID al cargar la demo
+  }, []);
+
+  const startNewConversation = () => {
+    setSource(generateConversationId());
+    setMessages([]); // Limpia el historial de mensajes
+    setIsTyping(false); // Reinicia el estado de "Nicole está escribiendo"
+  };
 
   useEffect(() => {
     const fetchAssistantData = async () => {
@@ -79,7 +92,7 @@ function ChatPrueba() {
         id: eventId,
         clientId: clientId,
         channelId: demoChannelId,
-        source: '12345',
+        source: source ,
         target: 'demo',
         text: input,
       };
@@ -202,7 +215,9 @@ const argentinaTime = date.toLocaleString('es-AR', options);
         <div style={{ width: "90%", marginTop: "10px" }}>
           <p style={{ textAlign: "left", color: "grey" }}>Desde acá vas a poder modificar tu asistente y simular una conversación Cliente - Asistente.</p>
           <p style={{ textAlign: "left", color: "grey" }}>{`Ultima actualizacion del prompt: ${argentinaTime}`}</p>
-          
+          <Button variant="outlined" onClick={startNewConversation} style={{backgroundColor:"#C896FC", color:"white", border:'0px solid', fontWeight:"bold", marginBottom :"10px"}}>
+            Nueva conversación
+          </Button>
         </div>
         <div style={{ display: "flex", width: "100%", justifyContent: 'space-between', maxHeight: "70%", minHeight: "450px", overflow: "auto"}}>
           <div className="assistant-box" style={{ marginLeft: isMobile ? "0%" : "2%" }}>
