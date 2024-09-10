@@ -12,7 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import { TextField, CircularProgress, useMediaQuery, Select, MenuItem } from '@mui/material';
+import { TextField, CircularProgress, useMediaQuery, Select, MenuItem , Pagination} from '@mui/material';
 import { getConversations, updateConversationMetadata, deleteConversation } from '../services/bffService';
 import StateSelector from './StateSelector';
 import NoteDialog from '../conversations/NoteDialog';
@@ -58,7 +58,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     backgroundColor: "#E4E6EC !important",
   },
   '& .css-wop1k0-MuiDataGrid-footerContainer': {
-    width: "0%",
+    width: "100%",
     height: "0px",
   },
   '& .css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone': {
@@ -212,6 +212,8 @@ const SimpleTable = () => {
   const [filteredRows, setFilteredRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery('(max-width:600px)');
+  const [page, setPage] = useState(1); // Página actual
+  const [pageSize, setPageSize] = useState(40);
 
   const fetchConversations = async () => {
     setLoading(true);
@@ -237,9 +239,9 @@ const SimpleTable = () => {
             hour12: false,
           }).replace(", ", " ");
           const numeroCorto = conversation.channel_source.substr(3, 18);
-          const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 || 1 ? 'WhatsApp' : 'Instagram';
+          const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 || 1 ? 'WhatsApp' : conversation.channel_type === 6? "Demo" : 'Instagram';
           const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0, 15);
-
+       
           return {
             id: conversation.id,
             referencia: referencia,
@@ -393,6 +395,16 @@ const SimpleTable = () => {
         renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
       },
     ];
+    const handlePageChange = (event, newPage) => {
+      setPage(newPage);
+    };
+  
+    // Manejar la selección de página desde el dropdown
+    const handlePageSelect = (event) => {
+      setPage(Number(event.target.value));
+    };
+    
+    const totalPages = Math.ceil(filteredRows.length / pageSize);
 
   return (
     <>
@@ -477,19 +489,22 @@ const SimpleTable = () => {
             <Loading/>
           </Box>
         ) : (
+          <>
           <StyledDataGrid
             rows={filteredRows.map(row => ({ ...row, fechaHora: row.formattedFechaHora }))}
             columns={columns}
             getRowClassName={(params) =>
               params.indexRelativeToCurrentPage % 2 === 0 ? 'Mui-even' : 'Mui-odd'
             }
-            pageSize={10}
-            rowsPerPageOptions={[5, 10, 20]}
-            components={{ Toolbar: GridToolbar }}
+            pageSize={pageSize}
             disableSelectionOnClick
-            hideFooter
             autoHeight={false}
             getRowHeight={() => 'auto'}
+            onPageChange={(newPage) => setPage(newPage + 1)}
+            rowsPerPageOptions={[40]}
+              pagination
+            components={{
+            Toolbar: GridToolbar}}
             initialState={{
               sorting: {
                 sortModel: [{ field: 'fechaHora', sort: 'desc' }],
@@ -500,6 +515,27 @@ const SimpleTable = () => {
               height: '100%',
             }}
           />
+          {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+          />
+          
+          <Select
+            label="Seleccionar página"
+            value={page}
+            onChange={handlePageSelect}
+            style={{ width: 100 }}
+          >
+            {[...Array(totalPages)].map((_, index) => (
+              <MenuItem key={index + 1} value={index + 1}>
+                Página {index + 1}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box> */}
+        </>
         )}
       </Box>
     </>

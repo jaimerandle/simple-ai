@@ -74,6 +74,7 @@ const UserStats = () => {
             'WhatsApp': 0,
             'Mercado Libre': 0,
             'Instagram': 0,
+            'Demo':0
           };
           
           // Weekly data
@@ -82,7 +83,7 @@ const UserStats = () => {
             const date = new Date();
             date.setDate(date.getDate() - i);
             const dateString = date.toISOString().split('T')[0];
-            last7Days[dateString] = { 'WhatsApp': 0, 'Mercado Libre': 0, 'Instagram': 0 };
+            last7Days[dateString] = { 'WhatsApp': 0, 'Mercado Libre': 0, 'Instagram': 0, 'Demo':0};
           }
 
           // Count conversations
@@ -90,7 +91,8 @@ const UserStats = () => {
             const date = new Date(conversation.last_updated).toISOString().split('T')[0];
             const channel = conversation.channel_type === 3 ? 'Mercado Libre' :
                             conversation.channel_type === 4 || 1 ? 'WhatsApp' :
-                            conversation.channel_id === 11 ? 'Instagram' : 'Otro';
+                            conversation.channel_id === 11 ? 'Instagram' : 
+                            conversation.channel_id === 6? "Demo": ""
             
             if (platformCounts[channel] !== undefined) {
               platformCounts[channel]++;
@@ -205,6 +207,7 @@ const UserStats = () => {
                   <Bar dataKey="WhatsApp" stackId="a" fill="#8D39BB" stroke="#b0b0b0" strokeWidth={1} />
                   <Bar dataKey="Mercado Libre" stackId="a" fill="#ffe600" stroke="#b0b0b0" strokeWidth={1} />
                   <Bar dataKey="Instagram" stackId="a" fill="#833ab4" stroke="#b0b0b0" strokeWidth={1} />
+                  <Bar dataKey="Demo" stackId="a" fill="#8D39BB" stroke="#b0b0b0" strokeWidth={1} />
                 </BarChart>
               )}
             </ResponsiveContainer>

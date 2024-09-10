@@ -73,6 +73,7 @@ function ChatPrueba() {
   const sendMessage = async () => {
     if (input.trim() !== '') {
       const eventId = String(Date.now()) + Math.floor(Math.random() * 999999);
+      console.log(eventId, "ID EVENT")
 
       const newMessage = {
         id: eventId,

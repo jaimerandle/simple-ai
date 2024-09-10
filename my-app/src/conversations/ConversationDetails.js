@@ -94,6 +94,10 @@ const ConversationDetails = () => {
         logoSrc = WhatsAppLogo;
         canal = 'WhatsApp';
         break;
+        case 6:
+          logoSrc = WhatsAppLogo;
+          canal = 'Demo';
+          break;
     default:
       logoSrc = WhatsAppLogo;
       canal = 'WhatsApp';
