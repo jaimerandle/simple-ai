@@ -6,6 +6,7 @@ import Listado from "../assets/description.png";
 import { useNavigate } from 'react-router-dom';
 import { getAssistants, getUserInfo, updateAssistant } from '../services/bffService';
 import Loading from '../components/Loading';
+import { formatText } from '../utils/FormatText';
 
 function ChatPrueba() {
   const [messages, setMessages] = useState([]);
@@ -129,10 +130,10 @@ function ChatPrueba() {
       if (result.action === 'SKIP') {
         console.log('Mensaje combinado con otro, no se muestra.');
       } else if (result.action === 'WAIT') {
-        setTimeout(() => startPolling(eventId), 5000);
+        setTimeout(() => startPolling(eventId), 2000);
       } else if (result.action === 'REPLY') {
         // Actualiza mensajes con la respuesta de Nicole
-        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: result.text, timestamp: new Date() }]);
+        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: formatText(result.text), timestamp: new Date() }]);
         setIsTyping(false); // Deja de mostrar "Nicole está escribiendo..." cuando llega la respuesta
       }
 
@@ -236,7 +237,7 @@ const argentinaTime = date.toLocaleString('es-AR', options);
                   className={`chat-message ${message.user === 'CLIENTE' ? 'own-message' : 'nicole-message'}`} // Cambiar la clase si es mensaje de Nicole
                 >
                   <strong>{message.user === 'CLIENTE' ? 'Cliente' : assistantName}</strong>
-                  <span>{message.text}</span>
+                  <span>{ <div dangerouslySetInnerHTML={{ __html: formatText(message.text)}} />}</span>
                 </div>
               ))}
               {isTyping && (

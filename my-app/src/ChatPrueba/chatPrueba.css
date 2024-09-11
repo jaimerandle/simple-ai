@@ -254,5 +254,22 @@
       padding: 8px;
     }
   }
+
+  
+  .chat-message strong {
+    font-weight: bold;
+  }
+  
+  .chat-message img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+  }
+  
+  .message-timestamp {
+    font-size: 0.75em;
+    color: #888;
+  }
   
   

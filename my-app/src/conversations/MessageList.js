@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import ChatBubble from '../components/ChatBubble';
 import AvatarWrapper from '../components/AvatarWrapper';
 import { useMediaQuery } from '@mui/material';
+import { formatText } from '../utils/FormatText';
 
 
 const formatDate = (timestamp) => {
@@ -57,7 +58,7 @@ const formatDate = (timestamp) => {
                             maxWidth: '70%',
                           }}
                         >
-                          {mensaje.text}
+                          { <div dangerouslySetInnerHTML={{ __html: formatText(mensaje.text)}} />}
                           <Typography
                             variant="body2"
                             color="#969AB8"
@@ -92,7 +93,7 @@ const formatDate = (timestamp) => {
                             // Fondo verde claro para diferenciar el mensaje de Nicole
                           }}
                         >
-                          {mensaje.text}
+                         { <div dangerouslySetInnerHTML={{ __html: formatText(mensaje.text)}} />}
                           <Typography
                             variant="body2"
                             color="#969AB8"
