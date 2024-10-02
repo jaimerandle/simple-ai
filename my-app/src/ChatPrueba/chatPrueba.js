@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './chatPrueba.css';
 import Navbar from '../Home/Navbar';
 import { Box, Button, useMediaQuery } from '@mui/material';
@@ -23,6 +23,8 @@ function ChatPrueba() {
   const isMobile = useMediaQuery('(max-width:600px)');
   const navigate = useNavigate();
   const [dates, setDates] = useState("")
+
+  const messagesEndRef = useRef(null);
 
   const generateConversationId = () => {
     return String(Date.now()) + Math.floor(Math.random() * 999999);
@@ -74,6 +76,16 @@ function ChatPrueba() {
 
     fetchAssistantData();
   }, [navigate]);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom(); // Llama esta función cada vez que los mensajes cambian
+  }, [messages , isTyping]);
 
   // Función para manejar el envío al presionar Enter en el chat
   const handleKeyPress = (e) => {
@@ -245,6 +257,7 @@ const argentinaTime = date.toLocaleString('es-AR', options);
                   <span>{assistantName} está escribiendo...</span>
                 </div>
               )}
+              <div ref={messagesEndRef} />
             </div>
             <div className="chat-input">
               <input

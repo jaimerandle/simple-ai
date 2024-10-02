@@ -92,6 +92,21 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-row.Mui-selected:hover': {
     backgroundColor: '#E4CAFF', // Mantener el fondo de hover al seleccionar
   },
+  "& .css-1di5fex-MuiTablePagination-root .MuiTablePagination-selectLabel":{
+    marginTop: "20px",
+    color:"grey",
+    fontWeight:"bold"
+  },
+  "& .css-1di5fex-MuiTablePagination-root .MuiTablePagination-input":{
+    marginTop:"8px",
+    color:"grey",
+    fontWeight:"bold"
+  },
+  "& .css-11oje6f-MuiTablePagination-displayedRows":{
+    marginTop:"20px",
+    color:"grey",
+    fontWeight:"bold"
+  }
 }));
 
 const ActionButton = ({ row, onDelete }) => {
@@ -238,9 +253,9 @@ const SimpleTable = () => {
             second: '2-digit',
             hour12: false,
           }).replace(", ", " ");
-          const numeroCorto = conversation.channel_source.substr(3, 18);
+          // const numeroCorto = conversation.channel_source.substr(3, 18);
           const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : conversation.channel_type === 1 ? 'WhatsApp' : conversation.channel_type === 6? "Demo" : 'Instagram';
-          const referencia = canal === 'WhatsApp' ? numeroCorto : conversation.channel_source.substr(0, 15);
+          const referencia = canal === 'WhatsApp' ? conversation.channel_source.substr(0, 15) : conversation.channel_source.substr(0, 15);
        
           return {
             id: conversation.id,
@@ -515,26 +530,6 @@ const SimpleTable = () => {
               height: '100%',
             }}
           />
-          {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-          />
-          
-          <Select
-            label="Seleccionar página"
-            value={page}
-            onChange={handlePageSelect}
-            style={{ width: 100 }}
-          >
-            {[...Array(totalPages)].map((_, index) => (
-              <MenuItem key={index + 1} value={index + 1}>
-                Página {index + 1}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box> */}
         </>
         )}
       </Box>

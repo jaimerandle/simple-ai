@@ -1,6 +1,6 @@
 export const formatText = (text) => {
     // Convertir *texto* en <strong>texto</strong>
-    text = text.replace(/\*(.*?)\*/g, '<h1 style="font-weight:bold">$1</h1>');
+    text = text.replace(/\*(.*?)\*/g, '<h2 style="font-weight:bold">$1</h2>');
     
     // Eliminar texto entre los caracteres especiales 【 y 】
     text = text.replace(/【.*?】/g, '');
