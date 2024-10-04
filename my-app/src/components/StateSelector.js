@@ -4,14 +4,18 @@ import { updateConversationMetadata } from '../services/bffService';
 
 const getColorForState = (state) => {
   switch (state) {
-    case 'alta':
-      return 'red';
-    case 'media':
-      return 'green';
-    case 'baja':
-      return 'orange';
-    case'descarte':
+    case 'Sin Respuesta':
       return 'grey';
+    case 'Respondio':
+      return 'orange';
+    case 'Llamado':
+      return 'green';
+    case'Meet':
+      return 'aqua';
+    case'Cliente':
+      return 'red';
+    case'Marketing':
+      return 'Black';
   }
 };
 
@@ -53,10 +57,12 @@ const StateSelector = ({ id, initialState, onStateChange }) => {
           width:"100%"
         }}
       >
-        <MenuItem value="alta" style={{ color: 'red' }}>Alto potencial</MenuItem>
-        <MenuItem value="media" style={{ color: 'green' }}>Cliente</MenuItem>
-        <MenuItem value="baja" style={{ color: 'orange' }}>No Cliente</MenuItem>
-        <MenuItem value="descarte" style={{ color: 'grey' }}>Descarte</MenuItem>
+        <MenuItem value="Sin Respuesta" style={{ color: 'grey' }}>Sin Rta</MenuItem>
+        <MenuItem value="Respondio" style={{ color: 'orange' }}>Respondio</MenuItem>
+        <MenuItem value="Llamado" style={{ color: 'green' }}>Llamado</MenuItem>
+        <MenuItem value="Meet" style={{ color: 'aqua' }}>Meet</MenuItem>
+        <MenuItem value="Cliente" style={{ color: 'red' }}>Cliente</MenuItem>
+        <MenuItem value="Marketing" style={{ color: 'black' }}>Marketing</MenuItem>
       </Select>
     );
   };

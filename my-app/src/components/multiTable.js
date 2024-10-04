@@ -12,12 +12,13 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import { TextField, CircularProgress, useMediaQuery, Select, MenuItem , Pagination} from '@mui/material';
+import { TextField, CircularProgress, useMediaQuery, Select, MenuItem , Pagination, ButtonBase} from '@mui/material';
 import { getConversations, updateConversationMetadata, deleteConversation } from '../services/bffService';
 import StateSelector from './StateSelector';
 import NoteDialog from '../conversations/NoteDialog';
 import Loading from './Loading';
 import ColumnSelector from './ColumnSelector';
+import {Tooltip} from '@mui/material';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
@@ -230,12 +231,93 @@ const SimpleTable = ({ customerDetails }) => {
   const isMobile = useMediaQuery('(max-width:600px)');
   const [page, setPage] = useState(1); // Página actual
   const [pageSize, setPageSize] = useState(40);
+  const [openNote, setOpenNote] = useState(false);
+  const [selectedNote, setSelectedNote] = useState('');
+  const [selectedResponsible, setSelectedResponsible] = useState('');
+  const [selectedId, setSelectedId] = useState(null);
+  
+
+  const truncateNote = (note) => {
+    return note.length > 50 ? `${note.substring(0, 30)}...` : note? note :"Sin notas";
+  };
+
+  console.log(selectedId, "selected")
+
+  const handleOpenNoteDialog = (note, responsible, id) => {
+    setOpenNote(true);
+    setSelectedId(id);
+    const storedConversations = JSON.parse(sessionStorage.getItem('conversations')) || [];
+    const currentConversation = storedConversations.find(conversation => conversation.id === id);
+    
+    if (currentConversation) {
+      setSelectedNote(currentConversation.note || 'Sin notas');
+      setSelectedResponsible(currentConversation.responsible || '');
+    } else {
+      setSelectedNote(note || 'Sin notas');
+      setSelectedResponsible(responsible || '');
+    }}
+
+  const handleCloseNoteDialog = () => {
+    setOpenNote(false);
+  };
+
+  const handleSaveNote = async (note, responsible) => {
+    // Actualiza el sessionStorage
+    const storedConversations = JSON.parse(sessionStorage.getItem('conversations')) || [];
+    const updatedConversations = storedConversations.map(conversation => {
+      if (conversation.id === selectedId) {
+        return {
+          ...conversation,
+          note: note,
+          responsible: responsible,
+          state: conversation.state || "Sin Respuesta", // Si el state es null, setear a 'baja'
+        };
+      }
+      return conversation;
+    });
+  
+    sessionStorage.setItem('conversations', JSON.stringify(updatedConversations));
+  
+    // Actualiza también el estado local `rows` y `filteredRows` para que el Tooltip refleje el cambio
+    setRows(updatedConversations);
+    setFilteredRows(updatedConversations); // Si estás filtrando las filas
+  
+    // Actualiza la metadata en el backend
+    const token = localStorage.getItem('authToken');
+    const currentConversation = updatedConversations.find(conversation => conversation.id === selectedId);
+  
+    if (currentConversation) {
+      try {
+        const newMetadata = {
+          ...currentConversation.metadata,
+          note: note,
+          responsible: responsible,
+          state: currentConversation.state || "Sin Respuesta",
+        };
+  
+        await updateConversationMetadata(selectedId, newMetadata, token);
+      } catch (error) {
+        console.error('Error al actualizar la metadata en el backend:', error.message);
+      }
+    }
+  };
+  
   
   // Definir las columnas fijas
   const allColumns = [
     { field: 'id', headerName: 'ID', flex: 1 },
     { field: 'referencia', headerName: 'Referencia', flex: 1 },
     { field: 'canal', headerName: 'Canal', flex: 1 },
+    { 
+      field: 'note', 
+      headerName: 'Notas', 
+      flex: 1,
+      renderCell: (params) => (
+        <Tooltip title={params.row.note}> {/* Mostrar todo el contenido de la nota al hacer hover */}
+          <ButtonBase onClick={()=>handleOpenNoteDialog(params.row.note, params.row.responsible, params.row.id)}>{truncateNote(params.row.note)}</ButtonBase> {/* Truncar la nota a 50 caracteres */}
+        </Tooltip>
+      )
+    },
     { field: 'fechaHora', headerName: 'Fecha y Hora', flex: 1, sortComparator: (a, b) => new Date(b) - new Date(a) },
     { field: 'state', headerName: 'Prioridad', flex: 1 ,
       renderCell: (params) => (
@@ -262,6 +344,7 @@ const SimpleTable = ({ customerDetails }) => {
   const selectableColumns = combinedColumns.filter(
     (col) => col.field !== 'id' && col.field !== 'actions'
   );
+
   
   const [selectedColumns, setSelectedColumns] = useState(() => {
     const storedColumns = localStorage.getItem('selectedColumns');
@@ -301,8 +384,8 @@ const SimpleTable = ({ customerDetails }) => {
             canal: canal,
             fechaHora: date,
             formattedFechaHora: isMobile ? formattedDate : formattedDateTime,
-            state: conversation.metadata?.state || 'baja',
-            note: conversation.metadata?.note || "",
+            state: conversation.metadata?.state || "Sin Respuesta",
+            note: conversation.metadata?.note || 'Sin notas',
             responsible: conversation.metadata?.responsible || "",
             extract: conversation.extract,
             metadata: conversation.metadata, // Asegúrate de incluir el campo metadata en los datos
@@ -525,6 +608,16 @@ const SimpleTable = ({ customerDetails }) => {
         </>
         )}
       </Box>
+      {openNote?(
+        <NoteDialog
+        open={openNote}
+        handleClose={handleCloseNoteDialog}
+        handleSave={handleSaveNote}
+        initialNote={selectedNote}
+        initialResponsible={selectedResponsible}
+        id={selectedId}
+      />
+      ):(<></>)}
       {open? (
       <ColumnSelector
         availableColumns={selectableColumns}

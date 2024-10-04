@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -26,6 +26,7 @@ const ConversationDetails = () => {
   const [manualMessage, setManualMessage] = useState(''); // Estado para el mensaje manual
   const [manualMode, setManualMode] = useState(false); // Estado del switch para modo manual
   const navigate = useNavigate();
+  const textFieldRef = useRef(null); 
 
   useEffect(() => {
     const fetchConversationDetails = async () => {
@@ -47,6 +48,14 @@ const ConversationDetails = () => {
     fetchConversationDetails();
   }, [id, navigate]);
 
+  useEffect(() => {
+    if (manualMode && textFieldRef.current) {
+      // Desplazarse hacia el TextField cuando el switch está activado
+      textFieldRef.current.scrollIntoView({ behavior: 'smooth' });
+
+    }
+  }, [manualMode]);
+
   const handleStateChange = (id, newState) => {
     setConversation(prevConversation => ({
       ...prevConversation,
@@ -67,6 +76,10 @@ const ConversationDetails = () => {
   // Maneja el cambio del switch
   const handleManualModeChange = (event) => {
     setManualMode(event.target.checked);
+    if (event.target.checked && textFieldRef.current) {
+      // Si el switch está activado, desplázate hacia el TextField
+      textFieldRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   // Maneja el cambio en el campo de mensaje manual
@@ -124,9 +137,9 @@ const ConversationDetails = () => {
   }
 
   return (
-    <div>
+    <div style={{ height: '100vh', overflowY: 'auto' }}>
       <Navbar />
-      <div style={{ width: "90%", marginLeft: "5%" }}>
+      <div style={{ width: "90%", marginLeft: "5%", height:"80vh" }}>
         <ConversationContainer canal={canal} style={{ paddingBottom: '100px', backgroundColor: "white" }}>
           <ConversationsTop canal={canal} logoSrc={logoSrc} style={{ backgroundColor: "white" }} />
           <div style={{ border: "0.3px solid #E1C9FF", zIndex: "1111", marginTop: "20px" }}></div>
@@ -153,9 +166,11 @@ const ConversationDetails = () => {
                 width: "100%",
                 justifyContent:"flex-end"
               }}
+              ref={textFieldRef} 
             >
               {/* Campo de texto estilo WhatsApp */}
               <TextField
+              
                 fullWidth
                 placeholder="Escribe un mensaje..."
                 value={manualMessage}
@@ -171,10 +186,10 @@ const ConversationDetails = () => {
                     backgroundColor: 'white', // Fondo blanco
                   },
                   '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'transparent', // Sin borde visible
+                    borderColor: 'grey', // Sin borde visible
                   },
                   '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'transparent',
+                    borderColor: 'grey',
                   },
                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'transparent',

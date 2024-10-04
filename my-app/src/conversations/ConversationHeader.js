@@ -74,7 +74,7 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
                 ...conversation,
                 note: note,
                 responsible: responsible,
-                state: conversation.state || "baja", // Si el state es null, setear a "baja"
+                state: conversation.state || "Sin Respuesta", // Si el state es null, setear a "baja"
             };
         }
         return conversation;
@@ -93,7 +93,7 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
             const newMetadata = {
                 ...existingMetadata,
                 note: note,
-                state: currentConversation.state || "baja",
+                state: currentConversation.state || "Sin Respuesta",
                 responsible: responsible // Si el state es null, setear a "baja"
             };
 

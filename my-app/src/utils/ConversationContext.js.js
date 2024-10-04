@@ -61,7 +61,7 @@ export const ConversationProvider = ({ children }) => {
           return {
             ...conversation,
             formattedFechaHora: formattedDateTime,
-            state: conversation.metadata?.state || 'baja',
+            state: conversation.metadata?.state || "Sin Respuesta",
           };
         });
 
