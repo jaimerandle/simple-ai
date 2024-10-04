@@ -17,6 +17,7 @@ import { getConversations, updateConversationMetadata, deleteConversation } from
 import StateSelector from './StateSelector';
 import NoteDialog from '../conversations/NoteDialog';
 import Loading from './Loading';
+import ColumnSelector from './ColumnSelector';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
@@ -221,7 +222,7 @@ const ActionButton = ({ row, onDelete }) => {
   );
 };
 
-const SimpleTable = () => {
+const SimpleTable = ({ customerDetails }) => {
   const [filter, setFilter] = useState('');
   const [rows, setRows] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
@@ -229,6 +230,44 @@ const SimpleTable = () => {
   const isMobile = useMediaQuery('(max-width:600px)');
   const [page, setPage] = useState(1); // Página actual
   const [pageSize, setPageSize] = useState(40);
+  
+  // Definir las columnas fijas
+  const allColumns = [
+    { field: 'id', headerName: 'ID', flex: 1 },
+    { field: 'referencia', headerName: 'Referencia', flex: 1 },
+    { field: 'canal', headerName: 'Canal', flex: 1 },
+    { field: 'fechaHora', headerName: 'Fecha y Hora', flex: 1, sortComparator: (a, b) => new Date(b) - new Date(a) },
+    { field: 'state', headerName: 'Prioridad', flex: 1 ,
+      renderCell: (params) => (
+        <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />
+      )
+    },
+    { field: 'actions', headerName: 'Acciones', flex: 1,
+      renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />
+    }
+  ];
+
+  // Procesar las customColumns que vienen en el objeto customerDetails
+  const customColumns = customerDetails?.customColumns?.map(col => ({
+    field: col.name,
+    headerName: col.title,
+    flex: 1,
+    renderCell: (params) => params?.row?.metadata?.[col.name] || '', // Acceder al campo dentro de metadata
+  })) || [];
+
+  // Combinar columnas fijas con las columnas personalizadas
+  const combinedColumns = [...allColumns, ...customColumns];
+  
+  // Las columnas seleccionables son todas menos las fijas 'id' y 'actions'
+  const selectableColumns = combinedColumns.filter(
+    (col) => col.field !== 'id' && col.field !== 'actions'
+  );
+  
+  const [selectedColumns, setSelectedColumns] = useState(() => {
+    const storedColumns = localStorage.getItem('selectedColumns');
+    return storedColumns ? JSON.parse(storedColumns) : selectableColumns.map(col => col.field);
+  });
+  const [open, setOpen] = useState(false);
 
   const fetchConversations = async () => {
     setLoading(true);
@@ -236,7 +275,6 @@ const SimpleTable = () => {
     if (token) {
       try {
         const conversations = await getConversations(token);
-        console.log(conversations,"converstiosnsAll")
         const formattedRows = conversations.map((conversation) => {
           const date = new Date(conversation.last_updated);
           const formattedDate = date.toLocaleDateString('es-AR', {
@@ -253,7 +291,7 @@ const SimpleTable = () => {
             second: '2-digit',
             hour12: false,
           }).replace(", ", " ");
-          // const numeroCorto = conversation.channel_source.substr(3, 18);
+          
           const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : conversation.channel_type === 1 ? 'WhatsApp' : conversation.channel_type === 6? "Demo" : 'Instagram';
           const referencia = canal === 'WhatsApp' ? conversation.channel_source.substr(0, 15) : conversation.channel_source.substr(0, 15);
        
@@ -266,7 +304,8 @@ const SimpleTable = () => {
             state: conversation.metadata?.state || 'baja',
             note: conversation.metadata?.note || "",
             responsible: conversation.metadata?.responsible || "",
-            extract: conversation.extract
+            extract: conversation.extract,
+            metadata: conversation.metadata, // Asegúrate de incluir el campo metadata en los datos
           };
         });
 
@@ -297,7 +336,6 @@ const SimpleTable = () => {
       }
     };
 
-    // Llamar a la función al montar el componente
     fetchAndUpdateConversations();
 
     // Listener para actualizaciones en sessionStorage
@@ -317,7 +355,6 @@ const SimpleTable = () => {
   const handleFilterChange = (event) => {
     const value = event.target.value.toLowerCase();
     setFilter(value);
-    console.log(rows,"ROW")
 
     const filtered = rows.filter((row) =>
       row.id.toString().includes(value) ||
@@ -345,7 +382,6 @@ const SimpleTable = () => {
     setRows(updatedRows);
     setFilteredRows(updatedFilteredRows);
 
-    // Actualiza también en sessionStorage
     sessionStorage.setItem('conversations', JSON.stringify(updatedRows));
   };
 
@@ -356,70 +392,25 @@ const SimpleTable = () => {
     setRows(updatedRows);
     setFilteredRows(updatedRows);
 
-    // Actualiza también en sessionStorage
     sessionStorage.setItem('conversations', JSON.stringify(updatedRows));
   };
 
-  const columns = isMobile
-    ? [
-      { field: 'referencia', headerName: 'Referencia', flex: 1 },
-      {
-        field: 'fechaHora',
-        headerName: 'Fecha',
-        flex: 1,
-        sortComparator: (a, b) => new Date(b) - new Date(a),
-      },
-      {
-        field: 'state',
-        headerName: 'Prioridad',
-        flex: 1,
-        renderCell: (params) => (
-          <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />
-        ),
-      },
-      {
-        field: 'actions',
-        headerName: 'Acciones',
-        flex: 1,
-        renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
-      },
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-    ]
-    : [
-      { field: 'id', headerName: 'ID', flex: 1 },
-      { field: 'referencia', headerName: 'Referencia', flex: 1 },
-      { field: 'canal', headerName: 'Canal', flex: 1 },
-      {
-        field: 'fechaHora',
-        headerName: 'Fecha y Hora',
-        flex: 1,
-        sortComparator: (a, b) => new Date(b) - new Date(a),
-      },
-      {
-        field: 'state',
-        headerName: 'Prioridad',
-        flex: 1,
-        renderCell: (params) => (
-          <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />
-        ),
-      },
-      {
-        field: 'actions',
-        headerName: 'Acciones',
-        flex: 1,
-        renderCell: (params) => <ActionButton row={params.row} onDelete={handleDeleteRow} />,
-      },
-    ];
-    const handlePageChange = (event, newPage) => {
-      setPage(newPage);
-    };
+  const handleSaveColumns = (newSelectedColumns) => {
+    setSelectedColumns(newSelectedColumns);
+    localStorage.setItem('selectedColumns', JSON.stringify(newSelectedColumns));
+    setOpen(false);
+  };
+  const displayedColumns = [
+    ...combinedColumns.filter(
+      (col) => col.field === 'id' || (selectedColumns.includes(col.field) && col.field !== 'actions')
+    ),
+    combinedColumns.find(col => col.field === 'actions') // Siempre agrega la columna 'actions' al final
+  ];
   
-    // Manejar la selección de página desde el dropdown
-    const handlePageSelect = (event) => {
-      setPage(Number(event.target.value));
-    };
-    
-    const totalPages = Math.ceil(filteredRows.length / pageSize);
+
 
   return (
     <>
@@ -494,6 +485,7 @@ const SimpleTable = () => {
               },
             }}
           />
+            <Button onClick={handleOpen}>Seleccionar Columnas</Button>
           <IconButton color="white" onClick={handleRefresh} style={{ color: "grey", width: isMobile ?? "20%" }} sx={{
           }}>
             <RefreshIcon style={{ height: "25px" }} />
@@ -507,7 +499,7 @@ const SimpleTable = () => {
           <>
           <StyledDataGrid
             rows={filteredRows.map(row => ({ ...row, fechaHora: row.formattedFechaHora }))}
-            columns={columns}
+            columns={displayedColumns}
             getRowClassName={(params) =>
               params.indexRelativeToCurrentPage % 2 === 0 ? 'Mui-even' : 'Mui-odd'
             }
@@ -533,6 +525,14 @@ const SimpleTable = () => {
         </>
         )}
       </Box>
+      {open? (
+      <ColumnSelector
+        availableColumns={selectableColumns}
+        selectedColumns={selectedColumns}
+        onSave={handleSaveColumns}
+        onClose={handleClose}
+        open={open}
+      />):(<></>)}
     </>
   );
 };

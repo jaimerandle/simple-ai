@@ -1,9 +1,8 @@
-// ConversationDetails.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Button, CircularProgress, Dialog, DialogActions, DialogTitle, useMediaQuery } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogTitle, IconButton, useMediaQuery, TextField, Switch } from '@mui/material';
 import Navbar from '../Home/Navbar';
 import { getConversationDetails, deleteConversation } from '../services/bffService';
 import ConversationHeader from './ConversationHeader';
@@ -15,6 +14,7 @@ import InstagramLogo from '../assets/Instagram.svg';
 import MercadoLibreLogo from '../assets/mercadolibre.svg';
 import Loading from '../components/Loading';
 import { ConversationsTop } from './ConversationTop';
+import SendIcon from '@mui/icons-material/Send';
 
 const ConversationDetails = () => {
   const isMobile = useMediaQuery('(max-width:600px)');
@@ -23,6 +23,8 @@ const ConversationDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
+  const [manualMessage, setManualMessage] = useState(''); // Estado para el mensaje manual
+  const [manualMode, setManualMode] = useState(false); // Estado del switch para modo manual
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +47,6 @@ const ConversationDetails = () => {
     fetchConversationDetails();
   }, [id, navigate]);
 
-
   const handleStateChange = (id, newState) => {
     setConversation(prevConversation => ({
       ...prevConversation,
@@ -60,6 +61,25 @@ const ConversationDetails = () => {
           : conversation
       );
       sessionStorage.setItem('conversations', JSON.stringify(updatedConversations));
+    }
+  };
+
+  // Maneja el cambio del switch
+  const handleManualModeChange = (event) => {
+    setManualMode(event.target.checked);
+  };
+
+  // Maneja el cambio en el campo de mensaje manual
+  const handleManualMessageChange = (event) => {
+    setManualMessage(event.target.value);
+  };
+
+  // Maneja el envío del mensaje manual
+  const handleSendManualMessage = () => {
+    if (manualMessage.trim() !== '') {
+      // Aquí puedes implementar la lógica para enviar el mensaje manual al backend o actualizar el estado de la conversación
+      console.log('Mensaje enviado:', manualMessage);
+      setManualMessage(''); // Limpiar el campo de mensaje después de enviar
     }
   };
 
@@ -90,14 +110,14 @@ const ConversationDetails = () => {
       logoSrc = WhatsAppLogo;
       canal = 'WhatsApp';
       break;
-      case 1:
-        logoSrc = WhatsAppLogo;
-        canal = 'WhatsApp';
-        break;
-        case 6:
-          logoSrc = WhatsAppLogo;
-          canal = 'Demo';
-          break;
+    case 1:
+      logoSrc = WhatsAppLogo;
+      canal = 'WhatsApp';
+      break;
+    case 6:
+      logoSrc = WhatsAppLogo;
+      canal = 'Demo';
+      break;
     default:
       logoSrc = WhatsAppLogo;
       canal = 'WhatsApp';
@@ -106,16 +126,80 @@ const ConversationDetails = () => {
   return (
     <div>
       <Navbar />
-      <div style={{width:"90%", marginLeft:"5%"}}>
-      <ConversationContainer canal={canal} style={{ paddingBottom: '100px' , backgroundColor:"white" }}>
-        <ConversationsTop canal={canal} logoSrc={logoSrc} style={{backgroundColor:"white"}}/>
-        <div style={{border:"0.3px solid #E1C9FF", zIndex:"1111", marginTop:"20px"}}></div>
-        <div style={{display:isMobile? "block":"flex", backgroundColor:"white"}}>
-        <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} onStateChange={handleStateChange} canal={canal} logoSrc={logoSrc}/>
-        <MessageList style={{backgroundColor:"pink"}} conversation={conversation} />
-        </div>
-      </ConversationContainer>
-    </div>
+      <div style={{ width: "90%", marginLeft: "5%" }}>
+        <ConversationContainer canal={canal} style={{ paddingBottom: '100px', backgroundColor: "white" }}>
+          <ConversationsTop canal={canal} logoSrc={logoSrc} style={{ backgroundColor: "white" }} />
+          <div style={{ border: "0.3px solid #E1C9FF", zIndex: "1111", marginTop: "20px" }}></div>
+          <Box sx={{ marginTop: 2, display: 'flex', alignItems: 'center' }}>
+            <Typography sx={{ marginRight: 2, marginLeft:2 }}>Modo IA</Typography>
+          <Switch checked={manualMode} onChange={handleManualModeChange} />
+          <Typography sx={{ marginLeft: 2 }}>Modo Manual</Typography>
+          </Box>
+          <div style={{ display: isMobile ? "block" : "flex", backgroundColor: "white" }}>
+            <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} onStateChange={handleStateChange} canal={canal} logoSrc={logoSrc} />
+            <MessageList style={{ backgroundColor: "pink" }} conversation={conversation} />
+          </div>
+
+          {/* Agregar el switch y el campo de texto si está activado */}
+
+          {manualMode && (
+              <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'right',
+                padding: '10px',
+                borderRadius: '10px', // Bordes redondeados
+                marginTop: 2,
+                width: "100%",
+                justifyContent:"flex-end"
+              }}
+            >
+              {/* Campo de texto estilo WhatsApp */}
+              <TextField
+                fullWidth
+                placeholder="Escribe un mensaje..."
+                value={manualMessage}
+                onChange={handleManualMessageChange}
+                variant="outlined"
+                multiline
+                style={{width:"65%", display:"flex", justifyContent:"flex-end"}}
+                maxRows={4} // Limita las filas a 4 para un efecto similar a WhatsApp
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    padding: '8px 10px', // Espaciado interior
+                    borderRadius: '20px', // Bordes redondeados
+                    backgroundColor: 'white', // Fondo blanco
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'transparent', // Sin borde visible
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'transparent',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'transparent',
+                  },
+                }}
+              />
+        
+              {/* Botón de enviar alineado a la derecha */}
+              <IconButton
+                color="primary"
+                onClick={handleSendManualMessage}
+                sx={{
+                  marginLeft: '10px',
+                  backgroundColor: '#25d366', // Color de fondo estilo WhatsApp
+                  '&:hover': {
+                    backgroundColor: '#22b358', // Color al hacer hover
+                  },
+                }}
+              >
+                <SendIcon sx={{ color: 'white' }} />
+              </IconButton>
+            </Box>
+          )}
+        </ConversationContainer>
+      </div>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import Loading from '../components/Loading';
 
 const Home = () => {
     const [userName, setUserName] = useState('');
+    const [newColumns, setNewColumns] = useState('');
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -23,6 +24,7 @@ const Home = () => {
             } else {
                 try {
                     const userDetails = await getUserInfo(token);
+                    setNewColumns(userDetails.clientInfo.details)
                     setUserName(userDetails.name); // Assuming the user details have a 'name' field
                 } catch (error) {
                     console.error('Error fetching user details:', error);
@@ -35,6 +37,8 @@ const Home = () => {
 
         fetchUserDetails();
     }, [navigate]);
+
+    console.log(newColumns, "NEWCOLUMNS")
 
     if (loading) {
         return (
@@ -53,7 +57,7 @@ const Home = () => {
                         <div classname="roboto-medium"> 
                         <div className="container-fluid px-4">
                             <div className="row justify-content-center">
-                                <SimpleTable />
+                                <SimpleTable customerDetails={newColumns} />
                             </div>
                         </div>
                         </div>
