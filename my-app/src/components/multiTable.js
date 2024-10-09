@@ -447,7 +447,8 @@ const SimpleTable = ({ customerDetails }) => {
       row.state.toLowerCase().includes(value) ||
       row.note.toLowerCase().includes(value) ||
       row.responsible.toLowerCase().includes(value) || 
-      row.extract.toLowerCase().includes(value)
+      row.extract.toLowerCase().includes(value) || 
+      row.state.toLowerCase().includes(value)
     );
 
     setFilteredRows(filtered);

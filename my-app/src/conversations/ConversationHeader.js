@@ -108,7 +108,7 @@ const ConversationHeader = ({ conversation, id, isMobile, onStateChange, canal ,
   const numeroCorto = conversation.channel_source?.substr(3, 18);
 
   return (
-    <Box sx={{ padding: 2, marginTop: "4px",width:isMobile?"100%":"30%", textAlign:"left" }}>
+    <Box sx={{ padding: 2, marginTop: "4px",width:isMobile?"100%":"30%", textAlign:"left"}}>
         <div style={{backgroundColor:"#F6F6F6"}}>
             <div style={{padding:"15px"}}>
          <Typography color="#6728B8"><strong>ID: {conversation.id} </strong></Typography>

@@ -111,4 +111,62 @@ export const updateAssistant = async (id, updatedAssistant, token) => {
     }
 };
 
+export const pauseConversation = async (id, token) => {
+    try {
+        const response = await apiClient.post(`/conversations/${id}/pause`, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        return response.data;  // Devuelve la respuesta de la conversación pausada
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error pausing the conversation');
+    }
+};
+
+export const resumeConversation = async (id, token) => {
+    try {
+        const response = await apiClient.post(`/conversations/${id}/resume`, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        return response.data;  // Devuelve la respuesta de la conversación reanudada
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error resuming the conversation');
+    }
+};
+
+
+export const sendManualMessage = async (conversationId, message) => {
+    try {
+      await fetch(`/conversations/${conversationId}/reply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: message }),
+      });
+      console.log('Mensaje manual enviado');
+    } catch (error) {
+      console.error('Error al enviar mensaje manual:', error);
+    }
+  };
+
+  export const replyToConversation = async (id, message, token) => {
+    try {
+        const response = await apiClient.post(`/conversations/${id}/reply`, message, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        return response.data;  // Devuelve la respuesta de enviar el mensaje
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error sending manual message');
+    }
+};
+
+  
+  
 

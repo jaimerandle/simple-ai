@@ -18,12 +18,12 @@ const formatDate = (timestamp) => {
     return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
   
-  const MessageList = ({ conversation }) => {
+  const MessageList = ({ conversation, isManual }) => {
     let currentDate = '';  // Ahora es una variable simple
     const isMobile = useMediaQuery('(max-width:600px)');
   
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"20px", width: isMobile? "100%":"70%", overflow:"auto" }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:"75vh" }}>
           {conversation.messages && conversation.messages.length > 0 ? (
             conversation.messages.map((mensaje, index) => {
               const messageDate = formatDate(mensaje.timestamp);
@@ -58,7 +58,7 @@ const formatDate = (timestamp) => {
                             maxWidth: '70%',
                           }}
                         >
-                          { <div dangerouslySetInnerHTML={{ __html: formatText(mensaje.text)}} />}
+                          {<div dangerouslySetInnerHTML={{ __html: formatText(mensaje.text)}} />}
                           <Typography
                             variant="body2"
                             color="#969AB8"
@@ -93,7 +93,7 @@ const formatDate = (timestamp) => {
                             // Fondo verde claro para diferenciar el mensaje de Nicole
                           }}
                         >
-                         { <div dangerouslySetInnerHTML={{ __html: formatText(mensaje.text)}} />}
+                         { <div dangerouslySetInnerHTML={{ __html: formatText( mensaje.text)}} />}
                           <Typography
                             variant="body2"
                             color="#969AB8"

@@ -114,7 +114,7 @@ function ChatPrueba() {
       setMessages(prevMessages => [...prevMessages, { user: 'CLIENTE', text: input, timestamp: new Date() }]);
 
       try {
-        await fetch('https://bcyn2bhdqok5d3ivfomkhqygf40jvnex.lambda-url.us-east-1.on.aws/6/asdasd123', {
+        await fetch('https://7slvz4c3sadkqahhvs2v6mvvua0arqfj.lambda-url.us-east-1.on.aws/6/asdasd123', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newMessage),
@@ -133,7 +133,7 @@ function ChatPrueba() {
   };
 
   const startPolling = async (eventId) => {
-    const pollingUrl = `https://p25wnfnld3cmko5bnstky43e5m0chfzy.lambda-url.us-east-1.on.aws/${eventId}`;
+    const pollingUrl = `https://ye7vfne74zvjc3twxc2h2mtkqq0ezayn.lambda-url.us-east-1.on.aws/${eventId}`;
 
     try {
       const response = await fetch(pollingUrl);

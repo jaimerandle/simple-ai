@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const BASE_URL = 'https://ehlomr2ww4uo3kqr27ic2l3woq0lxgvs.lambda-url.us-east-1.on.aws';
+const BASE_URL = 'https://6wqwjnilkygbweybic5ywpqmse0akwlt.lambda-url.us-east-1.on.aws/';
 
 const apiClient = axios.create({
     baseURL: BASE_URL,

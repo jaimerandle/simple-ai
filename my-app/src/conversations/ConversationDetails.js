@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Button, CircularProgress, Dialog, DialogActions, DialogTitle, IconButton, useMediaQuery, TextField, Switch } from '@mui/material';
 import Navbar from '../Home/Navbar';
-import { getConversationDetails, deleteConversation } from '../services/bffService';
+import { getConversationDetails, deleteConversation, pauseConversation, resumeConversation, sendManualMessage, replyToConversation } from '../services/bffService';
 import ConversationHeader from './ConversationHeader';
 import MessageList from './MessageList';
 import DeleteDialog from './DeleteDialog';
@@ -22,11 +22,14 @@ const ConversationDetails = () => {
   const [conversation, setConversation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
   const [manualMessage, setManualMessage] = useState(''); // Estado para el mensaje manual
   const [manualMode, setManualMode] = useState(false); // Estado del switch para modo manual
   const navigate = useNavigate();
   const textFieldRef = useRef(null); 
+  const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
+  const token = localStorage?.getItem('authToken');
+  const isManual = manualMessage;
+  const [manualMessages, setManualMessages] = useState([]); 
 
   useEffect(() => {
     const fetchConversationDetails = async () => {
@@ -49,12 +52,44 @@ const ConversationDetails = () => {
   }, [id, navigate]);
 
   useEffect(() => {
-    if (manualMode && textFieldRef.current) {
-      // Desplazarse hacia el TextField cuando el switch está activado
-      textFieldRef.current.scrollIntoView({ behavior: 'smooth' });
-
+    if (conversation?.status === 3 ){
+      setManualMode(true)
     }
-  }, [manualMode]);
+
+    const pollMessages = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await getConversationDetails(id, token, lastMessageTimestamp);
+  
+        if (response.messages.length > 0) {
+          const newTimestamp = response.messages[response.messages.length - 1].timestamp;
+          setLastMessageTimestamp(newTimestamp);
+  
+          // Filtrar los nuevos mensajes que no están ya en la conversación y excluir los mensajes del "dashboard"
+          const newMessages = response.messages.filter(
+            msg => !conversation.messages.some(existingMsg => existingMsg.timestamp === msg.timestamp) 
+            && msg.from !== 'dashboard' // Excluir mensajes que vienen del dashboard
+          );
+  
+          if (newMessages.length > 0) {
+            setConversation(prev => ({
+              ...prev,
+              messages: [...prev.messages, ...newMessages], // Agregar solo mensajes nuevos que no están duplicados
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error al hacer polling:', error);
+      }
+    };
+  
+    const pollingInterval = setInterval(pollMessages, 5000);
+  
+    return () => clearInterval(pollingInterval); 
+  }, [id, lastMessageTimestamp, conversation?.messages]);
+  
+  
+  
 
   const handleStateChange = (id, newState) => {
     setConversation(prevConversation => ({
@@ -74,10 +109,29 @@ const ConversationDetails = () => {
   };
 
   // Maneja el cambio del switch
-  const handleManualModeChange = (event) => {
-    setManualMode(event.target.checked);
-    if (event.target.checked && textFieldRef.current) {
-      // Si el switch está activado, desplázate hacia el TextField
+  const handleManualModeChange = async (event) => {
+    const isManual = event.target.checked ;
+    setManualMode(isManual);
+  
+    if (isManual) {
+      // Pausar la conversación
+      try {
+        await pauseConversation(id , token); // POST a /conversations/:id/pause
+        console.log('Conversación pausada');
+      } catch (error) {
+        console.error('Error al pausar la conversación:', error);
+      }
+    } else {
+      // Reanudar la conversación
+      try {
+        await resumeConversation(id, token); // POST a /conversations/:id/resume
+        console.log('Conversación reanudada');
+      } catch (error) {
+        console.error('Error al reanudar la conversación:', error);
+      }
+    }
+  
+    if (isManual && textFieldRef.current) {
       textFieldRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -87,14 +141,35 @@ const ConversationDetails = () => {
     setManualMessage(event.target.value);
   };
 
-  // Maneja el envío del mensaje manual
-  const handleSendManualMessage = () => {
-    if (manualMessage.trim() !== '') {
-      // Aquí puedes implementar la lógica para enviar el mensaje manual al backend o actualizar el estado de la conversación
-      console.log('Mensaje enviado:', manualMessage);
-      setManualMessage(''); // Limpiar el campo de mensaje después de enviar
+// Función para enviar un mensaje manual
+const handleSendManualMessage = async () => {
+  if (manualMessage.trim() !== '') {
+    try {
+      const token = localStorage.getItem('authToken');
+      await replyToConversation(id, { text: manualMessage }, token); // Enviar el mensaje manual
+
+      const newMessage = {
+        text: manualMessage,
+        from: 'dashboard',
+        timestamp: new Date().toISOString(),
+      };
+
+      // Actualizar la conversación localmente
+      setConversation(prevConversation => ({
+        ...prevConversation,
+        messages: [...prevConversation?.messages, newMessage], // Agregar el mensaje manual
+      }));
+
+      // Agregar el mensaje manual a la lista de mensajes enviados
+      setManualMessages(prev => [...prev, newMessage]);
+
+      setManualMessage(''); // Limpiar el campo de mensaje
+    } catch (error) {
+      console.error('Error al enviar el mensaje manual:', error.message);
     }
-  };
+  }
+};
+
 
   if (loading) {
     return (
@@ -150,7 +225,7 @@ const ConversationDetails = () => {
           </Box>
           <div style={{ display: isMobile ? "block" : "flex", backgroundColor: "white" }}>
             <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} onStateChange={handleStateChange} canal={canal} logoSrc={logoSrc} />
-            <MessageList style={{ backgroundColor: "pink" }} conversation={conversation} />
+            <MessageList style={{ backgroundColor: "pink" }} conversation={conversation} isManual={manualMode} />
           </div>
 
           {/* Agregar el switch y el campo de texto si está activado */}
@@ -175,6 +250,12 @@ const ConversationDetails = () => {
                 placeholder="Escribe un mensaje..."
                 value={manualMessage}
                 onChange={handleManualMessageChange}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault(); // Evita que se agregue una nueva línea
+                    handleSendManualMessage(); // Llama a la función de envío de mensaje
+                  }
+                }}
                 variant="outlined"
                 multiline
                 style={{width:"65%", display:"flex", justifyContent:"flex-end"}}
@@ -182,7 +263,7 @@ const ConversationDetails = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     padding: '8px 10px', // Espaciado interior
-                    borderRadius: '20px', // Bordes redondeados
+                    borderRadius: '10px', // Bordes redondeados
                     backgroundColor: 'white', // Fondo blanco
                   },
                   '& .MuiOutlinedInput-notchedOutline': {
@@ -203,13 +284,16 @@ const ConversationDetails = () => {
                 onClick={handleSendManualMessage}
                 sx={{
                   marginLeft: '10px',
+                  alignSelf:"center",
+                  height:"40px",
+                  width:"4%",
                   backgroundColor: '#25d366', // Color de fondo estilo WhatsApp
                   '&:hover': {
                     backgroundColor: '#22b358', // Color al hacer hover
                   },
                 }}
               >
-                <SendIcon sx={{ color: 'white' }} />
+                <SendIcon sx={{ color: 'white',  width:"100%" }} />
               </IconButton>
             </Box>
           )}
