@@ -51,12 +51,15 @@ const ConversationDetails = () => {
     fetchConversationDetails();
   }, [id, navigate]);
 
-  useEffect(async () => {
-    if (await conversation?.status === 3 ){
-      setManualMode(true)
+  useEffect( () => {
+    async function setStatus(){
+      if ( await conversation?.status === 3 ){
+        setManualMode(true)
+        
+      }
+      else {setManualMode(false)}
     }
-    else {setManualMode(false)}
-
+    setStatus()
     const pollMessages = async () => {
       try {
         const token = localStorage.getItem('authToken');
@@ -259,7 +262,7 @@ const handleSendManualMessage = async () => {
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault(); // Evita que se agregue una nueva línea
-                    event.stopPropagation(); // Detiene la propagación del evento para que no afecte al Switch
+                    // Detiene la propagación del evento para que no afecte al Switch
                     handleSendManualMessage(); // Llama a la función de envío de mensaje
                   }
                 }}
