@@ -55,6 +55,7 @@ const ConversationDetails = () => {
     if (conversation?.status === 3 ){
       setManualMode(true)
     }
+    else {setManualMode(false)}
 
     const pollMessages = async () => {
       try {
