@@ -237,7 +237,7 @@ const argentinaTime = date.toLocaleString('es-AR', options);
             <textarea
               value={assistantInput}
               onChange={(e) => setAssistantInput(e.target.value)}
-              placeholder={extraPrompt && assistantInput ? '' : "Interactúa con el asistente. Ejemplo: sos muy carismática, hablas coloquial."}
+              placeholder={extraPrompt && assistantInput ? '' : "Agrega instrucciones adicionales para el asistente (opcional)"}
             />
             <button onClick={sendToAssistant} style={{ fontWeight: "bold", marginTop: "5px" }}>ENVIAR A ASISTENTE SIMPLE AI</button>
           </div>
