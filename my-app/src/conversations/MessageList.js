@@ -6,6 +6,7 @@ import ChatBubble from '../components/ChatBubble';
 import AvatarWrapper from '../components/AvatarWrapper';
 import { useMediaQuery } from '@mui/material';
 import { formatText } from '../utils/FormatText';
+import { useEffect , useRef} from 'react';
 
 
 const formatDate = (timestamp) => {
@@ -21,6 +22,19 @@ const formatDate = (timestamp) => {
   const MessageList = ({ conversation, isManual }) => {
     let currentDate = '';  // Ahora es una variable simple
     const isMobile = useMediaQuery('(max-width:600px)');
+    const messagesEndRef = useRef(null); // Ref para el final de la lista de mensajes
+
+  // Función para hacer scroll al final
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Hacer scroll al final cada vez que cambian los mensajes
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversation.messages]);
   
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:"75vh" }}>
@@ -114,6 +128,7 @@ const formatDate = (timestamp) => {
                         <AvatarWrapper de={mensaje.from} />
                       </>
                     )}
+                     <div ref={messagesEndRef} />
                   </Box>
                 </React.Fragment>
               );
