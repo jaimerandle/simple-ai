@@ -28,7 +28,7 @@ const ConversationDetails = () => {
   const textFieldRef = useRef(null); 
   const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
   const token = localStorage?.getItem('authToken');
-  const isManual = manualMessage;
+  const messagesEndRef = useRef(null);
   const [manualMessages, setManualMessages] = useState([]); 
 
   useEffect(() => {
@@ -51,8 +51,8 @@ const ConversationDetails = () => {
     fetchConversationDetails();
   }, [id, navigate]);
 
-  useEffect(() => {
-    if (conversation?.status === 3 ){
+  useEffect(async () => {
+    if (await conversation?.status === 3 ){
       setManualMode(true)
     }
     else {setManualMode(false)}
@@ -90,7 +90,12 @@ const ConversationDetails = () => {
   }, [id, lastMessageTimestamp, conversation?.messages]);
   
   
-  
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
 
   const handleStateChange = (id, newState) => {
     setConversation(prevConversation => ({
@@ -163,8 +168,8 @@ const handleSendManualMessage = async () => {
 
       // Agregar el mensaje manual a la lista de mensajes enviados
       setManualMessages(prev => [...prev, newMessage]);
-
       setManualMessage(''); // Limpiar el campo de mensaje
+      scrollToBottom();
     } catch (error) {
       console.error('Error al enviar el mensaje manual:', error.message);
     }
@@ -246,7 +251,7 @@ const handleSendManualMessage = async () => {
             >
               {/* Campo de texto estilo WhatsApp */}
               <TextField
-              
+                
                 fullWidth
                 placeholder="Escribe un mensaje..."
                 value={manualMessage}
@@ -254,6 +259,7 @@ const handleSendManualMessage = async () => {
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault(); // Evita que se agregue una nueva línea
+                    event.stopPropagation(); // Detiene la propagación del evento para que no afecte al Switch
                     handleSendManualMessage(); // Llama a la función de envío de mensaje
                   }
                 }}
