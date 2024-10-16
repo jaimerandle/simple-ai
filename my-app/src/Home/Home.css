@@ -18,7 +18,7 @@
 }
 /* Home.css */
 body {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    background: white;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -75,7 +75,7 @@ body {
 }
 
 .card {
-    background-color: transparent;
+    background-color: white;
     border: none;
 }
 
@@ -125,3 +125,26 @@ body {
         transform: translateY(-20px);
     }
 }
+.roboto-light {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .roboto-medium {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+  }
+
+@media (max-width: 600px) {
+    #wrapper {
+        display: block;
+        padding: 0;
+    }
+
+    #page-content-wrapper {
+        padding: 0;
+    }
+}
+
