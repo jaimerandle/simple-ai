@@ -145,7 +145,7 @@ function ChatPrueba() {
         setTimeout(() => startPolling(eventId), 2000);
       } else if (result.action === 'REPLY') {
         // Actualiza mensajes con la respuesta de Nicole
-        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: formatText(result.messages[0].text.body), timestamp: new Date() }]);
+        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: formatText(result.text), timestamp: new Date() }]);
         setIsTyping(false); // Deja de mostrar "Nicole está escribiendo..." cuando llega la respuesta
       }
 
