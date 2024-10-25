@@ -11,18 +11,18 @@ import { formatText } from '../utils/FormatText';
 function ChatPrueba() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false); // Estado para "Nicole está escribiendo"
-  const [extraPrompt, setExtraPrompt] = useState(''); // Estado para el extraPrompt del asistente
+  const [isTyping, setIsTyping] = useState(false); 
+  const [extraPrompt, setExtraPrompt] = useState('');
   const [assistantInput, setAssistantInput] = useState('');
-  const [assistantName, setAssistantName] = useState('')
+  const [assistantName, setAssistantName] = useState('');
   const [demoChannelId, setDemoChannelId] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [assistantId, setAssistantId] = useState(null);
-  const [clientId, setClientId]= useState(null)
-  const [source, setSource]= useState('')
+  const [clientId, setClientId]= useState(null);
+  const [source, setSource]= useState('');
   const isMobile = useMediaQuery('(max-width:600px)');
   const navigate = useNavigate();
-  const [dates, setDates] = useState("")
+  const [dates, setDates] = useState('');
 
   const messagesEndRef = useRef(null);
 
@@ -31,13 +31,13 @@ function ChatPrueba() {
   };
 
   useEffect(() => {
-    setSource(generateConversationId()); // Genera un nuevo ID al cargar la demo
+    setSource(generateConversationId()); 
   }, []);
 
   const startNewConversation = () => {
     setSource(generateConversationId());
-    setMessages([]); // Limpia el historial de mensajes
-    setIsTyping(false); // Reinicia el estado de "Nicole está escribiendo"
+    setMessages([]); 
+    setIsTyping(false); 
   };
 
   useEffect(() => {
@@ -45,29 +45,25 @@ function ChatPrueba() {
       const token = localStorage.getItem('authToken');
 
       if (!token) {
-        navigate('/'); // Redirigir si no hay token
+        navigate('/');
         return;
       }
 
       try {
-        // Obtener los asistentes y el primer extraPrompt
         const assistants = await getAssistants(token);
-        setDates(assistants[0].last_updated)
-        const firstAssistant = assistants[0]; // Tomar el primer asistente
-        const prompt = firstAssistant.config.extraPrompt || ''; // Si no hay extraPrompt, usar string vacío
-        setExtraPrompt(prompt); // Guarda el extraPrompt
+        setDates(assistants[0].last_updated);
+        const firstAssistant = assistants[0]; 
+        const prompt = firstAssistant.config.extraPrompt || ''; 
+        setExtraPrompt(prompt); 
         setAssistantId(firstAssistant.id);
-        setAssistantName(firstAssistant.name) // Guarda el ID del asistente
-        setAssistantInput(prompt); // Asigna el extraPrompt al textarea
+        setAssistantName(firstAssistant.name);
+        setAssistantInput(prompt);
 
-        // Obtener el demoChannelId del cliente
         const clientInfo = await getUserInfo(token);
-        console.log(clientInfo,"CLIENTE")
         setDemoChannelId(clientInfo?.clientInfo.details?.demoChannelId);
-        setClientId(clientInfo.client_id)
-        // Guarda el demoChannelId
+        setClientId(clientInfo.client_id);
 
-        setLoading(false); // Deja de cargar una vez que tienes los datos
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data", error);
         setLoading(false);
@@ -84,33 +80,29 @@ function ChatPrueba() {
   };
 
   useEffect(() => {
-    scrollToBottom(); // Llama esta función cada vez que los mensajes cambian
+    scrollToBottom(); 
   }, [messages , isTyping]);
 
-  // Función para manejar el envío al presionar Enter en el chat
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Prevenir el comportamiento por defecto de "Enter" en formularios
+      e.preventDefault(); 
       sendMessage();
     }
   };
 
-  // Función para enviar mensajes en el chat
   const sendMessage = async () => {
     if (input.trim() !== '') {
       const eventId = String(Date.now()) + Math.floor(Math.random() * 999999);
-      console.log(eventId, "ID EVENT")
 
       const newMessage = {
         id: eventId,
         clientId: clientId,
         channelId: demoChannelId,
-        source: source ,
+        source: source,
         target: 'demo',
         text: input,
       };
 
-      // Actualiza mensajes con el nuevo mensaje del cliente
       setMessages(prevMessages => [...prevMessages, { user: 'CLIENTE', text: input, timestamp: new Date() }]);
 
       try {
@@ -122,7 +114,6 @@ function ChatPrueba() {
 
         setInput('');
 
-        // Mostrar "Nicole está escribiendo..."
         setIsTyping(true);
 
         setTimeout(() => startPolling(eventId), 10000);
@@ -144,9 +135,21 @@ function ChatPrueba() {
       } else if (result.action === 'WAIT') {
         setTimeout(() => startPolling(eventId), 2000);
       } else if (result.action === 'REPLY') {
-        // Actualiza mensajes con la respuesta de Nicole
-        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: formatText(result.text), timestamp: new Date() }]);
-        setIsTyping(false); // Deja de mostrar "Nicole está escribiendo..." cuando llega la respuesta
+        // Verificar tipo de mensaje (texto, imagen, documento)
+        const replyMessage = result?.text
+        console.log(replyMessage, "mensaje de prueba")
+        let formattedMessage;
+
+        // if (replyMessage.type === 'text') {
+          formattedMessage = formatText(replyMessage|| '');
+        // } else if (replyMessage.type === 'image') {
+        //   formattedMessage = `<img src="${replyMessage.image.link}" alt="${replyMessage.image.caption || 'Imagen'}"`;
+        // } else if (replyMessage.type === 'document') {
+        //   formattedMessage = `<a href="${replyMessage.document.link}" target="_blank">${replyMessage.document.caption || 'Documento'}</a>`;
+        // }
+
+        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: formattedMessage, timestamp: new Date() }]);
+        setIsTyping(false);
       }
 
     } catch (error) {
@@ -154,60 +157,45 @@ function ChatPrueba() {
     }
   };
 
-  // Función para enviar la configuración al asistente (actualización del extraPrompt)
   const sendToAssistant = async () => {
-    setLoading(true)
+    setLoading(true);
     if (assistantInput.trim() !== '') {
-        const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('authToken');
 
-        try {
-            // Obtener el asistente actual
-            const assistants = await getAssistants(token);
-            const firstAssistant = assistants[0]; 
-            // Tomar el primer asistente
-            setDates(firstAssistant.last_updated)
+      try {
+        const assistants = await getAssistants(token);
+        const firstAssistant = assistants[0]; 
+        setDates(firstAssistant.last_updated);
 
-            // Actualizar solo el campo extraPrompt en la config, pero enviamos el asistente completo
-            const updatedAssistant = {
-                ...firstAssistant, // Copiamos todo el asistente
-                config: {
-                    ...firstAssistant.config, // Copiamos toda la config existente
-                    extraPrompt: assistantInput, // Sobrescribimos solo el extraPrompt
-                },
-            };
+        const updatedAssistant = {
+          ...firstAssistant, 
+          config: {
+            ...firstAssistant.config, 
+            extraPrompt: assistantInput, 
+          },
+        };
 
-            // Realizar el PUT a /assistants/ID para actualizar el asistente completo
-            await updateAssistant(firstAssistant.id, updatedAssistant, token);
-            console.log(firstAssistant, "actualizada")
+        await updateAssistant(firstAssistant.id, updatedAssistant, token);
+        setExtraPrompt(assistantInput);
 
-            // Actualizar el extraPrompt en el estado y mostrar en el input
-            setExtraPrompt(assistantInput);
-
-
-        } catch (error) {
-            console.error('Error actualizando el asistente:', error);
-        }
-        setLoading(false)
+      } catch (error) {
+        console.error('Error actualizando el asistente:', error);
+      }
+      setLoading(false);
     }
-};
+  };
 
-const date = new Date(dates)
-
-
-// Convertir la fecha a zona horaria de Argentina (ART - UTC-3)
-const options = {
-  timeZone: 'America/Argentina/Buenos_Aires', 
-  year: 'numeric', 
-  month: '2-digit', 
-  day: '2-digit', 
-  hour: '2-digit', 
-  minute: '2-digit', 
-  second: '2-digit'
-};
-
-// Obtener la fecha formateada
-const argentinaTime = date.toLocaleString('es-AR', options);
-
+  const date = new Date(dates);
+  const options = {
+    timeZone: 'America/Argentina/Buenos_Aires', 
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit', 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit'
+  };
+  const argentinaTime = date.toLocaleString('es-AR', options);
   return (
     <div style={{ height: '100vh', overflowY: 'auto' }}>
       <Navbar />
@@ -237,7 +225,7 @@ const argentinaTime = date.toLocaleString('es-AR', options);
             <textarea
               value={assistantInput}
               onChange={(e) => setAssistantInput(e.target.value)}
-              placeholder={extraPrompt && assistantInput ? '' : "Agrega instrucciones adicionales para el asistente (opcional)"}
+              placeholder={extraPrompt && assistantInput ? '' : "Agrega instrucciones adicionales para el asistente"}
             />
             <button onClick={sendToAssistant} style={{ fontWeight: "bold", marginTop: "5px" }}>ENVIAR A ASISTENTE SIMPLE AI</button>
           </div>
