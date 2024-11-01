@@ -125,37 +125,46 @@ function ChatPrueba() {
 
   const startPolling = async (eventId) => {
     const pollingUrl = `https://ye7vfne74zvjc3twxc2h2mtkqq0ezayn.lambda-url.us-east-1.on.aws/${eventId}`;
-
+  
     try {
       const response = await fetch(pollingUrl);
       const result = await response.json();
-
+  
       if (result.action === 'SKIP') {
         console.log('Mensaje combinado con otro, no se muestra.');
       } else if (result.action === 'WAIT') {
         setTimeout(() => startPolling(eventId), 2000);
       } else if (result.action === 'REPLY') {
-        // Verificar tipo de mensaje (texto, imagen, documento)
-        const replyMessage = result?.text
-        console.log(replyMessage, "mensaje de prueba")
-        let formattedMessage;
-
-        // if (replyMessage.type === 'text') {
-          formattedMessage = formatText(replyMessage|| '');
-        // } else if (replyMessage.type === 'image') {
-        //   formattedMessage = `<img src="${replyMessage.image.link}" alt="${replyMessage.image.caption || 'Imagen'}"`;
-        // } else if (replyMessage.type === 'document') {
-        //   formattedMessage = `<a href="${replyMessage.document.link}" target="_blank">${replyMessage.document.caption || 'Documento'}</a>`;
-        // }
-
-        setMessages(prevMessages => [...prevMessages, { user: 'NICOLE', text: formattedMessage, timestamp: new Date() }]);
+        const replyMessages = result?.text
+          ? [{ type: 'textWap', body: result.text}]
+          : result.messages || [];
+  
+        replyMessages.forEach((replyMessage) => {
+          let formattedMessage;
+  
+          if (replyMessage.type === 'textWap') {
+            {formattedMessage = replyMessage.text.body}}
+            if (replyMessage.type === 'text'){
+            formattedMessage = `<p>${replyMessage.text.body}</p>`;
+          } else if (replyMessage.type === 'image') {
+            formattedMessage = `<img src="${replyMessage.image.link}" alt="${replyMessage.image.caption || 'Imagen'}">`;
+          } else if (replyMessage.type === 'document') {
+            formattedMessage = `<a href="${replyMessage.document.url}" target="_blank">${replyMessage.document.caption || 'Documento'}</a>`;
+          }
+  
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { user: 'NICOLE', text: formattedMessage, timestamp: new Date() },
+          ]);
+        });
+  
         setIsTyping(false);
       }
-
     } catch (error) {
       console.error('Error durante el polling:', error);
     }
   };
+  
 
   const sendToAssistant = async () => {
     setLoading(true);
