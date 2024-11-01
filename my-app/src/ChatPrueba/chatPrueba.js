@@ -147,7 +147,12 @@ function ChatPrueba() {
             if (replyMessage.type === 'text'){
             formattedMessage = `<p>${replyMessage.text.body}</p>`;
           } else if (replyMessage.type === 'image') {
-            formattedMessage = `<img src="${replyMessage.image.link}" alt="${replyMessage.image.caption || 'Imagen'}">`;
+            formattedMessage = `
+     <div>
+       <img src="${replyMessage.image.link}" alt="${replyMessage.image.caption || 'Imagen'}">
+       ${replyMessage.image.caption ? `<p style={{fontWeight: bold}}>${replyMessage.image.caption}</p>` : ''}
+     </div>
+           `;
           } else if (replyMessage.type === 'document') {
             formattedMessage = `<a href="${replyMessage.document.url}" target="_blank">${replyMessage.document.caption || 'Documento'}</a>`;
           }
