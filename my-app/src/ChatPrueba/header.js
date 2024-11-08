@@ -60,7 +60,7 @@ function Header({ assistants, selectedAssistant, onAssistantChange, isMobile, na
           }
         }}
       >
-        {assistants.map((assistant) => (
+        {assistants?.map((assistant) => (
           <MenuItem key={assistant.id} value={assistant}>
             {assistant.name}
           </MenuItem>

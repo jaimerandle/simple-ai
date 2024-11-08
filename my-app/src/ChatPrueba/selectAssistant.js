@@ -7,9 +7,9 @@ function SelectAssistant({ assistants, selectedAssistant, onChange }) {
       <InputLabel>Selecciona un asistente</InputLabel>
       <Select
         value={selectedAssistant ? selectedAssistant.id : ''}
-        onChange={(e) => onChange(assistants.find(assistant => assistant.id === e.target.value))}
+        onChange={(e) => onChange(assistants?.find(assistant => assistant.id === e.target.value))}
       >
-        {assistants.map((assistant) => (
+        {assistants?.map((assistant) => (
           <MenuItem key={assistant.id} value={assistant.id}>
             {assistant.name}
           </MenuItem>

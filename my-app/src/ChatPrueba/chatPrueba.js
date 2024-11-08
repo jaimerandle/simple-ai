@@ -7,16 +7,14 @@ import Header from './header';
 import ChatBox from './chatBox';
 import AssistantBox from './assistantBox';
 import ConfirmationDialog from './confirmationDialog';
-import { getAssistants, getUserInfo, updateAssistant } from '../services/bffService';
+import { getAssistants, getUserInfo, updateAssistant, getChannels } from '../services/bffService';
 import Loading from '../components/Loading';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
-
-
 function ChatPrueba() {
   const [messages, setMessages] = useState([]);
-  const [conversations, setConversations] = useState({}); // Guarda conversaciones por asistente
+  const [conversations, setConversations] = useState({});
   const [input, setInput] = useState('');
   const [extraPrompt, setExtraPrompt] = useState('');
   const [dates, setDates] = useState("");
@@ -24,11 +22,12 @@ function ChatPrueba() {
   const [assistantName, setAssistantName] = useState('');
   const [assistants, setAssistants] = useState([]);
   const [selectedAssistant, setSelectedAssistant] = useState(null);
+  const [channels, setChannels] = useState([]); 
+  const [channelId, setChannelId] = useState(null); 
   const [isModified, setIsModified] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [pendingAssistant, setPendingAssistant] = useState(null);
   const [clientId, setClientId] = useState(null);
-  const [demoChannelId, setDemoChannelId] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
   const navigate = useNavigate();
@@ -54,10 +53,9 @@ function ChatPrueba() {
   }, [messages]);
 
   const startNewConversation = () => {
-    // Reinicia solo la conversación del asistente actual
     setConversations((prevConversations) => ({
       ...prevConversations,
-      [selectedAssistant.id]: [], // Borra la conversación del asistente actual
+      [selectedAssistant.id]: [],
     }));
     setMessages([]);
     setSource(generateConversationId());
@@ -80,9 +78,15 @@ function ChatPrueba() {
         setAssistantInput(assistantsData[0].config.extraPrompt || '');
 
         const clientInfo = await getUserInfo(token);
-        console.log(clientInfo, "CLIENTioNFO")
-        setDemoChannelId(clientInfo?.clientInfo.details?.demoChannelId);
         setClientId(clientInfo.client_id);
+
+        const channelsData = await getChannels(token);
+        setChannels(channelsData);
+
+        const initialChannel = channelsData.find(channel => channel.assistant_id === assistantsData[0].id && channel.type === 6);
+        if (initialChannel) {
+          setChannelId(initialChannel.id);
+        }
 
         setLoading(false);
       } catch (error) {
@@ -105,7 +109,7 @@ function ChatPrueba() {
     } else {
       setConversations((prevConversations) => ({
         ...prevConversations,
-        [selectedAssistant.id]: messages, // Guarda la conversación actual antes de cambiar
+        [selectedAssistant.id]: messages,
       }));
       const newMessages = conversations[newAssistant.id] || [];
       setMessages(newMessages);
@@ -113,31 +117,68 @@ function ChatPrueba() {
       setAssistantName(newAssistant.name);
       setExtraPrompt(newAssistant.config.extraPrompt || '');
       setAssistantInput(newAssistant.config.extraPrompt || '');
+
+      const assistantChannel = channels.find(channel => channel.assistant_id === newAssistant.id && channel.type === 6);
+      if (assistantChannel) {
+        setChannelId(assistantChannel.id);
+      }
+
       setSource(generateConversationId()); 
       setIsTyping(false);
     }
   };
+const confirmAssistantChange = async () => {
+  if (pendingAssistant) {
+    // Guarda la conversación actual antes de cambiar de asistente
+    setConversations((prevConversations) => ({
+      ...prevConversations,
+      [selectedAssistant.id]: messages,
+    }));
 
-  const confirmAssistantChange = () => {
-    if (pendingAssistant) {
-      setConversations((prevConversations) => ({
-        ...prevConversations,
-        [selectedAssistant.id]: messages,
-      }));
+    try {
+      const token = localStorage.getItem('authToken');
+
+      // Obtiene la lista de asistentes actualizada después del cambio
+      const assistantsData = await getAssistants(token);
+      setAssistants(assistantsData);
+
+      // Busca el asistente actualizado en la lista y selecciona el nuevo
+      const updatedAssistant = assistantsData.find(assistant => assistant.id === pendingAssistant.id);
+
+      // Obtiene los canales y selecciona el canal de tipo 6 del nuevo asistente
+      const channels = await getChannels(token);
+      const assistantChannel = channels.find(channel => 
+        channel.assistant_id === pendingAssistant.id && channel.type === 6
+      );
+
+      if (assistantChannel) {
+        setChannelId(assistantChannel.id);
+      } else {
+        console.error('No se encontró un canal de tipo 6 para el asistente seleccionado');
+      }
+
+      // Actualiza los datos del asistente seleccionado y su conversación
+      setSelectedAssistant(updatedAssistant);
+      setAssistantName(updatedAssistant.name);
+      setExtraPrompt(updatedAssistant.config.extraPrompt || '');
+      setAssistantInput(updatedAssistant.config.extraPrompt || '');
       const newMessages = conversations[pendingAssistant.id] || [];
       setMessages(newMessages);
-      setSelectedAssistant(pendingAssistant);
-      setAssistantName(pendingAssistant.name);
-      setExtraPrompt(pendingAssistant.config.extraPrompt || '');
-      setAssistantInput(pendingAssistant.config.extraPrompt || '');
-      setSource(generateConversationId()); 
+      setSource(generateConversationId());
       setIsTyping(false);
 
+      // Limpia el estado de cambio pendiente y cierra el modal
       setShowConfirmation(false);
       setPendingAssistant(null);
       setIsModified(false);
+
+    } catch (error) {
+      console.error('Error al actualizar o cargar el asistente o el canal:', error);
     }
-  };
+  }
+};
+
+
 
   const sendMessage = async () => {
     if (input.trim() !== '') {
@@ -146,9 +187,9 @@ function ChatPrueba() {
       const newMessage = {
         id: eventId,
         clientId: clientId,
-        channelId: demoChannelId,
+        channelId: channelId, 
         source: source,
-        target: selectedAssistant.name, // Usa el nombre del asistente actual
+        target: selectedAssistant.name, 
         text: input,
       };
 
@@ -208,7 +249,7 @@ function ChatPrueba() {
   
           setMessages((prevMessages) => [
             ...prevMessages,
-            { user: selectedAssistant.name, text: formattedMessage, timestamp: new Date() }, // Muestra el nombre del asistente actual
+            { user: selectedAssistant.name, text: formattedMessage, timestamp: new Date() }, 
           ]);
         });
   
@@ -221,36 +262,44 @@ function ChatPrueba() {
   };
 
   const sendPromptToAssistant = async () => {
-    setLoadingSendPrompt(true)
-    if (assistantInput.trim() !== '') {
-      const token = localStorage.getItem('authToken');
+    setLoadingSendPrompt(true);
+    if (assistantInput.trim() && selectedAssistant) {
+        const token = localStorage.getItem('authToken');
+        try {
+            const updatedAssistant = {
+                ...selectedAssistant,
+                config: {
+                    ...selectedAssistant.config,
+                    extraPrompt: assistantInput,
+                },
+            };
 
-      try {
-        const assistants = await getAssistants(token);
-        const firstAssistant = assistants[0]; 
-        setDates(firstAssistant.last_updated);
+            // Realiza el PUT para actualizar el prompt sin usar ETag
+            await updateAssistant(selectedAssistant.id, updatedAssistant, token);
 
-        const updatedAssistant = {
-          ...firstAssistant, 
-          config: {
-            ...firstAssistant.config, 
-            extraPrompt: assistantInput, 
-          },
-        };
+            // Vuelve a obtener la lista de asistentes para asegurar la sincronización
+            const assistantsData = await getAssistants(token);
+            setAssistants(assistantsData);
 
-        await updateAssistant(firstAssistant.id, updatedAssistant, token);
-        setExtraPrompt(assistantInput);
-        setOpenSnack(true)
-       setLoadingSendPrompt(false)
-      } catch (error) {
-        setOpenSnackError(true)
-        console.error('Error actualizando el asistente:', error);
-      }
+            // Encuentra y sincroniza el asistente actualizado
+            const refreshedAssistant = assistantsData.find(assistant => assistant.id === selectedAssistant.id);
+            setSelectedAssistant(refreshedAssistant);
+            setExtraPrompt(refreshedAssistant.config.extraPrompt || '');
+            setAssistantInput(refreshedAssistant.config.extraPrompt || '');
+
+            setOpenSnack(true);
+            setIsModified(false);
+        } catch (error) {
+            console.error('Error actualizando el asistente:', error);
+            setOpenSnackError(true);
+        } finally {
+            setLoadingSendPrompt(false);
+        }
     }
-  };
-  
-  
+};
 
+  
+  
   return (
     <div style={{ height: '100vh', overflowY: 'auto' }}>
       <Navbar />
@@ -294,21 +343,21 @@ function ChatPrueba() {
           <Snackbar
             open={openSnack}
             autoHideDuration={3500}
-            onClose={()=>{setOpenSnack(false)}}
-            >
-               <Alert onClose={()=>{setOpenSnack(false)}} severity="success">
-                  Tu asistente de {assistantName} se actualizo correctamente!
-              </Alert>
-        </Snackbar>
-        <Snackbar
+            onClose={() => setOpenSnack(false)}
+          >
+            <Alert onClose={() => setOpenSnack(false)} severity="success">
+              Tu asistente de {assistantName} se actualizó correctamente!
+            </Alert>
+          </Snackbar>
+          <Snackbar
             open={openSnackError}
             autoHideDuration={3500}
-            onClose={()=>{setOpenSnackError(false)}}
-            >
-               <Alert onClose={()=>{setOpenSnackError(false)}} severity="error">
-                  Tu asistente de {assistantName} no se pudo actualizar
-              </Alert>
-        </Snackbar>
+            onClose={() => setOpenSnackError(false)}
+          >
+            <Alert onClose={() => setOpenSnackError(false)} severity="error">
+              Tu asistente de {assistantName} no se pudo actualizar
+            </Alert>
+          </Snackbar>
         </div>
       )}
     </div>

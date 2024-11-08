@@ -167,6 +167,19 @@ export const sendManualMessage = async (conversationId, message) => {
     }
 };
 
+export const getChannels = async (token) => {
+    try {
+        const response = await apiClient.get('/channels', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        return response.data;  // Devuelve la lista de canales
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error fetching channels');
+    }
+};
+
   
   
 
