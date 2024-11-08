@@ -32,7 +32,7 @@ function ChatBox({ messages, input, setInput, onSend, isTyping, assistantName, m
           onKeyPress={handleKeyPress}
           placeholder="Escribe un mensaje..."
         />
-        <button onClick={onSend}>ENVIAR</button>
+        <button style={{fontWeight:"bold", backgroundColor:"rgb(67, 10, 98)"}} onClick={onSend}>ENVIAR</button>
 
       </div>
     </div>

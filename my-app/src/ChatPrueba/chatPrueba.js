@@ -9,6 +9,10 @@ import AssistantBox from './assistantBox';
 import ConfirmationDialog from './confirmationDialog';
 import { getAssistants, getUserInfo, updateAssistant } from '../services/bffService';
 import Loading from '../components/Loading';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
+
 
 function ChatPrueba() {
   const [messages, setMessages] = useState([]);
@@ -29,9 +33,11 @@ function ChatPrueba() {
   const isMobile = useMediaQuery('(max-width:600px)');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [loadingSendPrompt, setLoadingSendPrompt] = useState(false);
   const [source, setSource] = useState("");
   const messagesEndRef = useRef(null);
-  const [etag, setEtag] = useState(null); 
+  const [openSnack, setOpenSnack] = useState(false); 
+  const [openSnackError, setOpenSnackError] = useState(false); 
 
   const generateConversationId = () => {
     return String(Date.now()) + Math.floor(Math.random() * 999999);
@@ -215,7 +221,7 @@ function ChatPrueba() {
   };
 
   const sendPromptToAssistant = async () => {
-    setLoading(true);
+    setLoadingSendPrompt(true)
     if (assistantInput.trim() !== '') {
       const token = localStorage.getItem('authToken');
 
@@ -234,11 +240,12 @@ function ChatPrueba() {
 
         await updateAssistant(firstAssistant.id, updatedAssistant, token);
         setExtraPrompt(assistantInput);
-
+        setOpenSnack(true)
+       setLoadingSendPrompt(false)
       } catch (error) {
+        setOpenSnackError(true)
         console.error('Error actualizando el asistente:', error);
       }
-      setLoading(false);
     }
   };
   
@@ -266,7 +273,7 @@ function ChatPrueba() {
               assistantInput={assistantInput}
               onPromptChange={handlePromptChange}
               onSend={sendPromptToAssistant}
-              loading={loading}
+              loading={loadingSendPrompt}
             />
             <ChatBox 
               messages={messages} 
@@ -284,6 +291,24 @@ function ChatPrueba() {
             onCancel={() => setShowConfirmation(false)}
             assistantName={pendingAssistant?.name}
           />
+          <Snackbar
+            open={openSnack}
+            autoHideDuration={3500}
+            onClose={()=>{setOpenSnack(false)}}
+            >
+               <Alert onClose={()=>{setOpenSnack(false)}} severity="success">
+                  Tu asistente de {assistantName} se actualizo correctamente!
+              </Alert>
+        </Snackbar>
+        <Snackbar
+            open={openSnackError}
+            autoHideDuration={3500}
+            onClose={()=>{setOpenSnackError(false)}}
+            >
+               <Alert onClose={()=>{setOpenSnackError(false)}} severity="error">
+                  Tu asistente de {assistantName} no se pudo actualizar
+              </Alert>
+        </Snackbar>
         </div>
       )}
     </div>

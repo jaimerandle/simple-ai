@@ -17,7 +17,7 @@ function Header({ assistants, selectedAssistant, onAssistantChange, isMobile, na
           backgroundColor: "white",
           color: "grey",
           '&:hover': {
-            backgroundColor: "#9747FF", // Violeta
+            backgroundColor: "rgb(67, 10, 98)", // Violeta
             color: "white",
           }
         }}
@@ -36,7 +36,7 @@ function Header({ assistants, selectedAssistant, onAssistantChange, isMobile, na
           backgroundColor: "white",
           color: "grey",
           '&:hover': {
-            backgroundColor: "#9747FF",
+            backgroundColor: "rgb(67, 10, 98)",
             color: "white",
           }
         }}
@@ -55,7 +55,7 @@ function Header({ assistants, selectedAssistant, onAssistantChange, isMobile, na
           backgroundColor: "white",
           color: "grey",
           '&:hover': {
-            backgroundColor: "#9747FF",
+            backgroundColor: "rgb(67, 10, 98)",
             color: "white",
           }
         }}
