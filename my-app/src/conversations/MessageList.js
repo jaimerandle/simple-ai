@@ -6,10 +6,12 @@ import AvatarWrapper from '../components/AvatarWrapper';
 import { useMediaQuery } from '@mui/material';
 import { formatText } from '../utils/FormatText';
 
+
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
   return date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 };
+
 
 const formatTime = (timestamp) => {
   const date = new Date(timestamp);
@@ -31,6 +33,8 @@ const MessageList = ({ conversation, isManual }) => {
     scrollToBottom();
   }, [conversation.messages]);
 
+
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:"75vh" }}>
       {conversation.messages && conversation.messages.length > 0 ? (
@@ -38,6 +42,7 @@ const MessageList = ({ conversation, isManual }) => {
           const messageDate = formatDate(mensaje.timestamp);
           const isNewDay = messageDate !== currentDate;
           currentDate = messageDate;
+          console.log(mensaje.text , "texto")
 
           return (
             <React.Fragment key={index}>
@@ -69,14 +74,14 @@ const MessageList = ({ conversation, isManual }) => {
                     >
                       {/* Renderizado según el tipo de mensaje */}
                       {mensaje.text && (
-                        <div style={{marginTop:"10px"}} dangerouslySetInnerHTML={{ __html: formatText(mensaje.text || '') }} />
+                        <div style={{marginTop:"10px", fontSize:"14px"}} dangerouslySetInnerHTML={{ __html: formatText(mensaje.text|| '') }} />
                       )}
                       {mensaje.image && (
                         <div style={{display:"grid"}}>
                           <div>
-                          <img src={mensaje.image?.link} alt={mensaje.image?.caption || 'Imagen'} style={{ maxWidth: '100%'}} />
+                          <img src={mensaje.image?.link} alt={<div dangerouslySetInnerHTML={{ __html: formatText(mensaje.image.caption || '') }}/>} style={{ maxWidth: '100%'}} />
                           </div>
-                          {mensaje.image?.caption && <Typography variant="caption">{mensaje.image.caption}</Typography>}
+                          {mensaje.image?.caption && <Typography variant="caption">{<div dangerouslySetInnerHTML={{ __html: formatText(mensaje.image.caption || '') }}/>}</Typography>}
                         </div>
                       )}
                       {mensaje.document && (
@@ -90,7 +95,7 @@ const MessageList = ({ conversation, isManual }) => {
                         variant="body2"
                         color="#969AB8"
                         sx={{
-                          marginTop: 5,
+                          marginTop: 1,
                           fontSize: '0.55rem',
                           textAlign: 'left',
                           bottom: 0,
@@ -122,14 +127,14 @@ const MessageList = ({ conversation, isManual }) => {
                     >
                       {/* Renderizado según el tipo de mensaje */}
                       {mensaje.text && (
-                        <div  style={{marginTop:"10px"}} dangerouslySetInnerHTML={{ __html: formatText(mensaje.text|| '') }} />
+                        <div  style={{marginTop:"10px", fontSize:"14px !important"}} dangerouslySetInnerHTML={{ __html: formatText(mensaje.text|| '') }} />
                       )}
                       {mensaje.image && (
                         <div style={{display:"grid"}}>
                           <div style={{'display': 'flex', 'width': '100%', 'justify-items': 'center', 'justify-content': 'center', marginBottom:"10px", marginTop:"10px"}}>
                           <img src={mensaje.image?.link} alt={mensaje.image?.caption || 'Imagen'} style={{ maxWidth: '60%'}} />
                           </div>
-                          {mensaje.image?.caption && <Typography variant="caption">{mensaje.image.caption}</Typography>}
+                          {mensaje.image?.caption && <Typography variant="caption">{<div dangerouslySetInnerHTML={{ __html: formatText(mensaje.image.caption || '') }}/>}</Typography>}
                         </div>
                       )}
                       {mensaje.document && (

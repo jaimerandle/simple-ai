@@ -375,7 +375,7 @@ const SimpleTable = ({ customerDetails }) => {
             hour12: false,
           }).replace(", ", " ");
           
-          const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : conversation.channel_type === 1 ? 'WhatsApp' : conversation.channel_type === 6? "Demo" : 'Instagram';
+          const canal = conversation.channel_type === 3 ? 'Mercado Libre' : conversation.channel_type === 4 ? 'WhatsApp' : conversation.channel_type === 1 ? 'WhatsApp' : conversation.channel_type === 7 ? 'WhatsApp' : conversation.channel_type === 6? "Demo" : 'Instagram';
           const referencia = canal === 'WhatsApp' ? conversation.channel_source.substr(0, 15) : conversation.channel_source.substr(0, 15);
        
           return {
