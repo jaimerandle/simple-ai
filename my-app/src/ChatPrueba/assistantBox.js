@@ -4,8 +4,9 @@ import Spinner from 'react-bootstrap/esm/Spinner';
 
 function AssistantBox({ assistantInput, onPromptChange, onSend, loading }) {
   return (
-    <div className="assistant-box">
+    <div className="assistant-box" >
       <textarea
+        
         value={assistantInput}
         onChange={onPromptChange}
         placeholder="Agrega instrucciones adicionales para el asistente"

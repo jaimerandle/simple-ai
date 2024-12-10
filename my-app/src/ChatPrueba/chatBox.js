@@ -1,7 +1,9 @@
 import React from 'react';
-import "./chatPrueba.css"
+import "./chatPrueba.css";
+import { useMediaQuery } from '@mui/material';
 
 function ChatBox({ messages, input, setInput, onSend, isTyping, assistantName, messagesEndRef}) {
+  const isMobile = useMediaQuery('(max-width:600px)');
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -10,7 +12,7 @@ function ChatBox({ messages, input, setInput, onSend, isTyping, assistantName, m
   };
 
   return (
-    <div className="chat-box">
+    <div className="chat-box" style={{width:"100%",height:isMobile?"90%":"100%"}}>
       <div className="chat-messages">
         {messages.map((message, index) => (
           <div key={index} className={`chat-message ${message.user === 'CLIENTE' ? 'own-message' : 'nicole-message'}`}>

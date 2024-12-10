@@ -20,7 +20,7 @@ const formatTime = (timestamp) => {
 
 const MessageList = ({ conversation, isManual }) => {
   let currentDate = ''; 
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const isMobile = useMediaQuery('(max-width:750px)');
   const messagesEndRef = useRef(null); 
 
   const scrollToBottom = () => {
@@ -36,7 +36,7 @@ const MessageList = ({ conversation, isManual }) => {
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:"75vh" }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:isMobile?"40vh":'70vh' }}>
       {conversation.messages && conversation.messages.length > 0 ? (
         conversation.messages.map((mensaje, index) => {
           const messageDate = formatDate(mensaje.timestamp);

@@ -15,9 +15,12 @@ import MercadoLibreLogo from '../assets/mercadolibre.svg';
 import Loading from '../components/Loading';
 import { ConversationsTop } from './ConversationTop';
 import SendIcon from '@mui/icons-material/Send';
+import SimpleAI from '../assets/SimpleWhiteAI.png';
+import Logo from '../assets/simpleLogo.webp';
+import TitleSimple from '../components/titleSimple';
 
 const ConversationDetails = () => {
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const isMobile = useMediaQuery('(max-width:750px)');
   const { id } = useParams();
   const [conversation, setConversation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -204,17 +207,22 @@ const ConversationDetails = () => {
   }
 
   return (
-    <div style={{ height: '100vh', overflowY: 'auto' }}>
+    <div className={isMobile?"ALL":""} style={{ height: '100%', display:'flex',flexDirection:isMobile?'column-reverse':'column',}}>
       <Navbar />
-      <div style={{ width: "90%", marginLeft: "5%", height:"80vh" }}>
-        <ConversationContainer canal={canal} style={{ paddingBottom: '100px', backgroundColor: "white" }}>
+      <div style={{ width:isMobile?"100%":"90%",marginLeft:isMobile?"" :"5%", height:isMobile?"100%":"100%",zIndex:isMobile?"2":""}}>
+        <ConversationContainer canal={canal} style={{ backgroundColor: "white",height:"100%",borderRadius:isMobile?"10px 10px 0px 0px":"",}}>
           <ConversationsTop canal={canal} logoSrc={logoSrc} style={{ backgroundColor: "white" }} />
           <div style={{ border: "0.3px solid #E1C9FF", zIndex: "1111", marginTop: "20px" }}></div>
-          <Box sx={{ marginTop: 2, display: 'flex', alignItems: 'center' }}>
+          {
+            !isMobile?
+            <Box sx={{ marginTop: 2, display: 'flex', alignItems: 'center' }}>
             <Typography sx={{ marginRight: 2, marginLeft:2 }}>Modo IA</Typography>
             <Switch checked={manualMode} onChange={handleManualModeChange} />
             <Typography sx={{ marginLeft: 2 }}>Modo Manual</Typography>
           </Box>
+            :
+            <></>
+          }
           <div style={{ display: isMobile ? "block" : "flex", backgroundColor: "white" }}>
             <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} onStateChange={handleStateChange} canal={canal} logoSrc={logoSrc} />
             <MessageList conversation={conversation} isManual={manualMode} />
@@ -285,6 +293,19 @@ const ConversationDetails = () => {
           )}
         </ConversationContainer>
       </div>
+      {isMobile?
+        <>
+          
+          <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"19%", gap:"20px",marginBottom:"10%"}}>
+            <img src={Logo}  style={{width:"30%"}}/>
+            <img src={SimpleAI} style={{width:"90%"}}/>
+          </div>
+        
+        </>
+        :
+        <></>
+      }
+   
     </div>
   );
 };

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar, } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -12,13 +12,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import { TextField, CircularProgress, useMediaQuery, Select, MenuItem , Pagination, ButtonBase} from '@mui/material';
+import { TextField, useMediaQuery, ButtonBase,Grid,Card,CardContent,Typography} from '@mui/material';
 import { getConversations, updateConversationMetadata, deleteConversation } from '../services/bffService';
 import StateSelector from './StateSelector';
 import NoteDialog from '../conversations/NoteDialog';
 import Loading from './Loading';
 import ColumnSelector from './ColumnSelector';
 import {Tooltip} from '@mui/material';
+
+
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-columnHeaders': {
@@ -235,7 +237,12 @@ const SimpleTable = ({ customerDetails }) => {
   const [selectedNote, setSelectedNote] = useState('');
   const [selectedResponsible, setSelectedResponsible] = useState('');
   const [selectedId, setSelectedId] = useState(null);
-  
+  //intersection  Observer
+  const [visibleCount,setVisibleCount] = useState(10);
+  const loadMoreRef = useRef(null);
+
+
+
 
   const truncateNote = (note) => {
     return note.length > 50 ? `${note.substring(0, 30)}...` : note? note :"Sin notas";
@@ -383,7 +390,7 @@ const SimpleTable = ({ customerDetails }) => {
             referencia: referencia,
             canal: canal,
             fechaHora: date,
-            formattedFechaHora: isMobile ? formattedDate : formattedDateTime,
+            formattedFechaHora: isMobile ? formattedDateTime : formattedDateTime,
             state: conversation.metadata?.state || "Sin Respuesta",
             note: conversation.metadata?.note || 'Sin notas',
             responsible: conversation.metadata?.responsible || "",
@@ -404,6 +411,29 @@ const SimpleTable = ({ customerDetails }) => {
       }
     }
   };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          // Incrementa los elementos visibles cuando el último es observado
+          setVisibleCount((prev) => Math.min(prev + 10, filteredRows.length));
+        }
+      },
+      { threshold: 1.0 } // Se activa cuando el 100% del elemento está visible
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [filteredRows]);
+
 
   useEffect(() => {
     const fetchAndUpdateConversations = () => {
@@ -527,11 +557,12 @@ const SimpleTable = ({ customerDetails }) => {
       </style>
       <Box
         sx={{
-          height: "70vh",
+     
+          height:isMobile?"65vh":"70vh",
           width: '100%',
           background: '',
-          padding: isMobile ? 0 : 2,
-          marginTop: "15px",
+          padding: isMobile ? 1 : 2,
+          marginTop: isMobile?"30px":"10px",
           flexGrow: "1",
         }}
       >
@@ -569,7 +600,7 @@ const SimpleTable = ({ customerDetails }) => {
               },
             }}
           />
-            <Button onClick={handleOpen}>Seleccionar Columnas</Button>
+            <Button style={{display:isMobile?'none':''}} onClick={handleOpen}>Seleccionar Columnas</Button>
           <IconButton color="white" onClick={handleRefresh} style={{ color: "grey", width: isMobile ?? "20%" }} sx={{
           }}>
             <RefreshIcon style={{ height: "25px" }} />
@@ -580,32 +611,102 @@ const SimpleTable = ({ customerDetails }) => {
             <Loading/>
           </Box>
         ) : (
-          <>
-          <StyledDataGrid
-            rows={filteredRows.map(row => ({ ...row, fechaHora: row.formattedFechaHora }))}
-            columns={displayedColumns}
-            getRowClassName={(params) =>
-              params.indexRelativeToCurrentPage % 2 === 0 ? 'Mui-even' : 'Mui-odd'
+          <> 
+            {
+              !isMobile?(
+                <StyledDataGrid
+                rows={filteredRows.map(row => ({ ...row, fechaHora: row.formattedFechaHora }))}
+                columns={displayedColumns}
+                getRowClassName={(params) =>
+                  params.indexRelativeToCurrentPage % 2 === 0 ? 'Mui-even' : 'Mui-odd'
+                }
+                pageSize={pageSize}
+                disableSelectionOnClick
+                autoHeight={false}
+                getRowHeight={() => 'auto'}
+                onPageChange={(newPage) => setPage(newPage + 1)}
+                rowsPerPageOptions={[40]}
+                  pagination
+                components={{
+                Toolbar: GridToolbar}}
+                initialState={{
+                  sorting: {
+                    sortModel: [{ field: 'fechaHora', sort: 'desc' }],
+                  },
+                }}
+                sx={{
+                  flexGrow: 1, // Para que ocupe el espacio restante en el contenedor
+                  height: '100%',
+                }}
+                renderCell
+              />
+              )
+              :
+              (<Box sx={{height:"85%",overflowY:"auto",backgroundColor:"white"}}>
+                 {filteredRows.slice(0,visibleCount).map((item,index) => (
+                
+                  <Grid item xs={12} sm={12} md={12} key={item.id}  sx={{padding:"10px"}}>
+                    <Card>
+                      <CardContent sx={{display:"flex"}}>
+                        <Box sx={{flex:"2"}}>
+                          <Typography variant="h6" component="div">
+                            ID {item.id}
+                          </Typography>
+                          <Box sx={{
+                            display:"flex",
+                            gap:'9%'
+                          }}>
+                            <Box>
+                                <Typography variant='body2'>Referencia</Typography>
+                                <Typography variant='body2'>Canal</Typography>
+                                <Typography variant='body2'>Fecha</Typography>
+                                <Typography variant='body2'>Hora</Typography>
+                            </Box>
+                            <Box>
+                              <Typography variant="body2" color="grey">
+                                {item.referencia}
+                              </Typography>
+                              <Typography variant="body2" color="grey">
+                                {item.canal}
+                              </Typography>
+                              <Typography variant="body2" color="grey">
+                                {item.formattedFechaHora.substring(0,16)}
+                              </Typography>
+                              <Typography variant="body2" color="grey">
+                              {item.formattedFechaHora.substring(17,)}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Box>
+                        <Box sx={{flex:"1",display:"flex",flexDirection:"column",alignItems:"center"}}>
+                        <StateSelector id={item.id} initialState={item.state} onStateChange={handleStateChange} />
+                          <Typography variant='body2' color="grey" sx={{margin:"10px"}} >Acciones</Typography>
+                          <Box sx={{display:"flex",gap:"10px"}}>
+                            <ActionButton  row={item} onDelete={handleDeleteRow}/>
+                          </Box>  
+                        </Box>
+
+                      </CardContent>
+                    </Card>
+                 
+                  </Grid>
+                  ))}
+                {visibleCount < filteredRows.length && (
+                        <div
+                          ref={loadMoreRef}
+                          style={{
+                            height: "20px",
+                            textAlign: "center",
+                            color: "gray",
+                            margin: "10px 0",
+                          }}
+                        >
+                          Cargando más...
+                        </div>
+                      )}
+              </Box>
+              )
             }
-            pageSize={pageSize}
-            disableSelectionOnClick
-            autoHeight={false}
-            getRowHeight={() => 'auto'}
-            onPageChange={(newPage) => setPage(newPage + 1)}
-            rowsPerPageOptions={[40]}
-              pagination
-            components={{
-            Toolbar: GridToolbar}}
-            initialState={{
-              sorting: {
-                sortModel: [{ field: 'fechaHora', sort: 'desc' }],
-              },
-            }}
-            sx={{
-              flexGrow: 1, // Para que ocupe el espacio restante en el contenedor
-              height: '100%',
-            }}
-          />
         </>
         )}
       </Box>

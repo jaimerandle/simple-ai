@@ -28,10 +28,10 @@ const Navbar = () => {
    },[])
 
     return (
-        <div className='NAVBAR' style={{ position:"relative" , "z-index": "111111"}}>
+        <div className={isMobile?"":"NAVBAR"}   style={{ backgroundColor:"white", position:"relative" , "z-index": "111111" ,width:isMobile?"100%":""}}>
             <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{ backgroundColor: 'white' }}>
                 <div className="container-fluid">
-                    <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className="navbar-brand" style={{ display:isMobile?'none':'flex', alignItems: 'center' ,}}>
                         <img style={{ height: '30px', width: '30px', marginLeft: '10px', marginTop: '5px' }} src={SimpleLogo} alt="Simple Logo" />
                         <img style={{ width: isMobile? "70px":'130px', marginTop: '10px', marginLeft: '10px' }} src={simpleAi} alt="Simple AI" onClick={() => navigate("/home")} />
                     </div>
@@ -41,28 +41,58 @@ const Navbar = () => {
                         <p style={{color:"white", marginLeft:"5px"}}>Bienvenido,{" "}<strong>{name}</strong>!</p>
                     </div>
                     : <></>}
-                    <div className="ml-auto" style={{ display: 'flex', alignItems: 'center', width: isMobile?"60%": "" }}>
-                    <a className="nav-link user-icon-wrapper">
-                            <Tooltip title="Test">
-                                <WhatshotIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/ChatTest")} />
-                            </Tooltip>
-                        </a>
-                        <a className="nav-link user-icon-wrapper">
-                            <Tooltip title="Perfil">
-                                <PersonIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/Perfil")} />
-                            </Tooltip>
-                        </a>
-                        <a className="nav-link user-icon-wrapper">
-                            <Tooltip title="Dashboard">
-                                <EqualizerIcon style={{  height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/dashboard")} />
-                            </Tooltip>
-                        </a>
-                        <a className="nav-link user-icon-wrapper">
-                            <Tooltip title="Cerrar sesión">
-                                <LogoutIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"white"}} onClick={handleLogout} />
-                            </Tooltip>
-                        </a>
-                    </div>
+                    {!isMobile?
+                        <div className="ml-auto" style={{ display: 'flex', alignItems: 'center', width: isMobile?"60%": "" }}>
+                            <a className="nav-link user-icon-wrapper" >
+                                <Tooltip title="Test" >
+                                    <WhatshotIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/ChatTest")} />
+                                </Tooltip>
+                            </a>
+                            <a className="nav-link user-icon-wrapper">
+                                <Tooltip title="Perfil">
+                                    <PersonIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/Perfil")} />
+                                </Tooltip>
+                            </a>
+                            <a className="nav-link user-icon-wrapper">
+                                <Tooltip title="Dashboard">
+                                    <EqualizerIcon style={{  height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/dashboard")} />
+                                </Tooltip>
+                            </a>
+                            <a className="nav-link user-icon-wrapper">
+                                <Tooltip title="Cerrar sesión">
+                                    <LogoutIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"white"}} onClick={handleLogout} />
+                                </Tooltip>
+                            </a>
+                        </div>
+                    :
+                       <div style={{display:'flex',justifyContent:'space-between',width:'100%'}}>
+                            <div style={{flex:'4',display:'flex',gap:'25px'}}>
+                                <a className="nav-link user-icon-wrapper">
+                                    <Tooltip title="Test" >
+                                        <WhatshotIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"grey" }} onClick={() => navigate("/ChatTest")} />
+                                    </Tooltip>
+                                </a>
+                                <a className="nav-link user-icon-wrapper">
+                                    <Tooltip title="Perfil">
+                                        <PersonIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"grey" }} onClick={() => navigate("/Perfil")} />
+                                    </Tooltip>
+                                </a>
+                                <a className="nav-link user-icon-wrapper">
+                                    <Tooltip title="Dashboard">
+                                        <EqualizerIcon style={{  height: '30px', width: '30px', cursor: "pointer", color:"grey" }} onClick={() => navigate("/dashboard")} />
+                                    </Tooltip>
+                                </a>
+                            </div>
+                            <div style={{flex:'1',display:'flex',alignItems:"center" ,justifyContent:'center'}}>
+                                <a className="nav-link user-icon-wrapper">
+                                    <Tooltip title="Cerrar sesión">
+                                        <LogoutIcon style={{ height: '30px', width: '30px', cursor: "pointer", color:"grey"}} onClick={handleLogout} />
+                                    </Tooltip>
+                                </a>
+                            </div>
+                       </div> 
+                    }
+                    
                 </div>
             </nav>
         </div>

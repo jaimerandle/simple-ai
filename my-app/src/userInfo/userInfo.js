@@ -5,6 +5,8 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import StoreIcon from '@mui/icons-material/Store';
 import Navbar from '../Home/Navbar';
+import SimpleAI from '../assets/SimpleWhiteAI.png'
+import Logo from '../assets/simpleLogo.webp'
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 import './userInfo.css'; // Asegúrate de usar esta hoja de estilos
@@ -25,7 +27,7 @@ const UserInfoContainer = styled(Box)(({ theme }) => ({
 const UserAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(16),
   height: theme.spacing(16),
-  marginBottom: theme.spacing(2),
+  marginBottom: theme.spacing(3),
 }));
 
 // Estilo para la caja que contiene la información del usuario
@@ -70,9 +72,9 @@ const UserInfo = () => {
   }
 
   return (
-    <div className="USER">
+    <div className="USER" style={{display:isMobile?"flex":"" ,flexDirection:isMobile?"column-reverse":""}}>
       <Navbar />
-      <UserInfoContainer >
+      <UserInfoContainer style={{minHeight:isMobile?"76vh":""}} >
         <InfoBox style={{width: isMobile? '90%' : "", marginLeft: isMobile? '0%' : "", height:isMobile? "480px":""}}>
           <UserAvatar alt={user.name} src={user.avatar} style={{marginLeft:isMobile? "33%" : "30%", width:isMobile? "33%":"", height: isMobile? "70px": ""}}/>
           <Typography variant="h5" color="textPrimary" gutterBottom>{user.name}</Typography>
@@ -101,6 +103,14 @@ const UserInfo = () => {
           </List>
         </InfoBox>
       </UserInfoContainer>
+      {isMobile?
+        <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"20%", gap:"20px"}}>
+          <img src={Logo}  style={{width:"30%"}}/>
+          <img src={SimpleAI} style={{width:"90%"}}/>
+        </div>
+        :
+        <></>
+      }
     </div>
   );
 };
