@@ -1,16 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import Login from './Login/login';
 import Home from './Home/Home';
-
 import SimpleTable from './components/multiTable';
-import ConversationDetails from './components/ConversationDetails';
+import ConversationDetails from './conversations/ConversationDetails';
 import UserInfo from './userInfo/userInfo';
-import { user } from './data/userData';
 import UserStats from './dashboard/userStadistics';
+import { setupInterceptors } from './services/apiClient';
+import ChatPrueba from './ChatPrueba/chatPrueba';
 
 
-function App() {
+const App= () => {
+    setupInterceptors(Navigate);
     return (
         <Router>
             <Routes>
@@ -19,8 +20,9 @@ function App() {
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/conversation/:id" element={<ConversationDetails />} />
                 <Route path="/conversations" element={<SimpleTable />} />
-                <Route path="/Perfil" element={<UserInfo user={user} />}/>
+                <Route path="/Perfil" element={<UserInfo />}/>
                 <Route path="/dashboard" element={ <UserStats />}/>
+                <Route path="/chatTest" element={ <ChatPrueba />}/>
             </Routes>
         </Router>
     );

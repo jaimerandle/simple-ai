@@ -18,7 +18,7 @@
 }
 /* Home.css */
 body {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    background: white;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -52,9 +52,10 @@ body {
 #page-content-wrapper {
     flex: 1;
     overflow-y: auto;
+
     padding: 0px;
     margin-top: -35px;
-    background-color:transparent /* Fondo blanco semi-transparente */
+    background-color:white; /* Fondo blanco semi-transparente */
 }
 
 #sidebar-wrapper .sidebar-heading {
@@ -75,7 +76,7 @@ body {
 }
 
 .card {
-    background-color: transparent;
+    background-color: white;
     border: none;
 }
 
@@ -125,3 +126,51 @@ body {
         transform: translateY(-20px);
     }
 }
+.roboto-light {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .roboto-medium {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+  }
+
+@media (max-width: 750px) {
+    #wrapper {
+        display: block;
+        padding: 0;
+    }
+
+    #page-content-wrapper {
+        padding: 0;
+        margin-top: 0px;
+    }
+
+
+    
+}
+.HOME {
+    background-image: url('../assets/backgorundSimple.png'); /* Cambia la ruta según corresponda */
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+  }
+  
+
+  .HOME::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(62, 28, 82, 0.872); /* Aquí defines el color con transparencia */
+    z-index: 0; /* Coloca la capa encima */
+    pointer-events: none; /* Deja que el usuario interactúe con los elementos debajo */
+  } 
+  
+
