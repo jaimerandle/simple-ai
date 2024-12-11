@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Button, CircularProgress, Dialog, DialogActions, DialogTitle, IconButton, useMediaQuery, TextField, Switch } from '@mui/material';
 import Navbar from '../Home/Navbar';
-import { getConversationDetails, deleteConversation, pauseConversation, resumeConversation, sendManualMessage, replyToConversation } from '../services/bffService';
+import { getConversationDetails, pauseConversation, resumeConversation, replyToConversation, updateConversationMetadata } from '../services/bffService';
 import ConversationHeader from './ConversationHeader';
 import MessageList from './MessageList';
 import DeleteDialog from './DeleteDialog';
@@ -22,14 +22,13 @@ const ConversationDetails = () => {
   const [conversation, setConversation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [manualMessage, setManualMessage] = useState(''); 
-  const [manualMode, setManualMode] = useState(false); 
+  const [manualMessage, setManualMessage] = useState('');
+  const [manualMode, setManualMode] = useState(false);  // Modo Manual
+  const [copilotMode, setCopilotMode] = useState(false);  // Modo Copilot
+  const [suggestedReply, setSuggestedReply] = useState(''); // Respuesta sugerida por Copilot
+  const textFieldRef = useRef(null);
   const navigate = useNavigate();
-  const textFieldRef = useRef(null); 
-  const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
   const token = localStorage?.getItem('authToken');
-  const messagesEndRef = useRef(null);
-  const [manualMessages, setManualMessages] = useState([]); 
 
   useEffect(() => {
     const fetchConversationDetails = async () => {
@@ -40,6 +39,8 @@ const ConversationDetails = () => {
         try {
           const conversationDetails = await getConversationDetails(id, token);
           setConversation(conversationDetails);
+          setCopilotMode(conversationDetails.copilotEnabled || false);
+          setSuggestedReply(conversationDetails.suggestedReply || ''); // Cargar la respuesta sugerida
         } catch (error) {
           setError(error.message);
         } finally {
@@ -51,66 +52,23 @@ const ConversationDetails = () => {
     fetchConversationDetails();
   }, [id, navigate]);
 
-  useEffect( () => {
-    async function setStatus(){
-      if (await conversation?.status === 3 ){
-        setManualMode(true);
+  const handleCopilotModeChange = async (event) => {
+    if (!manualMode) return; // Deshabilitar Copilot si no está activado el Modo Manual
+    const isCopilot = event.target.checked;
+    setCopilotMode(isCopilot);
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await updateConversationMetadata(id, { copilotEnabled: isCopilot }, token); 
+      
+      if (isCopilot) {
+        const conversationDetails = await getConversationDetails(id, token);
+        setSuggestedReply(conversationDetails.suggestedReply || ''); // Precargar mensaje de Copilot
       } else {
-        setManualMode(false);
+        setSuggestedReply('');
       }
-    }
-    setStatus();
-
-    const pollMessages = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        const response = await getConversationDetails(id, token, lastMessageTimestamp);
-
-        if (response.messages.length > 0) {
-          const newTimestamp = response.messages[response.messages.length - 1].timestamp;
-          setLastMessageTimestamp(newTimestamp);
-
-          const newMessages = response.messages.filter(
-            msg => !conversation.messages.some(existingMsg => existingMsg.timestamp === msg.timestamp) 
-            && msg.from !== 'dashboard'
-          );
-
-          if (newMessages.length > 0) {
-            setConversation(prev => ({
-              ...prev,
-              messages: [...prev.messages, ...newMessages],
-            }));
-          }
-        }
-      } catch (error) {
-        console.error('Error al hacer polling:', error);
-      }
-    };
-
-    const pollingInterval = setInterval(pollMessages, 5000);
-    return () => clearInterval(pollingInterval); 
-  }, [id, lastMessageTimestamp, conversation?.messages]);
-
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleStateChange = (id, newState) => {
-    setConversation(prevConversation => ({
-      ...prevConversation,
-      state: newState,
-    }));
-
-    const storedConversations = JSON.parse(sessionStorage.getItem('conversations'));
-    if (storedConversations) {
-      const updatedConversations = storedConversations.map(conversation =>
-        conversation.id === parseInt(id)
-          ? { ...conversation, state: newState }
-          : conversation
-      );
-      sessionStorage.setItem('conversations', JSON.stringify(updatedConversations));
+    } catch (error) {
+      console.error('Error al actualizar el modo Copilot:', error);
     }
   };
 
@@ -121,14 +79,12 @@ const ConversationDetails = () => {
     if (isManual) {
       try {
         await pauseConversation(id, token); 
-        console.log('Conversación pausada');
       } catch (error) {
         console.error('Error al pausar la conversación:', error);
       }
     } else {
       try {
         await resumeConversation(id, token); 
-        console.log('Conversación reanudada');
       } catch (error) {
         console.error('Error al reanudar la conversación:', error);
       }
@@ -160,9 +116,7 @@ const ConversationDetails = () => {
           messages: [...prevConversation?.messages, newMessage],
         }));
 
-        setManualMessages(prev => [...prev, newMessage]);
         setManualMessage('');
-        scrollToBottom();
       } catch (error) {
         console.error('Error al enviar el mensaje manual:', error.message);
       }
@@ -193,10 +147,13 @@ const ConversationDetails = () => {
       canal = 'MELI';
       break;
     case 4:
-    case 1:
-    case 6:
       logoSrc = WhatsAppLogo;
       canal = 'WhatsApp';
+      break;
+    case 1:
+    case 6:
+      logoSrc = InstagramLogo;
+      canal = 'Instagram';
       break;
     default:
       logoSrc = WhatsAppLogo;
@@ -210,16 +167,29 @@ const ConversationDetails = () => {
         <ConversationContainer canal={canal} style={{ paddingBottom: '100px', backgroundColor: "white" }}>
           <ConversationsTop canal={canal} logoSrc={logoSrc} style={{ backgroundColor: "white" }} />
           <div style={{ border: "0.3px solid #E1C9FF", zIndex: "1111", marginTop: "20px" }}></div>
-          <Box sx={{ marginTop: 2, display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ marginRight: 2, marginLeft:2 }}>Modo IA</Typography>
-            <Switch checked={manualMode} onChange={handleManualModeChange} />
-            <Typography sx={{ marginLeft: 2 }}>Modo Manual</Typography>
-          </Box>
+          <Box sx={{ marginTop: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 1 }}>
+    <Typography sx={{ marginRight: 2 }}>Modo Manual</Typography>
+    <Switch checked={manualMode} onChange={handleManualModeChange} />
+  </Box>
+  {manualMode && 
+  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    <Typography sx={{ marginRight: 2 }}>Modo Copilot</Typography>
+    <Switch 
+      checked={copilotMode} 
+      onChange={handleCopilotModeChange} 
+      disabled={!manualMode}  // Solo se puede activar cuando el Modo Manual está activado
+    />
+  </Box>}
+</Box>
+
+
           <div style={{ display: isMobile ? "block" : "flex", backgroundColor: "white" }}>
-            <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} onStateChange={handleStateChange} canal={canal} logoSrc={logoSrc} />
+            <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} />
             <MessageList conversation={conversation} isManual={manualMode} />
           </div>
 
+          {/* Mostrar el input solo cuando el Modo Manual está activado */}
           {manualMode && (
             <Box
               sx={{
@@ -236,7 +206,7 @@ const ConversationDetails = () => {
               <TextField
                 fullWidth
                 placeholder="Escribe un mensaje..."
-                value={manualMessage}
+                value={copilotMode ? suggestedReply : manualMessage}  // Si está en Copilot, mostrar el mensaje sugerido
                 onChange={handleManualMessageChange}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey) {
@@ -246,7 +216,7 @@ const ConversationDetails = () => {
                 }}
                 variant="outlined"
                 multiline
-                style={{width:"65%", display:"flex", justifyContent:"flex-end"}}
+                style={{ width: "65%", display: "flex", justifyContent: "flex-end" }}
                 maxRows={4}
                 sx={{
                   '& .MuiOutlinedInput-root': {
@@ -279,7 +249,7 @@ const ConversationDetails = () => {
                   },
                 }}
               >
-                <SendIcon sx={{ color: 'white',  width:"100%" }} />
+                <SendIcon sx={{ color: 'white', width:"100%" }} />
               </IconButton>
             </Box>
           )}
