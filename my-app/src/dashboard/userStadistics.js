@@ -285,7 +285,7 @@ const UserStats = () => {
       {isMobile?
         <>
           
-          <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"10%", gap:"20px",marginBottom:"10%"}}>
+          <div onClick={()=>navigate('/home')} style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"5%", gap:"20px",marginBottom:"5%"}}>
             <img src={Logo}  style={{width:"30%"}}/>
             <img src={SimpleAI} style={{width:"90%"}}/>
           </div>

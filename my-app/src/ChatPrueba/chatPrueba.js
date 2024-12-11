@@ -303,13 +303,16 @@ const confirmAssistantChange = async () => {
   
   
   return (
-      <div className={isMobile?'asistContainer':""} style={{ height: '100vh', overflowY: 'auto', display:isMobile?"flex":"",flexDirection:isMobile?"column-reverse":"none"}}>
-        <Navbar />
+    
+     <>
+        
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <Box sx={{backgroundColor:'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',zIndex:"3" }}>
             <Loading />
           </Box>
         ) : (
+          <div className={isMobile?'asistContainer':""} style={{ height: '100vh', overflowY: 'auto', display:isMobile?"flex":"",flexDirection:isMobile?"column-reverse":"none"}}>
+          <Navbar />
           <div className="playground-container" style={{zIndex:isMobile?"1":"", width:isMobile?"100%":"",borderRadius:isMobile?"10px 10px 0px 0px":""}}>
             <Header
               
@@ -368,20 +371,22 @@ const confirmAssistantChange = async () => {
               </Alert>
             </Snackbar>
           </div>
-        )}
-        {isMobile?
-        <>
-          
-          <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"10%", gap:"20px",marginBottom:"10%"}}>
-            <img src={Logo}  style={{width:"30%"}}/>
-            <img src={SimpleAI} style={{width:"90%"}}/>
+          {isMobile?
+            <>
+              
+              <div onClick={()=>navigate('/home')} style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"5%", gap:"20px",marginBottom:"5%"}}>
+                <img src={Logo}  style={{width:"30%"}}/>
+                <img src={SimpleAI} style={{width:"90%"}}/>
+              </div>
+            
+            </>
+            :
+            <></>
+          }
           </div>
-        
-        </>
-        :
-        <></>
-      }
-      </div>
+
+        )}
+      </>
   );
 }
 

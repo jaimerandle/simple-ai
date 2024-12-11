@@ -104,7 +104,7 @@ const UserInfo = () => {
         </InfoBox>
       </UserInfoContainer>
       {isMobile?
-        <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"20%", gap:"20px"}}>
+        <div onClick={()=>navigate('/home')} style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"20%", gap:"20px"}}>
           <img src={Logo}  style={{width:"30%"}}/>
           <img src={SimpleAI} style={{width:"90%"}}/>
         </div>

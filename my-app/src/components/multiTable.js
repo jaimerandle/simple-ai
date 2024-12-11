@@ -558,7 +558,7 @@ const SimpleTable = ({ customerDetails }) => {
       <Box
         sx={{
      
-          height:isMobile?"65vh":"70vh",
+          height:isMobile?"78vh":"70vh",
           width: '100%',
           background: '',
           padding: isMobile ? 1 : 2,

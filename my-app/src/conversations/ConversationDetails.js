@@ -296,7 +296,7 @@ const ConversationDetails = () => {
       {isMobile?
         <>
           
-          <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"19%", gap:"20px",marginBottom:"10%"}}>
+          <div onClick={()=>navigate('/home')} style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"19%", gap:"20px",marginBottom:"10%"}}>
             <img src={Logo}  style={{width:"30%"}}/>
             <img src={SimpleAI} style={{width:"90%"}}/>
           </div>
