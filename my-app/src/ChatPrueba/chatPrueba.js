@@ -311,7 +311,7 @@ const confirmAssistantChange = async () => {
             <Loading />
           </Box>
         ) : (
-          <div className={isMobile?'asistContainer':""} style={{ height: '100vh', overflowY: 'auto', display:isMobile?"flex":"",flexDirection:isMobile?"column-reverse":"none"}}>
+          <div className={isMobile?'asistContainer':""} style={{ height:isMobile? '100vh':'100%', overflowY: 'auto', display:isMobile?"flex":"",flexDirection:isMobile?"column-reverse":"none"}}>
           <Navbar />
           <div className="playground-container" style={{zIndex:isMobile?"1":"", width:isMobile?"100%":"",borderRadius:isMobile?"10px 10px 0px 0px":""}}>
             <Header
@@ -324,7 +324,7 @@ const confirmAssistantChange = async () => {
               startNewConversation={startNewConversation}
             />
             <div style={{ display: 'flex', width:isMobile? '90%':'100%', justifyContent: 'space-between',flexDirection:isMobile?"column":"",height:isMobile?"75%":"70%" }}>
-                <div style={{flex:isMobile?"1":"2",display:'flex'}}>
+                <div style={{flex:isMobile?"1":"1",display:'flex'}}>
                 <ChatBox 
                   messages={messages} 
                   input={input} 
