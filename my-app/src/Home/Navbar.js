@@ -9,6 +9,7 @@ import { Tooltip, useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import './Navbar.css'; // Asegúrate de crear y usar este archivo CSS
+import { DropdownMenu } from '../components/DropdownMenu';
 
 
 const Navbar = () => {
@@ -43,6 +44,11 @@ const Navbar = () => {
                     : <></>}
                     {!isMobile?
                         <div className="ml-auto" style={{ display: 'flex', alignItems: 'center', width: isMobile?"60%": "" }}>
+                            <a className="nav-link user-icon-wrapper">
+                                <Tooltip title="Test" >
+                                    <DropdownMenu />
+                                </Tooltip>
+                            </a>
                             <a className="nav-link user-icon-wrapper" >
                                 <Tooltip title="Test" >
                                     <WhatshotIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/ChatTest")} />
@@ -67,6 +73,11 @@ const Navbar = () => {
                     :
                        <div style={{display:'flex',justifyContent:'space-between',width:'100%'}}>
                             <div style={{flex:'4',display:'flex',gap:'25px'}}>
+                                <a className="nav-link user-icon-wrapper">
+                                    <Tooltip title="Test" >
+                                        <DropdownMenu/>
+                                    </Tooltip>
+                                </a>
                                 <a className="nav-link user-icon-wrapper">
                                     <Tooltip title="Test" >
                                         <WhatshotIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"grey" }} onClick={() => navigate("/ChatTest")} />
