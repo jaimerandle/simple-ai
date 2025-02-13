@@ -10,7 +10,9 @@ import Logo from '../assets/simpleLogo.webp'
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 import './userInfo.css'; // Asegúrate de usar esta hoja de estilos
-
+import WhatsAppQrHandler from './whatsappQrHandler';
+import { getAssistants } from '../services/bffService';
+import Melibre from "../assets/melibre.png"
 // Estilo para el contenedor del perfil del usuario
 const UserInfoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -39,7 +41,7 @@ const InfoBox = styled(Box)(({ theme }) => ({
   textAlign: 'center',
   zIndex:"1111",
   width: '400px',
-  marginTop:"-100px" // Tamaño fijo para la caja
+  
 }));
 
 const UserInfo = () => {
@@ -47,9 +49,11 @@ const UserInfo = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width:600px)');
+
   
   useEffect(() => {
     const cachedUserInfo = localStorage.getItem('userInfo');
+
     if (cachedUserInfo) {
       setUser(JSON.parse(cachedUserInfo));
       setLoading(false);
@@ -72,7 +76,7 @@ const UserInfo = () => {
   }
 
   return (
-    <div className="USER" style={{display:isMobile?"flex":"" ,flexDirection:isMobile?"column-reverse":""}}>
+    <div className="USER" style={{height:"100vh", overflow:"auto"}} >
       <Navbar />
       <UserInfoContainer style={{minHeight:isMobile?"76vh":""}} >
         <InfoBox style={{width: isMobile? '90%' : "", marginLeft: isMobile? '0%' : "", height:isMobile? "480px":""}}>
@@ -80,23 +84,20 @@ const UserInfo = () => {
           <Typography variant="h5" color="textPrimary" gutterBottom>{user.name}</Typography>
           <Typography variant="body1" color="black">{user.email}</Typography>
           <List style={{marginLeft:"20%"}}>
-            <ListItem style={{marginTop:'25px'}}>
-              <ListItemIcon style={{marginTop:"-20px"}}>
-                <WhatsAppIcon color={user.whatsapp ? "primary" : "disabled"} />
-              </ListItemIcon>
-              <ListItemText  primary="WhatsApp" secondary={user.whatsapp ? "Cuenta activa" : "Cuenta inactiva"} />
+            <ListItem style={{marginTop:'25px', padding:"0px", marginBottom:"10px"}}>
+            <WhatsAppQrHandler clientId={user.client_id} assistId={user.assistId} user={user} />
             </ListItem>
             <div className='border'/>
             <ListItem>
               <ListItemIcon style={{marginTop:"-20px"}}>
-                <InstagramIcon color={user.instagram ? "primary" : "disabled"} />
+                <InstagramIcon style={{color:"#8a3ab9"}} />
               </ListItemIcon>
               <ListItemText  primary="Instagram" secondary={user.instagram ? "Cuenta activa" : "Cuenta inactiva"} />
             </ListItem>
             <div className='border'/>
             <ListItem>
               <ListItemIcon style={{marginTop:"-20px"}}>
-                <StoreIcon color={user.mercadolibre ? "primary" : "disabled"} />
+                <img src={Melibre} style={{width:"25px"}}/>
               </ListItemIcon>
               <ListItemText primary="Mercado Libre" secondary={user.mercadolibre ? "Cuenta activa" : "Cuenta inactiva"} />
             </ListItem>
@@ -114,5 +115,6 @@ const UserInfo = () => {
     </div>
   );
 };
+
 
 export default UserInfo;

@@ -4,7 +4,7 @@ import Navbar from './Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import SimpleTable from '../components/multiTable';
-import { getUserInfo } from '../services/bffService';
+import { getAssistants, getUserInfo } from '../services/bffService';
 import { Box, useMediaQuery, } from '@mui/material';
 import Loading from '../components/Loading';
 import SimpleAI from '../assets/SimpleWhiteAI.png'
@@ -27,6 +27,8 @@ const Home = () => {
             } else {
                 try {
                     const userDetails = await getUserInfo(token);
+                    const assistantsData = await getAssistants(token);
+                    sessionStorage.setItem("asistentes", JSON.stringify(assistantsData));
                     setNewColumns(userDetails.clientInfo.details)
                     setUserName(userDetails.name); // Assuming the user details have a 'name' field
                 } catch (error) {
