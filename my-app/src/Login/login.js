@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import simpleAiWhite from "../assets/SimpleAiWhite.png"
 import SimpleLogo from "../assets/simpleLogo.webp";
 import simpleAiBlack from "../assets/simple-ai.webp"
 import './login.css';
 import { loginAuth, getUserInfo } from '../services/bffService';
 import Spinner from 'react-bootstrap/Spinner';
-import MessageLogo from "../assets/Group.png"
+
 
 const Login = () => {
     const [email, setEmail] = useState('');

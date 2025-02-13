@@ -13,7 +13,7 @@ const SimpleTable = () => {
   const [rows, setRows] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const isMobile = useMediaQuery('(max-width:750px)');
   const [pageSize] = useState(40);
 
   useEffect(() => {

@@ -11,6 +11,8 @@ import { getAssistants, getUserInfo, updateAssistant, getChannels } from '../ser
 import Loading from '../components/Loading';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import SimpleAI from '../assets/SimpleWhiteAI.png';
+import Logo from '../assets/simpleLogo.webp';
 
 function ChatPrueba() {
   const [messages, setMessages] = useState([]);
@@ -301,66 +303,85 @@ const confirmAssistantChange = async () => {
   
   
   return (
-    <div style={{ height: '100vh', overflowY: 'auto' }}>
-      <Navbar />
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <Loading />
-        </Box>
-      ) : (
-        <div className="playground-container">
-          <Header
-            assistants={assistants}
-            selectedAssistant={selectedAssistant}
-            onAssistantChange={handleAssistantChange}
-            isMobile={isMobile}
-            navigate={navigate}
-            startNewConversation={startNewConversation}
-          />
-          <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-            <AssistantBox
-              assistantInput={assistantInput}
-              onPromptChange={handlePromptChange}
-              onSend={sendPromptToAssistant}
-              loading={loadingSendPrompt}
+      <div className={isMobile?'asistContainer':""} style={{ height: '100vh', overflowY: 'auto', display:isMobile?"flex":"",flexDirection:isMobile?"column-reverse":"none"}}>
+        <Navbar />
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <Loading />
+          </Box>
+        ) : (
+          <div className="playground-container" style={{zIndex:isMobile?"1":"", width:isMobile?"100%":"",borderRadius:isMobile?"10px 10px 0px 0px":""}}>
+            <Header
+              
+              assistants={assistants}
+              selectedAssistant={selectedAssistant}
+              onAssistantChange={handleAssistantChange}
+              isMobile={isMobile}
+              navigate={navigate}
+              startNewConversation={startNewConversation}
             />
-            <ChatBox 
-              messages={messages} 
-              input={input} 
-              setInput={setInput} 
-              onSend={sendMessage} 
-              isTyping={isTyping} 
-              assistantName={assistantName} 
-              messagesEndRef={messagesEndRef}
+            <div style={{ display: 'flex', width:isMobile? '90%':'100%', justifyContent: 'space-between',flexDirection:isMobile?"column":"",height:isMobile?"75%":"70%" }}>
+                <div style={{flex:isMobile?"1":"2",display:'flex'}}>
+                <ChatBox 
+                  messages={messages} 
+                  input={input} 
+                  setInput={setInput} 
+                  onSend={sendMessage} 
+                  isTyping={isTyping} 
+                  assistantName={assistantName} 
+                  messagesEndRef={messagesEndRef}
+                />
+                </div>
+
+                <div style={{flex:"1",display:"flex"}}>
+                <AssistantBox
+                    assistantInput={assistantInput}
+                    onPromptChange={handlePromptChange}
+                    onSend={sendPromptToAssistant}
+                    loading={loadingSendPrompt}
+                  />
+      
+                </div>
+            </div>
+            <ConfirmationDialog
+              open={showConfirmation}
+              onConfirm={confirmAssistantChange}
+              onCancel={() => setShowConfirmation(false)}
+              assistantName={pendingAssistant?.name}
             />
+            <Snackbar
+              open={openSnack}
+              autoHideDuration={3500}
+              onClose={() => setOpenSnack(false)}
+            >
+              <Alert onClose={() => setOpenSnack(false)} severity="success">
+                Tu asistente de {assistantName} se actualizó correctamente!
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={openSnackError}
+              autoHideDuration={3500}
+              onClose={() => setOpenSnackError(false)}
+            >
+              <Alert onClose={() => setOpenSnackError(false)} severity="error">
+                Tu asistente de {assistantName} no se pudo actualizar
+              </Alert>
+            </Snackbar>
           </div>
-          <ConfirmationDialog
-            open={showConfirmation}
-            onConfirm={confirmAssistantChange}
-            onCancel={() => setShowConfirmation(false)}
-            assistantName={pendingAssistant?.name}
-          />
-          <Snackbar
-            open={openSnack}
-            autoHideDuration={3500}
-            onClose={() => setOpenSnack(false)}
-          >
-            <Alert onClose={() => setOpenSnack(false)} severity="success">
-              Tu asistente de {assistantName} se actualizó correctamente!
-            </Alert>
-          </Snackbar>
-          <Snackbar
-            open={openSnackError}
-            autoHideDuration={3500}
-            onClose={() => setOpenSnackError(false)}
-          >
-            <Alert onClose={() => setOpenSnackError(false)} severity="error">
-              Tu asistente de {assistantName} no se pudo actualizar
-            </Alert>
-          </Snackbar>
-        </div>
-      )}
-    </div>
+        )}
+        {isMobile?
+        <>
+          
+          <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"10%", gap:"20px",marginBottom:"10%"}}>
+            <img src={Logo}  style={{width:"30%"}}/>
+            <img src={SimpleAI} style={{width:"90%"}}/>
+          </div>
+        
+        </>
+        :
+        <></>
+      }
+      </div>
   );
 }
 

@@ -8,9 +8,9 @@ const ConversationContainer = styled(Box)(({ theme, canal }) => ({
   flexDirection: 'column',
   backgroundColor: canal === 'WhatsApp' ? 'black' : canal === 'Instagram' ? 'linear-gradient(to right, #833ab4, #fd1d1d, #fcb045)' : '#ffe600',
   padding: theme.spacing(2),
- height: '100vh',
+ height: '100%',
   marginTop:"-20px",
-  marginBottom:"40px"
+    
 }));
 
 export default ConversationContainer;
