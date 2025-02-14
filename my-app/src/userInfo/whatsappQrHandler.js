@@ -21,7 +21,8 @@ const WhatsAppQrHandler = ({ clientId, user }) => {
   console.log(selectedAssistant, "asistente seleccionado")
 
   const handleInputChange = (event) => {
-    setWhatsappNumber(event.target.value);
+    const value = event.target.value.replace(/\D/g, ''); 
+    setWhatsappNumber(value);
   };
 
   const handleGenerateQr = async () => {
@@ -114,16 +115,20 @@ const WhatsAppQrHandler = ({ clientId, user }) => {
         {showInput && (
           <Box>
             <TextField
-             
               helperText="Ingresar el numero sin +954"
-              FormHelperTextProps={{style: {color : "grey"}}}
+              FormHelperTextProps={{style: {color: "grey"}}}
               value={whatsappNumber}
+              type='tel'
               onChange={handleInputChange}
+              inputProps={{
+                maxLength: 11,
+                inputMode: 'numeric'
+              }}
               fullWidth
               style={{ marginBottom: '10px' }}
-               InputLabelProps={{
-                style: { color: 'grey' }  // Cambia el color del label
-                }}
+              InputLabelProps={{
+                style: { color: 'grey' }
+              }}
             />
             
             {/* Mostrar el Select con los asistentes */}
