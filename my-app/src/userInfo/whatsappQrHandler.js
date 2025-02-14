@@ -49,7 +49,7 @@ const WhatsAppQrHandler = ({ clientId, user }) => {
         );
       
       // Guardamos la URL del QR que se nos devuelve
-      setQrUrl(response.data);
+      setQrUrl(response.data.qr);
     } catch (error) {
       console.error('Error generando el QR:', error);
       alert('Hubo un error generando el QR.');
@@ -68,8 +68,10 @@ const WhatsAppQrHandler = ({ clientId, user }) => {
       }
   });
       
-
+      console.log(response.data)
       if (response.status === 200) {
+        setQrUrl(response.data.qr)
+        console.log(qrUrl)
         setQrStatus('QR escaneado y activo');
       }
     } catch (error) {
