@@ -71,9 +71,17 @@ const Home = () => {
                     </div>
                 </div>
                 {isMobile?
-                    <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"20%", gap:"20px"}}>
-                        <img src={Logo}  style={{width:"30%"}}/>
-                        <img src={SimpleAI} style={{width:"90%"}}/>
+                     <div style={{
+                        zIndex: "3", 
+                        margin: "auto", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        marginTop: "10%", 
+                        gap: "20px", 
+                        marginBottom: "4%",
+                      }}>
+                        <img src={Logo}  style={{ width: "20%", marginBottom:"10px" }}/>
+                        <img src={SimpleAI} style={{width:"70%", height:"30px", marginTop:"15px"}}/>
                     </div>
                     :
                     <></>

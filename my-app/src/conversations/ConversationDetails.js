@@ -164,55 +164,84 @@ const ConversationDetails = () => {
   }
 
   return (
-    <div className={isMobile?"ALL":""} style={{ height: '100%', display:'flex',flexDirection:isMobile?'column-reverse':'column',}}>
+    <div className={isMobile ? "ALL" : ""} style={{
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: isMobile ? 'column-reverse' : 'column',
+      overflowX: 'hidden',
+    }}>
       <Navbar />
-      <div style={{ width:isMobile?"100%":"90%",marginLeft:isMobile?"" :"5%", height:isMobile?"100%":"100%",zIndex:isMobile?"2":""}}>
-        <ConversationContainer canal={canal} style={{ backgroundColor: "white",height:"100%",borderRadius:isMobile?"10px 10px 0px 0px":"",}}>
+      <div style={{
+        width: isMobile ? "100%" : "90%",
+        marginLeft: isMobile ? "" : "5%",
+        height: isMobile ? "500px" : "100%",
+        zIndex: isMobile ? "2" : "",
+      }}>
+        <ConversationContainer canal={canal} style={{
+          backgroundColor: "white", 
+          height: isMobile ? "550px" : "100%", 
+          borderRadius: isMobile ? "10px 10px 0px 0px" : "",
+        }}>
           <ConversationsTop canal={canal} logoSrc={logoSrc} style={{ backgroundColor: "white" }} />
-          <div style={{ border: "0.3px solid #E1C9FF", zIndex: "1111", marginTop: "20px" }}></div>
+          <div style={{
+            border: "0.3px solid #E1C9FF", 
+            zIndex: "1111", 
+            marginTop: "20px",
+            marginBottom: isMobile ? "20px" : "0",
+          }}></div>
           {
-            !isMobile?
-            <Box sx={{ marginTop: 2, display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ marginRight: 2, marginLeft:2 }}>Modo IA</Typography>
-            <Switch checked={manualMode} onChange={handleManualModeChange} />
-            <Typography sx={{ marginLeft: 2 }}>Modo Manual</Typography>
-          </Box>
-            :
-            <></>
+            !isMobile ? (
+              <Box sx={{ marginTop: 2, display: 'flex', alignItems: 'center' }}>
+                <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Modo IA</Typography>
+                <Switch checked={manualMode} onChange={handleManualModeChange} />
+                <Typography sx={{ marginLeft: 2 }}>Modo Manual</Typography>
+              </Box>
+            ) : null
           }
-          <div style={{ display: isMobile ? "block" : "flex", backgroundColor: "white" }}>
+          <div style={{
+            display: isMobile ? "block" : "flex", 
+            backgroundColor: "white",
+            flexDirection: isMobile ? 'column' : 'row',
+            minHeight: isMobile?? '400px',
+            zIndex: isMobile??'333333',
+             position: isMobile??'fixed',
+            maxHeight: isMobile??'750px',
+              alignContent: isMobile?? 'center',
+            flexWrap: isMobile??'nowrap',
+            width: isMobile?'90%' : "100%",
+          }}>
             <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} />
-            <MessageList conversation={conversation} isManual={manualMode} />
+            <MessageList conversation={conversation} isManual={manualMode}/>
           </div>
 
-          {/* Mostrar el input solo cuando el Modo Manual está activado */}
           {manualMode && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'right',
-                padding: '10px',
-                borderRadius: '10px',
-                marginTop: 2,
-                width: "100%",
-                justifyContent:"flex-end"
-              }}
-              ref={textFieldRef} 
-            >
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '10px',
+              borderRadius: '10px',
+              marginTop: 2,
+              width: "100%",
+              justifyContent: "flex-end",
+            }} ref={textFieldRef}>
               <TextField
                 fullWidth
                 placeholder="Escribe un mensaje..."
-                value={copilotMode ? suggestedReply : manualMessage}  // Si está en Copilot, mostrar el mensaje sugerido
+                value={copilotMode ? suggestedReply : manualMessage}
                 onChange={handleManualMessageChange}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey) {
-                    event.preventDefault(); 
+                    event.preventDefault();
                     handleSendManualMessage();
                   }
                 }}
                 variant="outlined"
                 multiline
-                style={{ width: "65%", display: "flex", justifyContent: "flex-end" }}
+                style={{
+                  width: "65%",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
                 maxRows={4}
                 sx={{
                   '& .MuiOutlinedInput-root': {
@@ -236,34 +265,36 @@ const ConversationDetails = () => {
                 onClick={handleSendManualMessage}
                 sx={{
                   marginLeft: '10px',
-                  alignSelf:"center",
-                  height:"40px",
-                  width:"4%",
+                  alignSelf: "center",
+                  height: "40px",
+                  width: "4%",
                   backgroundColor: '#25d366',
                   '&:hover': {
                     backgroundColor: '#22b358',
                   },
                 }}
               >
-                <SendIcon sx={{ color: 'white', width:"100%" }} />
+                <SendIcon sx={{ color: 'white', width: "100%" }} />
               </IconButton>
             </Box>
           )}
         </ConversationContainer>
       </div>
-      {isMobile?
-        <>
-          
-          <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"19%", gap:"20px",marginBottom:"10%"}}>
-            <img src={Logo}  style={{width:"30%"}}/>
-            <img src={SimpleAI} style={{width:"90%"}}/>
-          </div>
-        
-        </>
-        :
-        <></>
-      }
-   
+
+      {isMobile && (
+        <div style={{
+          zIndex: "2", 
+          margin: "auto", 
+          display: "flex", 
+          alignItems: "center", 
+          marginTop: "4%", 
+          gap: "20px", 
+          marginBottom: "7%",
+        }}>
+          <img src={Logo} style={{ width: "20%", marginBottom:"10px" }} />
+          <img src={SimpleAI} style={{ width: "80%" }} />
+        </div>
+      )}
     </div>
   );
 };

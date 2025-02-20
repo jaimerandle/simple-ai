@@ -36,7 +36,7 @@ const MessageList = ({ conversation, isManual }) => {
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:isMobile?"40vh":'70vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:isMobile?"40vh":'70vh', position:isMobile? "fixed" : ""}}>
       {conversation.messages && conversation.messages.length > 0 ? (
         conversation.messages.map((mensaje, index) => {
           const messageDate = formatDate(mensaje.timestamp);
@@ -45,9 +45,9 @@ const MessageList = ({ conversation, isManual }) => {
           console.log(mensaje.text , "texto")
 
           return (
-            <React.Fragment key={index}>
+            <React.Fragment key={index} >
               {isNewDay && (
-                <Box sx={{ textAlign: 'center', marginTop: 2, marginBottom: 2 }}>
+                <Box sx={{ textAlign: 'center', marginTop: 2, marginBottom: 2 }} style={{position: isMobile?? "fixed"}}>
                   <Typography variant="caption" color="#969AB8">{messageDate}</Typography>
                 </Box>
               )}

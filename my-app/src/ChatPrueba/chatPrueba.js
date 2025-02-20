@@ -372,8 +372,8 @@ const confirmAssistantChange = async () => {
         {isMobile?
         <>
           
-          <div style={{zIndex:"2", margin:"auto",display:"flex",alignItems:"center",marginTop:"10%", gap:"20px",marginBottom:"10%"}}>
-            <img src={Logo}  style={{width:"30%"}}/>
+          <div style={{zIndex:"2", margin:"1% auto 1%",display:"flex",alignItems:"center",marginTop:"10%",marginBottom:"10%"}}>
+            <img src={Logo}  style={{width:"20%"}}/>
             <img src={SimpleAI} style={{width:"90%"}}/>
           </div>
         

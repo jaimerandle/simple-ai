@@ -8,6 +8,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Tooltip, useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import HomeIcon from '@mui/icons-material/Home';
 import './Navbar.css'; // Asegúrate de crear y usar este archivo CSS
 
 
@@ -28,7 +29,7 @@ const Navbar = () => {
    },[])
 
     return (
-        <div className={isMobile?"":"NAVBAR"}   style={{ backgroundColor:"white", position:"relative" , "z-index": "111111" ,width:isMobile?"100%":""}}>
+        <div className={isMobile?"":"NAVBAR"}   style={{ backgroundColor: isMobile? "white" :"white", position:isMobile?"fixed":"" , "z-index": "111111" ,width:isMobile?"100%":"", bottom:isMobile?0:""}}>
             <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{ backgroundColor: 'white' }}>
                 <div className="container-fluid">
                     <div className="navbar-brand" style={{ display:isMobile?'none':'flex', alignItems: 'center' ,}}>
@@ -43,6 +44,11 @@ const Navbar = () => {
                     : <></>}
                     {!isMobile?
                         <div className="ml-auto" style={{ display: 'flex', alignItems: 'center', width: isMobile?"60%": "" }}>
+                             <a className="nav-link user-icon-wrapper" >
+                                <Tooltip title="Home" >
+                                    <HomeIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/Home")} />
+                                </Tooltip>
+                            </a>
                             <a className="nav-link user-icon-wrapper" >
                                 <Tooltip title="Test" >
                                     <WhatshotIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/ChatTest")} />
@@ -65,8 +71,13 @@ const Navbar = () => {
                             </a>
                         </div>
                     :
-                       <div style={{display:'flex',justifyContent:'space-between',width:'100%'}}>
+                       <div style={{display:'flex',justifyContent:'space-between',width:'100%', position:"fixed" ,bottom:"0" }}>
                             <div style={{flex:'4',display:'flex',gap:'25px'}}>
+                            <a className="nav-link user-icon-wrapper" >
+                                <Tooltip title="Home" >
+                                    <HomeIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"grey" }} onClick={() => navigate("/Home")} />
+                                </Tooltip>
+                            </a>
                                 <a className="nav-link user-icon-wrapper">
                                     <Tooltip title="Test" >
                                         <WhatshotIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"grey" }} onClick={() => navigate("/ChatTest")} />
