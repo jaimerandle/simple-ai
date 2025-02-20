@@ -36,7 +36,7 @@ const MessageList = ({ conversation, isManual }) => {
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:"auto", height:isMobile?"40vh":'70vh', position:isMobile? "fixed" : ""}}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, backgroundColor: '#EEE5FA', border: "0.5px solid grey", marginTop:"-30px", width: isMobile? "100%":"70%", overflow:isMobile?"" : "auto", height:isMobile?"100vh":'70vh', position:isMobile? "relative" : ""}}>
       {conversation.messages && conversation.messages.length > 0 ? (
         conversation.messages.map((mensaje, index) => {
           const messageDate = formatDate(mensaje.timestamp);

@@ -326,7 +326,7 @@ const SimpleTable = ({ customerDetails }) => {
       )
     },
     { field: 'fechaHora', headerName: 'Fecha y Hora', flex: 1, sortComparator: (a, b) => new Date(b) - new Date(a) },
-    { field: 'state', headerName: 'Prioridad', flex: 1 ,
+    { field: 'state', headerName: 'Prioridad', flex: 0.7 ,
       renderCell: (params) => (
         <StateSelector id={params.row.id} initialState={params.row.state} onStateChange={handleStateChange} />
       )
@@ -679,7 +679,7 @@ const SimpleTable = ({ customerDetails }) => {
                           </Box>
                         </Box>
                         <Box sx={{flex:"1",display:"flex",flexDirection:"column",alignItems:"center"}}>
-                        <StateSelector id={item.id} initialState={item.state} onStateChange={handleStateChange} />
+                        <StateSelector id={item.id} initialState={item.state} onStateChange={handleStateChange} sx={{flex:"1",display:"flex",flexDirection:"column",alignItems:"center"}} />
                           <Typography variant='body2' color="grey" sx={{margin:"10px"}} >Acciones</Typography>
                           <Box sx={{display:"flex",gap:"10px"}}>
                             <ActionButton  row={item} onDelete={handleDeleteRow}/>

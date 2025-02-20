@@ -18,6 +18,8 @@ import SendIcon from '@mui/icons-material/Send';
 import SimpleAI from '../assets/SimpleWhiteAI.png';
 import Logo from '../assets/simpleLogo.webp';
 import TitleSimple from '../components/titleSimple';
+import { Grid } from '@mui/material';
+
 
 const ConversationDetails = () => {
   const isMobile = useMediaQuery('(max-width:750px)');
@@ -164,11 +166,13 @@ const ConversationDetails = () => {
   }
 
   return (
+    <Grid container spacing={2}>
+  <Grid item xs={12} sm={6} md={4}>
     <div className={isMobile ? "ALL" : ""} style={{
       height: '100%', 
       display: 'flex', 
       flexDirection: isMobile ? 'column-reverse' : 'column',
-      overflowX: 'hidden',
+      overflowX: 'auto',
     }}>
       <Navbar />
       <div style={{
@@ -198,18 +202,18 @@ const ConversationDetails = () => {
               </Box>
             ) : null
           }
-          <div style={{
-            display: isMobile ? "block" : "flex", 
-            backgroundColor: "white",
-            flexDirection: isMobile ? 'column' : 'row',
-            minHeight: isMobile?? '400px',
-            zIndex: isMobile??'333333',
-             position: isMobile??'fixed',
-            maxHeight: isMobile??'750px',
-              alignContent: isMobile?? 'center',
-            flexWrap: isMobile??'nowrap',
-            width: isMobile?'90%' : "100%",
-          }}>
+  <div
+    style={{
+      display: isMobile ? 'block' : 'flex',
+      backgroundColor: 'white',
+      flexDirection: isMobile ? 'column' : 'row',
+      minHeight: isMobile ? '400px' : '100%',
+      maxHeight: isMobile ? 'calc(100vh - 200px)' : '100%',  // Ajuste la altura de acuerdo a la pantalla
+      overflowY: isMobile ? 'auto' : 'initial',
+      position: 'relative',
+      flexWrap: isMobile ? 'nowrap' : 'wrap',
+    }}
+  >
             <ConversationHeader conversation={conversation} id={id} isMobile={isMobile} />
             <MessageList conversation={conversation} isManual={manualMode}/>
           </div>
@@ -296,6 +300,8 @@ const ConversationDetails = () => {
         </div>
       )}
     </div>
+    </Grid>
+    </Grid>
   );
 };
 
