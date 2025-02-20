@@ -11,7 +11,7 @@ export const ConversationsTop = (canal, logoSrc, title)=>{
     const navigate = useNavigate()
     const isMobile = useMediaQuery('(max-width:750px)');
     return(
-        <div style={{display:"flex",alignItmes:"center",flexDirection:isMobile?'column':'' , zIndex:"0", justifyContent:"space-between", marginTop:"0px",}}>
+        <div style={{display:"flex",alignItmes:"center",flexDirection:isMobile?'column':'' , zIndex:"0", justifyContent:"space-between", marginTop:"10px",}}>
             <Typography variant={isMobile?"h5":"h5"} gutterBottom color="grey" style={{zIndex:!isMobile?"1111":"", marginTop:!isMobile?"20px":"", textAlign:isMobile?"center":""}}>Detalles de la Conversación</Typography>
             <div style={{display:"flex", marginTop:"20px" ,textAlign:"center",gap:isMobile?"3%":"", justifyContent:isMobile?"space-between":""}}>
                 <div style={{display:"flex"}}>

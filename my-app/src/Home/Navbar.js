@@ -29,7 +29,7 @@ const Navbar = () => {
    },[])
 
     return (
-        <div className={isMobile?"":"NAVBAR"}   style={{ backgroundColor: isMobile? "white" :"white", position:isMobile?"fixed":"" , "z-index": "111111" ,width:isMobile?"100%":"", bottom:isMobile?0:""}}>
+        <div className={isMobile?"":"NAVBAR"}   style={{ backgroundColor: isMobile? "white" :"white", position:isMobile?"fixed":"" , "z-index": "9999" ,width:isMobile?"100%":"", bottom:isMobile?0:"", height: isMobile?"45px":"", marginTop:!isMobile?? "10px"}}>
             <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{ backgroundColor: 'white' }}>
                 <div className="container-fluid">
                     <div className="navbar-brand" style={{ display:isMobile?'none':'flex', alignItems: 'center' ,}}>

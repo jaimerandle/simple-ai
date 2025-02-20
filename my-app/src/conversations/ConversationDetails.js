@@ -166,31 +166,32 @@ const ConversationDetails = () => {
   }
 
   return (
-    <Grid container spacing={2}>
-  <Grid item xs={12} sm={6} md={4}>
     <div className={isMobile ? "ALL" : ""} style={{
       height: '100%', 
       display: 'flex', 
       flexDirection: isMobile ? 'column-reverse' : 'column',
       overflowX: 'auto',
+      
     }}>
       <Navbar />
       <div style={{
         width: isMobile ? "100%" : "90%",
         marginLeft: isMobile ? "" : "5%",
-        height: isMobile ? "500px" : "100%",
+        height: isMobile ? "750px" : "100%",
         zIndex: isMobile ? "2" : "",
+        marginBottom: "-30px",
+        overflow:"hidden"
       }}>
         <ConversationContainer canal={canal} style={{
           backgroundColor: "white", 
-          height: isMobile ? "550px" : "100%", 
+          height: isMobile ? "850px" : "100%", 
           borderRadius: isMobile ? "10px 10px 0px 0px" : "",
         }}>
           <ConversationsTop canal={canal} logoSrc={logoSrc} style={{ backgroundColor: "white" }} />
           <div style={{
             border: "0.3px solid #E1C9FF", 
             zIndex: "1111", 
-            marginTop: "20px",
+            marginTop: "10px",
             marginBottom: isMobile ? "20px" : "0",
           }}></div>
           {
@@ -300,8 +301,7 @@ const ConversationDetails = () => {
         </div>
       )}
     </div>
-    </Grid>
-    </Grid>
+  
   );
 };
 
