@@ -320,7 +320,7 @@ const confirmAssistantChange = async () => {
               navigate={navigate}
               startNewConversation={startNewConversation}
             />
-            <div style={{ display: 'flex', width:isMobile? '90%':'100%', justifyContent: 'space-between',flexDirection:isMobile?"column":"",height:isMobile?"75%":"70%" }}>
+            <div style={{ display: 'flex', width:isMobile? '90%':'100%', justifyContent: 'space-between',flexDirection:isMobile?"column":"",height:isMobile?"60%":"70%" }}>
                 <div style={{flex:isMobile?"1":"2",display:'flex'}}>
                 <ChatBox 
                   messages={messages} 

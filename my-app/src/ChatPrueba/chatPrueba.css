@@ -116,7 +116,7 @@
     background-color: rgb(255, 255, 255);
     color: black;
     border: 1px solid #E0E2E9;
-    max-height: 89.7%;
+    max-height: 80%;
   
     
     
@@ -148,7 +148,7 @@
     flex-direction: column;
     border-radius: 10px;
     margin-bottom: 0px;
-    height: 520px;
+    height: 107.7%;
     margin-right: 3%;
     margin-top: 10px;
   }

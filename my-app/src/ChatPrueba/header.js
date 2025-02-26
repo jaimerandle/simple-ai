@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Select, MenuItem, Button } from '@mui/material';
 import Listado from "../assets/description.png";
+import FileUpload from './fileUpload';
 
 function Header({ assistants, selectedAssistant, onAssistantChange, isMobile, navigate, startNewConversation }) {
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  // Función que se ejecuta cuando se selecciona un archivo
+  const handleFileSelect = (file) => {
+    setSelectedFile(file);  // Guardamos el archivo seleccionado en el estado
+    console.log('Archivo seleccionado:', file);
+  };
+
+  
   return (
     <div className="header-container" style={{display:isMobile?'flex':'',flexDirection:isMobile?"column":"",marginBottom:isMobile?"20px":""}}>
       <h1 style={{ fontSize:isMobile?"25px":"25px", color: "purple", marginTop: "10px" }}>Configuración asistente</h1>
@@ -67,6 +77,7 @@ function Header({ assistants, selectedAssistant, onAssistantChange, isMobile, na
             </MenuItem>
           ))}
         </Select>
+          <FileUpload  isMobile={isMobile}/>
       </div>
     </div>
   );
