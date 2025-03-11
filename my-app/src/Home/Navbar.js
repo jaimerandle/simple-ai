@@ -8,6 +8,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Tooltip, useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import ReplyAllIcon from '@mui/icons-material/ReplyAll';
 import HomeIcon from '@mui/icons-material/Home';
 import './Navbar.css'; // Asegúrate de crear y usar este archivo CSS
 
@@ -59,6 +60,11 @@ const Navbar = () => {
                                     <PersonIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/Perfil")} />
                                 </Tooltip>
                             </a>
+                            {/* <a className="nav-link user-icon-wrapper">
+                                <Tooltip title="Remarketing">
+                                    <ReplyAllIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/remarketing")} />
+                                </Tooltip>
+                            </a> */}
                             <a className="nav-link user-icon-wrapper">
                                 <Tooltip title="Dashboard">
                                     <EqualizerIcon style={{  height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/dashboard")} />

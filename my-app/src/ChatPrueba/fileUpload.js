@@ -1,29 +1,46 @@
-import { Button } from '@mui/material';
 import React, { useState, useEffect } from 'react';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { uploadFile, getUserFiles, deleteFiles } from '../services/bffService'; // Importa las funciones API
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FileUploadInfo from './infoGestor';
 
 const FileUpload = ({ isMobile }) => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileData, setFileData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar el modal
-  const [uploadedFiles, setUploadedFiles] = useState([]); // Para almacenar los archivos cargados
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [selectedFileDetails, setSelectedFileDetails] = useState(null); // Para almacenar el archivo seleccionado para detalles
+  const [openFileModal, setOpenFileModal] = useState(false); // Para abrir el modal de detalles del archivo
+
+  // Obtener client_id desde localStorage
+  const cachedUserInfo = localStorage.getItem('userInfo');
+  const clientId = cachedUserInfo ? JSON.parse(cachedUserInfo).client_id : null;
+  const token = localStorage.getItem('authToken');
 
   // Convertir archivo a base64
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
+  
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+  
+      reader.onerror = (error) => {
+        reject(error);
+      };
+  
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);  // El resultado será el archivo en base64
-      reader.onerror = (error) => reject(error);
     });
   };
 
   // Manejar el cambio de archivo
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file); // Guardamos el archivo seleccionado en el estado
-      setLoading(true); // Iniciar el loading
+    if (file && clientId) {
+      setSelectedFile(file);
+      setLoading(true);
 
       try {
         // Convertir el archivo a base64
@@ -32,57 +49,75 @@ const FileUpload = ({ isMobile }) => {
         // Crear el objeto con la información del archivo
         const fileData = {
           name: file.name,
-          type: file.type,
+          type: file.type.split('/').pop(),
+          clientId: clientId, // Usar el client_id de localStorage
           base64: base64,
         };
 
-        // Guardar los datos en sessionStorage
-        sessionStorage.setItem(file.name, JSON.stringify(fileData));
+        // Subir el archivo a través de la API
+        await uploadFile(fileData, token);
 
-        // Actualizamos el estado con los datos del archivo
-        setFileData(fileData);
-        setLoading(false); // Detener el loading
-        loadUploadedFiles(); // Cargar los archivos después de subir uno nuevo
-
-        console.log('Archivo cargado y guardado en sessionStorage');
+        setLoading(false); 
+        loadUploadedFiles(); 
+        console.log('Archivo cargado y guardado');
       } catch (error) {
         console.error('Error al convertir el archivo a base64:', error);
-        setLoading(false); // Detener el loading en caso de error
+        setLoading(false); 
       }
+    } else {
+      console.error('No se pudo obtener el clientId o no se seleccionó un archivo');
     }
   };
 
-  // Cargar los archivos almacenados en sessionStorage
-  const loadUploadedFiles = () => {
-    const files = [];
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      const file = sessionStorage.getItem(key);
-      if (file) {
-        try {
-          const fileObj = JSON.parse(file);
-
-          // Asegurarse de que el objeto tenga la estructura correcta
-          if (fileObj.name && fileObj.type && fileObj.base64) {
-            files.push(fileObj); // Solo agregamos los archivos válidos
-          }
-        } catch (error) {
-          console.error('Error al cargar archivo desde sessionStorage:', error);
-        }
-      }
+  // Cargar los archivos almacenados del usuario
+  const loadUploadedFiles = async () => {
+    try {
+      const files = await getUserFiles(clientId, token);
+      setUploadedFiles(files.list);
+    } catch (error) {
+      console.error('Error al cargar archivos:', error);
     }
-    setUploadedFiles(files); // Actualizamos el estado con los archivos cargados
   };
 
-  // Eliminar archivo de sessionStorage
-  const handleDeleteFile = (fileName) => {
-    sessionStorage.removeItem(fileName);
-    loadUploadedFiles();
+  // Eliminar archivo
+  const handleDeleteFile = async (file) => {
+    try {
+      await deleteFiles(clientId, token, file);
+      loadUploadedFiles();
+    } catch (error) {
+      console.error('Error al eliminar archivo:', error);
+    }
+  };
+
+  // Abrir el modal con los detalles del archivo
+  const handleFileClick = (file) => {
+    const fileUrl = `https://simple-ai-client-data.s3.amazonaws.com/${clientId}/public/${file}`;
+    setSelectedFileDetails({
+      name: file,
+      url: fileUrl,
+    });
+    setOpenFileModal(true);
+  };
+
+  // Cerrar el modal de detalles
+  const handleCloseFileModal = () => {
+    setOpenFileModal(false);
+    setSelectedFileDetails(null);
+  };
+
+  // Función para copiar la URL al portapapeles
+  const copyToClipboard = () => {
+    if (selectedFileDetails && selectedFileDetails) {
+      navigator.clipboard.writeText(selectedFileDetails);
+      alert('URL copiada al portapapeles');
+    }
   };
 
   useEffect(() => {
-    loadUploadedFiles(); // Cargar archivos al montar el componente
-  }, [loadUploadedFiles , handleDeleteFile]);
+    if (clientId) {
+      loadUploadedFiles(); // Cargar archivos al montar el componente
+    }
+  }, [clientId]);  // Dependiendo del client_id
 
   return (
     <div>
@@ -99,32 +134,34 @@ const FileUpload = ({ isMobile }) => {
             color: 'white',
           },
         }}
-        onClick={() => setIsModalOpen(true)} // Abrir el modal
+        onClick={() => setIsModalOpen(true)}
       >
         Seleccionar archivo
       </Button>
 
-      {/* Modal */}
+      {/* Modal para la gestión de archivos */}
       {isModalOpen && (
         <div style={modalStyles}>
           <div style={modalContentStyles}>
             <button onClick={() => setIsModalOpen(false)} style={closeButtonStyles}>
               X
             </button>
-            <h2>Gestión de Archivos</h2>
-            <p>En esta sección podrás cargar, visualizar y eliminar archivos. Los formatos permitidos son .png, .pdf, .img y .csv. Además, podrás hacer referencia a estos archivos desde el prompt, indicando cuál deseas usar. Ejemplo: "El archivo remeraVerde.png debe enviarse cuando se solicite una remera verde."</p>
-
-            <h3>Archivos cargados:</h3>
+            <FileUploadInfo/>
+            <h5>Archivos cargados:</h5>
             {uploadedFiles.length > 0 ? (
               <ul>
                 {uploadedFiles.map((file, index) => (
-                    <>
                   <li key={index}>
-                    <strong>{file.name.length > 20? file.name.substr(0, 19) + "..." : file.name }</strong> ({file.type})
-                    <button onClick={() => handleDeleteFile(file.name)} style={deleteButtonStyles}>Eliminar</button>
+                    <strong>
+                      <Button
+                        sx={{ textDecoration: 'underline', padding: '0', margin: '0 5px' }}
+                        onClick={() => handleFileClick(file)}
+                      >
+                        {isMobile ? file.length > 20 ? file.substr(0, 19).replace(/\.[^.]+$/, '') + '...' : file.replace(/\.[^.]+$/, '') : file.length > 70 ? file.substr(0, 69).replace(/\.[^.]+$/, '') + '...' : file.replace(/\.[^.]+$/, '')}
+                      </Button>
+                    </strong>
+                    <DeleteIcon onClick={() => handleDeleteFile(file)} style={deleteButtonStyles}/>
                   </li>
-                    <br></br>
-                    </>
                 ))}
               </ul>
             ) : (
@@ -134,7 +171,7 @@ const FileUpload = ({ isMobile }) => {
             <input
               type="file"
               id="file-input"
-              style={{ display: 'none' }}  // Ocultamos el input de archivo
+              style={{ display: 'none' }} 
               onChange={handleFileChange}
             />
             <Button
@@ -149,12 +186,36 @@ const FileUpload = ({ isMobile }) => {
                   color: 'white',
                 },
               }}
-              onClick={() => document.getElementById('file-input').click()} // Abre el explorador de archivos dentro del modal
+              onClick={() => document.getElementById('file-input').click()}
             >
               Seleccionar archivo
             </Button>
           </div>
         </div>
+      )}
+
+      {/* Modal de detalles del archivo */}
+      {openFileModal && selectedFileDetails && (
+        <Dialog open={openFileModal} onClose={handleCloseFileModal}>
+          <DialogTitle>Detalles del Archivo</DialogTitle>
+          <DialogContent>
+            <Typography variant="h6">Nombre del Archivo:</Typography>
+            <Typography variant="body1">{selectedFileDetails.name.replace(/\.[^.]+$/, '')}</Typography>
+            <Typography variant="h6" sx={{ marginTop: '16px' }}>URL del Archivo:</Typography>
+            <Typography variant="body1">
+              <a href={selectedFileDetails.url} target="_blank" rel="noopener noreferrer">
+                {selectedFileDetails.url}
+              </a>
+            <ContentCopyIcon
+              onClick={copyToClipboard}
+              sx={{ marginLeft: '10px', color: 'rgb(67, 10, 98)', cursor:"pointer" }}
+            />
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseFileModal} color="primary">Cerrar</Button>
+          </DialogActions>
+        </Dialog>
       )}
     </div>
   );
@@ -175,16 +236,16 @@ const modalStyles = {
 };
 
 const modalContentStyles = {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '5px',
-    width: "70%",
-    textAlign: 'center',
-    position: 'relative',
-    maxHeight: '400px',  // Limita la altura del modal
-    overflowY: 'auto',   // Agrega el scroll si es necesario
-  };
-  
+  backgroundColor: '#fff',
+  padding: '20px',
+  borderRadius: '5px',
+  width: '70%',
+  textAlign: 'center',
+  position: 'relative',
+  maxHeight: '400px',
+  overflowY: 'auto',
+};
+
 const closeButtonStyles = {
   position: 'absolute',
   top: '10px',
@@ -197,13 +258,9 @@ const closeButtonStyles = {
 
 const deleteButtonStyles = {
   marginLeft: '10px',
-  backgroundColor: 'red',
-  color: 'white',
-  border: 'none',
+  color: 'red',
   cursor: 'pointer',
-  borderRadius:"10px",
-  border:"1px solid grey",
-  padding:"5px"
+  padding: '3px'
 };
 
 export default FileUpload;

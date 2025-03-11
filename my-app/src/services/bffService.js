@@ -180,6 +180,51 @@ export const getChannels = async (token) => {
     }
 };
 
+// Subir un archivo
+export const uploadFile = async (fileData, token) => {
+  try {
+    const response = await apiClient.post('/files', fileData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+    return response.data;  // Devuelve la respuesta de la carga
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error uploading file');
+  }
+};
+
+// Obtener los archivos cargados para un usuario específico
+export const getUserFiles = async (userId, token) => {
+  try {
+    const response = await apiClient.get(`/listFilesUser/${userId}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    }); //client_id
+    return response.data;  // Devuelve los archivos del usuario
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error fetching user files');
+  }
+};
+
+export const deleteFiles = async (userId, token, file) => {
+    try {
+      const response = await apiClient.delete(`/filesUser/${userId}`, {
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',  // Especificamos que el cuerpo es JSON
+          },
+          data: { filename: file },  // Utilizamos `data` en lugar de `body` para algunas bibliotecas HTTP (como Axios)
+      });
+
+      return response.data;  // Devuelve los archivos del usuario
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al eliminar el archivo');
+    }
+};
+
+
   
   
 

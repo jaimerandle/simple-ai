@@ -77,7 +77,7 @@ function Header({ assistants, selectedAssistant, onAssistantChange, isMobile, na
             </MenuItem>
           ))}
         </Select>
-          <FileUpload  isMobile={isMobile}/>
+          <FileUpload  isMobile={isMobile} />
       </div>
     </div>
   );

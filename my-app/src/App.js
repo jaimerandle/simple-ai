@@ -8,6 +8,7 @@ import UserInfo from './userInfo/userInfo';
 import UserStats from './dashboard/userStadistics';
 import { setupInterceptors } from './services/apiClient';
 import ChatPrueba from './ChatPrueba/chatPrueba';
+import CampañaScreen from './Remarketing/CampScreen';
 
 
 const App= () => {
@@ -23,6 +24,7 @@ const App= () => {
                 <Route path="/Perfil" element={<UserInfo />}/>
                 <Route path="/dashboard" element={ <UserStats />}/>
                 <Route path="/chatTest" element={ <ChatPrueba />}/>
+                <Route path="/remarketing" element={ <CampañaScreen />}/>
             </Routes>
         </Router>
     );
