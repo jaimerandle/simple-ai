@@ -1,75 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
-import { uploadFile, getUserFiles, deleteFiles } from '../services/bffService'; // Importa las funciones API
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  CircularProgress,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Tooltip,
+  Box,
+  Paper,
+  Divider,
+} from '@mui/material';
+import {
+  uploadFile,
+  getUserFiles,
+  deleteFiles,
+} from '../services/bffService';
+import {
+  ContentCopy as ContentCopyIcon,
+  Delete as DeleteIcon,
+  CloudUpload as CloudUploadIcon,
+  Description as DescriptionIcon,
+} from '@mui/icons-material';
 import FileUploadInfo from './infoGestor';
 
 const FileUpload = ({ isMobile }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [selectedFileDetails, setSelectedFileDetails] = useState(null); // Para almacenar el archivo seleccionado para detalles
-  const [openFileModal, setOpenFileModal] = useState(false); // Para abrir el modal de detalles del archivo
+  const [selectedFileDetails, setSelectedFileDetails] = useState(null);
+  const [openFileModal, setOpenFileModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState(null);
+  const [filesLoaded, setFilesLoaded] = useState(false);
 
-  // Obtener client_id desde localStorage
   const cachedUserInfo = localStorage.getItem('userInfo');
   const clientId = cachedUserInfo ? JSON.parse(cachedUserInfo).client_id : null;
   const token = localStorage.getItem('authToken');
 
-  // Convertir archivo a base64
-  const convertToBase64 = (file) => {
+  const convertToBase64 = useCallback((file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-  
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-  
-      reader.onerror = (error) => {
-        reject(error);
-      };
-  
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
       reader.readAsDataURL(file);
     });
-  };
+  }, []);
 
-  // Manejar el cambio de archivo
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file && clientId) {
-      setSelectedFile(file);
-      setLoading(true);
-
-      try {
-        // Convertir el archivo a base64
-        const base64 = await convertToBase64(file);
-
-        // Crear el objeto con la información del archivo
-        const fileData = {
-          name: file.name,
-          type: file.type.split('/').pop(),
-          clientId: clientId, // Usar el client_id de localStorage
-          base64: base64,
-        };
-
-        // Subir el archivo a través de la API
-        await uploadFile(fileData, token);
-
-        setLoading(false); 
-        loadUploadedFiles(); 
-        console.log('Archivo cargado y guardado');
-      } catch (error) {
-        console.error('Error al convertir el archivo a base64:', error);
-        setLoading(false); 
-      }
-    } else {
-      console.error('No se pudo obtener el clientId o no se seleccionó un archivo');
-    }
-  };
-
-  // Cargar los archivos almacenados del usuario
   const loadUploadedFiles = async () => {
     try {
       const files = await getUserFiles(clientId, token);
@@ -79,188 +63,191 @@ const FileUpload = ({ isMobile }) => {
     }
   };
 
-  // Eliminar archivo
-  const handleDeleteFile = async (file) => {
+  // ✅ Ahora handleFileChange puede acceder a loadUploadedFiles
+  const handleFileChange = useCallback(async (e) => {
+    const file = e.target.files[0];
+    if (file && clientId) {
+      setSelectedFile(file);
+      setLoading(true);
+      try {
+        const base64 = await convertToBase64(file);
+
+        // Extraer la extensión del nombre del archivo original
+        const fileExtension = file.name.split('.').pop();
+
+        const fileData = {
+          name: file.name, // Usar el nombre original
+          type: fileExtension, // Usar la extensión extraída
+          clientId: clientId,
+          base64: base64,
+        };
+        await uploadFile(fileData, token);
+        setLoading(false);
+        loadUploadedFiles();
+      } catch (error) {
+        console.error('Error al convertir el archivo a base64:', error);
+        setLoading(false);
+      }
+    } else {
+      console.error('No se pudo obtener el clientId o no se seleccionó un archivo');
+    }
+  }, [clientId, convertToBase64, token]);
+
+  const handleDeleteFile = useCallback(async () => {
     try {
-      await deleteFiles(clientId, token, file);
-      loadUploadedFiles();
+      if (fileToDelete) {
+        await deleteFiles(clientId, token, fileToDelete);
+        loadUploadedFiles();
+        setOpenDeleteModal(false);
+      }
     } catch (error) {
       console.error('Error al eliminar archivo:', error);
     }
-  };
+  }, [clientId, token, fileToDelete, loadUploadedFiles]);
 
-  // Abrir el modal con los detalles del archivo
-  const handleFileClick = (file) => {
+  const handleFileClick = useCallback((file) => {
     const fileUrl = `https://simple-ai-client-data.s3.amazonaws.com/${clientId}/public/${file}`;
-    setSelectedFileDetails({
-      name: file,
-      url: fileUrl,
-    });
-    setOpenFileModal(true);
-  };
 
-  // Cerrar el modal de detalles
-  const handleCloseFileModal = () => {
+    // Extraer el nombre del archivo sin la extensión
+    const fileNameWithoutExtension = file.substring(0, file.lastIndexOf('.'));
+    const fileUrlWithoutExtension = `https://simple-ai-client-data.s3.amazonaws.com/${clientId}/public/${fileNameWithoutExtension}`
+
+    setSelectedFileDetails({ name: fileNameWithoutExtension, url: fileUrlWithoutExtension});
+    setOpenFileModal(true);
+  }, [clientId]);
+
+  const handleCloseFileModal = useCallback(() => {
     setOpenFileModal(false);
     setSelectedFileDetails(null);
-  };
+  }, []);
 
-  // Función para copiar la URL al portapapeles
-  const copyToClipboard = () => {
-    if (selectedFileDetails && selectedFileDetails) {
-      navigator.clipboard.writeText(selectedFileDetails);
+  const copyToClipboard = useCallback(() => {
+    if (selectedFileDetails && selectedFileDetails.url) {
+      navigator.clipboard.writeText(selectedFileDetails.url);
       alert('URL copiada al portapapeles');
     }
-  };
+  }, [selectedFileDetails]);
+
+  const openDeleteConfirmationModal = useCallback((file) => {
+    setFileToDelete(file);
+    setOpenDeleteModal(true);
+  }, []);
+
+  const closeDeleteConfirmationModal = useCallback(() => {
+    setOpenDeleteModal(false);
+    setFileToDelete(null);
+  }, []);
 
   useEffect(() => {
-    if (clientId) {
-      loadUploadedFiles(); // Cargar archivos al montar el componente
+    if (clientId && !filesLoaded) {
+      loadUploadedFiles();
+      setFilesLoaded(true); // Marcar como cargado
     }
-  }, [clientId]);  // Dependiendo del client_id
+  }, [clientId, filesLoaded, loadUploadedFiles]);
 
   return (
     <div>
       <Button
-        sx={{
-          display: 'flex',
-          width: isMobile ? '50%' : '100%',
-          border: '1px solid grey',
-          height: '50px',
-          backgroundColor: 'white',
-          color: 'grey',
-          '&:hover': {
-            backgroundColor: 'rgb(67, 10, 98)',
-            color: 'white',
-          },
-        }}
+        variant="outlined"
+        startIcon={<CloudUploadIcon />}
         onClick={() => setIsModalOpen(true)}
+        sx={{ width: isMobile ? '100%' : 'auto', mb: 2 , height:"50px" }}
       >
-        Seleccionar archivo
+        Cargar archivos
       </Button>
 
-      {/* Modal para la gestión de archivos */}
-      {isModalOpen && (
-        <div style={modalStyles}>
-          <div style={modalContentStyles}>
-            <button onClick={() => setIsModalOpen(false)} style={closeButtonStyles}>
-              X
-            </button>
-            <FileUploadInfo/>
-            <h5>Archivos cargados:</h5>
-            {uploadedFiles.length > 0 ? (
-              <ul>
-                {uploadedFiles.map((file, index) => (
-                  <li key={index}>
-                    <strong>
-                      <Button
-                        sx={{ textDecoration: 'underline', padding: '0', margin: '0 5px' }}
-                        onClick={() => handleFileClick(file)}
-                      >
-                        {isMobile ? file.length > 20 ? file.substr(0, 19).replace(/\.[^.]+$/, '') + '...' : file.replace(/\.[^.]+$/, '') : file.length > 70 ? file.substr(0, 69).replace(/\.[^.]+$/, '') + '...' : file.replace(/\.[^.]+$/, '')}
-                      </Button>
-                    </strong>
-                    <DeleteIcon onClick={() => handleDeleteFile(file)} style={deleteButtonStyles}/>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No hay archivos cargados.</p>
-            )}
-
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} fullWidth maxWidth="md" style={{marginTop:"50px"}}>
+        <DialogContent sx={{ maxHeight: '600px', overflowY: 'auto' }}> {/* Altura máxima y scroll */}
+          <FileUploadInfo />
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" gutterBottom>Archivos cargados:</Typography>
+          <Paper elevation={3} sx={{ p: 2, maxHeight: '300px', overflowY: 'auto' }}> {/* Altura máxima y scroll */}
+            <List>
+              {uploadedFiles.map((file, index) => (
+                <ListItem key={index} secondaryAction={
+                  <Tooltip title="Eliminar">
+                    <IconButton edge="end" aria-label="delete" onClick={() => openDeleteConfirmationModal(file)}>
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  </Tooltip>
+                }>
+                  <ListItemIcon>
+                    <DescriptionIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={isMobile
+                      ? file.length > 30
+                        ? file?.substring(0, file.lastIndexOf('.')).substring(0, 30) + '...'
+                        : file?.substring(0, file.lastIndexOf('.'))
+                      : file.length > 70
+                        ? file?.substring(0, file.lastIndexOf('.')).substring(0, 69) + '...'
+                        : file?.substring(0, file.lastIndexOf('.'))}
+                    onClick={() => handleFileClick(file)}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Paper>
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
             <input
               type="file"
               id="file-input"
-              style={{ display: 'none' }} 
+              style={{ display: 'none' }}
               onChange={handleFileChange}
             />
             <Button
-              sx={{
-                width: '100%',
-                marginTop: '10px',
-                height: '50px',
-                backgroundColor: 'white',
-                color: 'grey',
-                '&:hover': {
-                  backgroundColor: 'rgb(67, 10, 98)',
-                  color: 'white',
-                },
-              }}
-              onClick={() => document.getElementById('file-input').click()}
+              variant="contained"
+              component="label"
+              htmlFor="file-input"
+              startIcon={<CloudUploadIcon />}
+              disabled={loading}
             >
-              Seleccionar archivo
+              {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Subir nuevo archivo'}
             </Button>
-          </div>
-        </div>
-      )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsModalOpen(false)} color="primary">Cerrar</Button>
+        </DialogActions>
+      </Dialog>
 
-      {/* Modal de detalles del archivo */}
-      {openFileModal && selectedFileDetails && (
-        <Dialog open={openFileModal} onClose={handleCloseFileModal}>
-          <DialogTitle>Detalles del Archivo</DialogTitle>
-          <DialogContent>
-            <Typography variant="h6">Nombre del Archivo:</Typography>
-            <Typography variant="body1">{selectedFileDetails.name.replace(/\.[^.]+$/, '')}</Typography>
-            <Typography variant="h6" sx={{ marginTop: '16px' }}>URL del Archivo:</Typography>
-            <Typography variant="body1">
-              <a href={selectedFileDetails.url} target="_blank" rel="noopener noreferrer">
-                {selectedFileDetails.url}
-              </a>
-            <ContentCopyIcon
-              onClick={copyToClipboard}
-              sx={{ marginLeft: '10px', color: 'rgb(67, 10, 98)', cursor:"pointer" }}
-            />
+      <Dialog open={openFileModal} onClose={handleCloseFileModal} fullWidth maxWidth="sm">
+        <DialogTitle> <h4 style={{color: 'purple'}}>Detalles del Archivo</h4></DialogTitle>
+        <DialogContent>
+          <Typography variant="h6">Nombre:</Typography>
+          <Typography variant="body1">{selectedFileDetails?.name}</Typography>
+          <Typography variant="h6" sx={{ mt: 2 }}>URL:</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ flexGrow: 1, overflowWrap: 'break-word' }}>
+              {selectedFileDetails?.url}
             </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseFileModal} color="primary">Cerrar</Button>
-          </DialogActions>
-        </Dialog>
-      )}
+            <Tooltip title="Copiar URL">
+              <IconButton onClick={copyToClipboard}>
+                <ContentCopyIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseFileModal} color="primary">Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openDeleteModal} onClose={closeDeleteConfirmationModal}>
+        <DialogTitle>Confirmación de eliminación</DialogTitle>
+        <DialogContent>
+          <Typography variant="h6">
+            ¿Estás seguro de que quieres eliminar el archivo: <strong>{fileToDelete?.substring(0, fileToDelete.lastIndexOf('.'))}</strong>?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDeleteConfirmationModal} color="primary">No</Button>
+          <Button onClick={handleDeleteFile} color="error">Sí</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
-};
-
-// Estilos del modal
-const modalStyles = {
-  position: 'fixed',
-  top: '0',
-  left: '0',
-  right: '0',
-  bottom: '0',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  zIndex: '1000',
-};
-
-const modalContentStyles = {
-  backgroundColor: '#fff',
-  padding: '20px',
-  borderRadius: '5px',
-  width: '70%',
-  textAlign: 'center',
-  position: 'relative',
-  maxHeight: '400px',
-  overflowY: 'auto',
-};
-
-const closeButtonStyles = {
-  position: 'absolute',
-  top: '10px',
-  right: '10px',
-  background: 'transparent',
-  border: 'none',
-  fontSize: '20px',
-  cursor: 'pointer',
-};
-
-const deleteButtonStyles = {
-  marginLeft: '10px',
-  color: 'red',
-  cursor: 'pointer',
-  padding: '3px'
 };
 
 export default FileUpload;

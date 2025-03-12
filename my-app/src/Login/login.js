@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SimpleLogo from "../assets/simpleLogo.webp";
-import simpleAiBlack from "../assets/simple-ai.webp"
+import simpleAiBlack from "../assets/simple-ai.webp";
 import './login.css';
 import { loginAuth, getUserInfo } from '../services/bffService';
 import Spinner from 'react-bootstrap/Spinner';
-
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -22,6 +21,11 @@ const Login = () => {
         sessionStorage.clear();
     }, []);
 
+    const validateEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setEmailError('');
@@ -33,6 +37,9 @@ const Login = () => {
 
         if (!email) {
             setEmailError('Email is required');
+            valid = false;
+        } else if (!validateEmail(email)) {
+            setEmailError('Invalid email format');
             valid = false;
         }
 
@@ -46,11 +53,9 @@ const Login = () => {
                 const token = await loginAuth(email, password);
                 localStorage.setItem('authToken', token);
 
-                // Obtener y cachear la información del usuario
                 const userInfo = await getUserInfo(token);
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
 
-                // Navegar a la página principal
                 navigate('/home');
             } catch (error) {
                 console.error('Login error', error.message);
@@ -64,47 +69,45 @@ const Login = () => {
     };
 
     return (
-        <div className= "ALL">
-        <div className="login-container d-flex align-items-center justify-content-center vh-100 bg-light">
-            <div className="card p-5 login-card">
-                <div style={{ display: "flex" ,width:"100%", justifyContent:"center"}}>
-                    <img style={{ height: "50px", width: "50px" }} src={SimpleLogo} alt="Simple Logo" />
-                     <img style={{ width: "200px", height:"60px"}} src={simpleAiBlack} alt="Simple AI" />
+        <div className="ALL">
+            <div className="login-container d-flex align-items-center justify-content-center vh-100">
+                <div className="card p-5 login-card">
+                    <div className="logo-container">
+                        <img src={SimpleLogo} alt="Simple Logo" className="logo" />
+                        <img src={simpleAiBlack} alt="Simple AI" className="logo-text" style={{marginTop:"15px"}} />
+                    </div>
+                    <form onSubmit={handleSubmit} className="login-form">
+                        <div className="form-group">
+                            <label htmlFor="email">Email address</label>
+                            <input
+                                type="email"
+                                className={`form-control ${emailError ? 'is-invalid' : ''}`}
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Your email"
+                            />
+                            {emailError && <small className="form-text text-danger">{emailError}</small>}
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password"
+                            />
+                            {passwordError && <small className="form-text text-danger">{passwordError}</small>}
+                        </div>
+                        {loginError && <div className="alert alert-danger">{loginError}</div>}
+                        <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+                            {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
+                        </button>
+                    </form>
                 </div>
-                <p style={{width:"100%", justifyContent:'center',display:"flex",  fontSize:"20px", fontWeight:"bold", color:"grey"}}> Log in</p>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="email" style={{color:"white"}}>Email address</label>
-                        <input
-                            type="email"
-                            className={`form-control ${emailError ? 'is-invalid' : ''}`}
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Your email"
-                        />
-                        {emailError && <small className="form-text text-danger">{emailError}</small>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password" style={{color:"white"}}>Password</label>
-                        <input
-                            type="password"
-                            className={`form-control ${passwordError ? 'is-invalid' : ''}`}
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                        />
-                        {passwordError && <small className="form-text text-danger">{passwordError}</small>}
-                    </div>
-                    <br />
-                    {loginError && <div className="alert alert-danger">{loginError}</div>}
-                    <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-                        {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
-                    </button>
-                </form>
             </div>
-        </div>
         </div>
     );
 };

@@ -47,7 +47,7 @@ const Home = () => {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' , backgroundColor:"white"}}>
                 <Loading />
             </Box>
         );
@@ -55,7 +55,7 @@ const Home = () => {
 
     return (
         <>
-            <div className={isMobile?"HOME":""} style={{margin:'0px',height:isMobile?"100vh":"100%",display:"flex",flexDirection:isMobile?"column-reverse":"column",alignContent:"space-between"}}>
+            <div className={isMobile?"HOME":""} style={{margin:'0px',height:isMobile?"100vh":"100%",display:"flex",flexDirection:isMobile?"column-reverse":"column",alignContent:"space-between", backgroundColor:"white !important"}}>
                 <Navbar />
                 <div style={{height: '100%',zIndex:isMobile?"2":"" ,marginTop:isMobile?"8%":"",background:"white",borderRadius:isMobile?"10px 10px 0px 0px":""}}>
                     <div className="d-flex" id={!isMobile?"wrapper":""}>

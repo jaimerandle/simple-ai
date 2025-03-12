@@ -13,7 +13,7 @@ const FileUploadInfo = () => {
             <React.Fragment>
               <p><strong>Gestión de Archivos</strong></p>
             <p>Desde esta sección podrás <strong>subir</strong> y <strong>eliminar</strong> archivos que utilizarás para interactuar con tu asistente.</p>
-            <p>Estos archivos son esenciales para indicarle al asistente qué contenido debe enviar a tus clientes en función de sus consultas.</p>
+            <p>Estos archivos son esenciales para indicarle al asistente mediante la URL qué contenido debe enviar a tus clientes en función de sus consultas.</p>
             <p>La url la encontraras clickeando en el archivo que quieras utilizar</p>
             <p><strong>Ejemplo:</strong> Si un cliente pregunta por el proyecto "simple", envíale este archivo PDF:</p>
             <p>"https://simple-ai-client-data.s3.amazonaws.com/1/public/simple-ai.pdf"</p>
@@ -23,7 +23,7 @@ const FileUploadInfo = () => {
         placement="bottom"
       >
         <IconButton>
-          <InfoIcon />
+          <InfoIcon style={{color:"purple"}}/>
         </IconButton>
       </Tooltip>
     </div>
