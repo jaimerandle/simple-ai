@@ -21,6 +21,7 @@ import {
   uploadFile,
   getUserFiles,
   deleteFiles,
+  getPresignedUrl,
 } from '../services/bffService';
 import {
   ContentCopy as ContentCopyIcon,
@@ -63,35 +64,41 @@ const FileUpload = ({ isMobile }) => {
     }
   };
 
-  // ✅ Ahora handleFileChange puede acceder a loadUploadedFiles
   const handleFileChange = useCallback(async (e) => {
     const file = e.target.files[0];
+    console.log(file, "file")
     if (file && clientId) {
-      setSelectedFile(file);
-      setLoading(true);
-      try {
-        const base64 = await convertToBase64(file);
-
-        // Extraer la extensión del nombre del archivo original
-        const fileExtension = file.name.split('.').pop();
-
-        const fileData = {
-          name: file.name, // Usar el nombre original
-          type: fileExtension, // Usar la extensión extraída
-          clientId: clientId,
-          base64: base64,
+        setSelectedFile(file);
+        setLoading(true);
+        const getFileExtension = (fileType) => {
+            if (!fileType) {
+                return ''; // O maneja el caso donde fileType es null/undefined como prefieras
+            }
+            const index = fileType.indexOf('/');
+            if (index !== -1) {
+                return fileType.substring(index + 1);
+            }
+            return ''; // O maneja el caso donde el formato no es el esperado
         };
-        await uploadFile(fileData, token);
-        setLoading(false);
-        loadUploadedFiles();
-      } catch (error) {
-        console.error('Error al convertir el archivo a base64:', error);
-        setLoading(false);
-      }
+        try {
+            // Obtener la URL pre-firmada desde el backend
+            const presignedUrlResponse = await getPresignedUrl(file.name, getFileExtension(file.type), token, file.size, clientId);
+
+            const presignedUrl = presignedUrlResponse.url;
+
+            // Subir el archivo usando la URL pre-firmada
+            await uploadFile(file.name, getFileExtension(file.type), presignedUrl, token);
+
+            setLoading(false);
+            loadUploadedFiles();
+        } catch (error) {
+            console.error('Error al subir el archivo:', error);
+            setLoading(false);
+        }
     } else {
-      console.error('No se pudo obtener el clientId o no se seleccionó un archivo');
+        console.error('No se pudo obtener el clientId o no se seleccionó un archivo');
     }
-  }, [clientId, convertToBase64, token]);
+}, [clientId, token, loadUploadedFiles]);
 
   const handleDeleteFile = useCallback(async () => {
     try {
@@ -109,10 +116,8 @@ const FileUpload = ({ isMobile }) => {
     const fileUrl = `https://simple-ai-client-data.s3.amazonaws.com/${clientId}/public/${file}`;
 
     // Extraer el nombre del archivo sin la extensión
-    const fileNameWithoutExtension = file.substring(0, file.lastIndexOf('.'));
-    const fileUrlWithoutExtension = `https://simple-ai-client-data.s3.amazonaws.com/${clientId}/public/${fileNameWithoutExtension}`
-
-    setSelectedFileDetails({ name: fileNameWithoutExtension, url: fileUrlWithoutExtension});
+    const fileNameWithoutExtension = file;
+    setSelectedFileDetails({ name: fileNameWithoutExtension, url: fileUrl});
     setOpenFileModal(true);
   }, [clientId]);
 
@@ -177,11 +182,11 @@ const FileUpload = ({ isMobile }) => {
                   <ListItemText
                     primary={isMobile
                       ? file.length > 30
-                        ? file?.substring(0, file.lastIndexOf('.')).substring(0, 30) + '...'
-                        : file?.substring(0, file.lastIndexOf('.'))
+                        ? file?.substring(0, 30) + '...'
+                        : file
                       : file.length > 70
-                        ? file?.substring(0, file.lastIndexOf('.')).substring(0, 69) + '...'
-                        : file?.substring(0, file.lastIndexOf('.'))}
+                        ? file?.substring(0, 69) + '...'
+                        : file}
                     onClick={() => handleFileClick(file)}
                     sx={{ cursor: 'pointer' }}
                   />

@@ -60,11 +60,11 @@ const Navbar = () => {
                                     <PersonIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/Perfil")} />
                                 </Tooltip>
                             </a>
-                            {/* <a className="nav-link user-icon-wrapper">
+                             <a className="nav-link user-icon-wrapper">
                                 <Tooltip title="Remarketing">
                                     <ReplyAllIcon style={{ height:'30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/remarketing")} />
                                 </Tooltip>
-                            </a> */}
+                            </a> 
                             <a className="nav-link user-icon-wrapper">
                                 <Tooltip title="Dashboard">
                                     <EqualizerIcon style={{  height: '30px', width: '30px', cursor: "pointer", color:"white" }} onClick={() => navigate("/dashboard")} />

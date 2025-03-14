@@ -4,41 +4,54 @@ import Formulario from './FormRemark';
 import CampañasListadas from './ListCamp';
 import Notificaciones from './Notification';
 import Navbar from '../Home/Navbar';
+import { getPeriodicJobs } from '../services/bffService';
 
 const CampañaScreen = () => {
-  const [openSnack, setOpenSnack] = useState(false);
+    const [campaigns, setCampaigns] = useState([]); // Estado para las campañas
+    const [openSnack, setOpenSnack] = useState(false);
+    const [campaignAdded, setCampaignAdded] = useState(false);
 
-  // Llamado cuando se guarda una campaña
-  const handleCampaignSaved = () => {
-    setOpenSnack(true);
-  };
 
-  return (
-    <>
-         <Navbar />
-    <div style={{ height: '100vh', padding: '2%' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {/* Titulo */}
-        <Typography variant="h6" gutterBottom style={{color:"purple"}}>
-          Crear Campaña de Remarketing
-        </Typography>
+    const handleCampaignSaved = () => {
+        setOpenSnack(true);
+    };
 
-        {/* Formulario de entrada */}
-        <Formulario onCampaignSaved={handleCampaignSaved} />
+    const updateCampaigns = async () => {
+        try {
+            const token = localStorage.getItem('authToken');
+            const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+            const clientId = userInfo.client_id;
+            const fetchedCampaigns = await getPeriodicJobs(clientId, token);
+            console.log("Campañas obtenidas:", fetchedCampaigns);
+            setCampaigns(fetchedCampaigns); // Actualiza el estado en CampañaScreen
+            setCampaignAdded(true);
+        } catch (error) {
+            console.error('Error al obtener las campañas:', error);
+        }
+    };
 
-        {/* Listado de campañas */}
-        <CampañasListadas />
+    return (
+        <>
+            <Navbar />
+            <div style={{ height: '100vh', padding: '2%', overflow: "auto" }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Typography variant="h5" gutterBottom style={{ color: "purple", fontWeight: "bold" }}>
+                        Crear Campaña de Remarketing
+                    </Typography>
 
-        {/* Notificación de éxito */}
-        <Notificaciones
-          open={openSnack}
-          onClose={() => setOpenSnack(false)}
-          message="¡Campaña programada con éxito!"
-        />
-      </Box>
-    </div>
-    </>
-  );
+                    <Formulario onCampaignSaved={handleCampaignSaved} updateCampaigns={updateCampaigns} /> {/* Pasa updateCampaigns */}
+
+                    {/* <CampañasListadas campaigns={campaigns} campaignAdded={campaignAdded}  /> Pasa campaigns */}
+
+                    <Notificaciones
+                        open={openSnack}
+                        onClose={() => setOpenSnack(false)}
+                        message="¡Campaña programada con éxito!"
+                    />
+                </Box>
+            </div>
+        </>
+    );
 };
 
 export default CampañaScreen;

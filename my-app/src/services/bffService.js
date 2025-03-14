@@ -181,31 +181,56 @@ export const getChannels = async (token) => {
 };
 
 // Subir un archivo
-export const uploadFile = async (fileData, token) => {
-  try {
-    const response = await apiClient.post('/files', fileData, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        }
-    });
-    return response.data;  // Devuelve la respuesta de la carga
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Error uploading file');
-  }
+export const getPresignedUrl = async (fileName, type, token, size, clientId) => {
+    try {
+        const response = await apiClient.post(`/files`, {
+            name: fileName,
+            type: type,
+            sizeFile: size,
+            clientId: clientId
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error fetching presigned url');
+    }
 };
 
-// Obtener los archivos cargados para un usuario específico
-export const getUserFiles = async (userId, token) => {
-  try {
-    const response = await apiClient.get(`/listFilesUser/${userId}`, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
+// Subir un archivo usando una URL pre-firmada
+export const uploadFile = async (fileName, fileType, presignedUrl, file) => {
+    try {
+        const response = await fetch(presignedUrl, {
+            method: 'PUT',
+            body: file,
+            headers: {
+                'Content-Type': fileType,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error al subir el archivo: ${response.statusText}`);
         }
-    }); //client_id
-    return response.data;  // Devuelve los archivos del usuario
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Error fetching user files');
-  }
+
+        return response;
+    } catch (error) {
+        throw new Error('Error al subir el archivo a S3');
+    }
+};
+
+export const getUserFiles = async (userId, token) => {
+    try {
+        const response = await apiClient.get(`/listFilesUser/${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error fetching user files');
+    }
 };
 
 export const deleteFiles = async (userId, token, file) => {
@@ -224,6 +249,101 @@ export const deleteFiles = async (userId, token, file) => {
     }
 };
 
+export const createPeriodicJob = async (clientId, name, params, token, schedule) => {
+    try {
+        const response = await fetch('https://uzsdo6wiqd67bpntxajmtpczia0sanpr.lambda-url.us-east-1.on.aws/periodicjobs', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json', // Agrega el header Content-Type
+            },
+            body: JSON.stringify({ // Serializa el cuerpo como JSON
+                client_id: clientId,
+                name: name,
+                config: params, // No necesitas serializar params aquí, ya que JSON.stringify lo hace
+                schedule: schedule,
+            }),
+        });
+
+        if (!response.ok) {
+            // Maneja el error si la respuesta no es exitosa
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error creating periodic job');
+        }
+
+        return await response.json(); // Parsea la respuesta JSON
+    } catch (error) {
+        throw new Error(error.message || 'Error creating periodic job');
+    }
+};
+
+export const getPeriodicJobs = async (clientId, token) => {
+    try {
+        const response = await fetch(`https://uzsdo6wiqd67bpntxajmtpczia0sanpr.lambda-url.us-east-1.on.aws/periodicjobs?client_id=${clientId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error fetching periodic jobs');
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Error fetching periodic jobs');
+    }
+};
+
+export const updatePeriodicJob = async (id, campaignData, token) => {
+    try {
+        const response = await fetch(`https://uzsdo6wiqd67bpntxajmtpczia0sanpr.lambda-url.us-east-1.on.aws/periodicjobs/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ // Construye un objeto con los datos
+                name: campaignData.name,
+                config: campaignData.config,
+                schedule: campaignData.schedule,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Error al actualizar la campaña: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || `Error al actualizar la campaña`);
+    }
+};
+
+export const deletePeriodicJob = async (id, token) => {
+    try {
+        const response = await fetch(`https://uzsdo6wiqd67bpntxajmtpczia0sanpr.lambda-url.us-east-1.on.aws/periodicjobs/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Error al eliminar la campaña: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || `Error al eliminar la campaña`);
+    }
+};
 
   
   
