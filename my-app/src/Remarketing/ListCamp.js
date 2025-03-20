@@ -50,8 +50,8 @@ const CampañasListadas = ({ campaign, campaignAdded }) => {
             },
         });
         setEditedFrequency(scheduleToFrequency(campaign.schedule));
-        setEditedStartDateDaysAgo(campaign.config?.params?.dateStart / 24);
-        setEditedEndDateDaysAgo(campaign.config?.params?.dateEnd / 24);
+        setEditedStartDateDaysAgo(campaign.config?.params?.minAgeHoursStart / 24);
+        setEditedEndDateDaysAgo(campaign.config?.params?.minAgeHoursEnd / 24);
         setIsModalOpen(true);
     };
 
@@ -127,8 +127,8 @@ const CampañasListadas = ({ campaign, campaignAdded }) => {
                 config: {
                     params: {
                         ...editedCampaign.config.params,
-                        dateStart: editedStartDateDaysAgo * 24,
-                        dateEnd: editedEndDateDaysAgo * 24,
+                        minAgeHoursStart: editedStartDateDaysAgo * 24,
+                        minAgeHoursEnd: editedEndDateDaysAgo * 24,
                     },
                 },
             };

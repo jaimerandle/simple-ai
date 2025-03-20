@@ -35,7 +35,7 @@ const CampañaScreen = () => {
             <Navbar />
             <div style={{ height: '100vh', padding: '2%', overflow: "auto" }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Typography variant="h5" gutterBottom style={{ color: "purple", fontWeight: "bold" }}>
+                    <Typography variant="h5" gutterBottom style={{ color: "black", fontWeight: "bold" }}>
                         Crear Campaña de Remarketing
                     </Typography>
 

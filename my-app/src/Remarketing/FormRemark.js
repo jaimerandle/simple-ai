@@ -12,7 +12,7 @@ import {
   IconButton,
   Typography,
   Modal,
-  CircularProgress,
+  Paper,
 } from '@mui/material';
 import {
   createPeriodicJob,
@@ -55,15 +55,15 @@ const Formulario = ({ onCampaignSaved, updateCampaigns }) => {
           const freq = scheduleToFrequency(campaign.schedule);
           setFrequency(freq.frequency);
           setDayOfWeek(freq.dayOfWeek);
-          setStartDateDaysAgo(campaign.config?.params?.dateStart / 24);
-          setEndDateDaysAgo(campaign.config?.params?.dateEnd / 24);
+          setStartDateDaysAgo(campaign.config?.params?.minAgeHoursStart / 24);
+          setEndDateDaysAgo(campaign.config?.params?.minAgeHoursEnd / 24);
           setOriginalValues({
             message: campaign.config?.params?.prompt || '',
             title: campaign.name,
             frequency: freq.frequency,
             dayOfWeek: freq.dayOfWeek,
-            startDateDaysAgo: campaign.config?.params?.dateStart / 24,
-            endDateDaysAgo: campaign.config?.params?.dateEnd / 24,
+            startDateDaysAgo: campaign.config?.params?.minAgeHoursStart / 24,
+            endDateDaysAgo: campaign.config?.params?.minAgeHoursEnd / 24,
           });
         }
       } catch (error) {
@@ -231,8 +231,8 @@ const Formulario = ({ onCampaignSaved, updateCampaigns }) => {
             clientId: clientId,
             assistantId: assistant[0].id,
             channelType: 7,
-            dateEnd: endDateHours.toString(),
-            dateStart: startDateHours.toString(),
+            minAgeHoursStart: endDateHours.toString(),
+            minAgeHoursEnd: startDateHours.toString(),
             prompt: prompt,
           },
         };
@@ -252,15 +252,15 @@ const Formulario = ({ onCampaignSaved, updateCampaigns }) => {
           const freq = scheduleToFrequency(campaign.schedule);
           setFrequency(freq.frequency);
           setDayOfWeek(freq.dayOfWeek);
-          setStartDateDaysAgo(campaign.config?.params?.dateStart / 24);
-          setEndDateDaysAgo(campaign.config?.params?.dateEnd / 24);
+          setStartDateDaysAgo(campaign.config?.params?.minAgeHoursStart / 24);
+          setEndDateDaysAgo(campaign.config?.params?.minAgeHoursEnd / 24);
           setOriginalValues({
             message: campaign.config?.params?.prompt || '',
             title: campaign.name,
             frequency: freq.frequency,
             dayOfWeek: freq.dayOfWeek,
-            startDateDaysAgo: campaign.config?.params?.dateStart / 24,
-            endDateDaysAgo: campaign.config?.params?.dateEnd / 24,
+            startDateDaysAgo: campaign.config?.params?.minAgeHoursStart / 24,
+            endDateDaysAgo: campaign.config?.params?.minAgeHoursEnd / 24,
           });
         }
 
@@ -488,7 +488,7 @@ const Formulario = ({ onCampaignSaved, updateCampaigns }) => {
               </FormControl>
             </Box>
           )}
-          <div style={{ width: '50%' }}>
+          <div style={{ width: '90%' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px', fontSize: '1.2em', fontWeight: 'bold' }}>
               Antigüedad de las conversaciones:
             </div>
