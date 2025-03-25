@@ -16,9 +16,10 @@ function AssistantBox({ assistantInput, onPromptChange, onSend, loading }) {
     } else {
       setDisplayInput(originalInput);
     }
-    
+
   }, [originalInput]);
 
+  
   const handleInputChange = (event) => {
     // Actualiza el valor original y la visualización
     setOriginalInput(event.target.value);
